@@ -13,3 +13,19 @@ config_version=5
 config/name="Bridge"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=384
+window/size/viewport_height=216
+window/size/window_width_override=1152
+window/size/window_height_override=648
+window/stretch/mode="canvas_items"
+
+[file_customization]
+
+folder_colors={
+"res://assets/": "orange",
+"res://scenes/": "blue",
+"res://scripts/": "teal"
+}

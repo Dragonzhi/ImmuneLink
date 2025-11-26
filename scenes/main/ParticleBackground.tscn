@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0glq8w37tx27"]
+
+[ext_resource type="Script" uid="uid://dxgd4ixk3mw5b" path="res://scripts/others/particle_background.gd" id="1_ph5ds"]
+
+[node name="ParticleBackground" type="Node2D"]
+script = ExtResource("1_ph5ds")
