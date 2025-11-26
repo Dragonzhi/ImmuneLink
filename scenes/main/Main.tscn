@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://0nk3tfn6rk4s"]
+
+[ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="1_u1xfj"]
+
+[node name="Main" type="Node2D"]
+
+[node name="BackGround" type="Node2D" parent="."]
+z_index = -100
+
+[node name="ParticleBackground" parent="BackGround" instance=ExtResource("1_u1xfj")]
+radius_range = Vector2(0.5, 2)

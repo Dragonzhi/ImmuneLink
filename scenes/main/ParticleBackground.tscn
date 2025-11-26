@@ -1,6 +1,23 @@
-[gd_scene load_steps=2 format=3 uid="uid://c0glq8w37tx27"]
+[gd_scene load_steps=4 format=3 uid="uid://c0glq8w37tx27"]
 
 [ext_resource type="Script" uid="uid://dxgd4ixk3mw5b" path="res://scripts/others/particle_background.gd" id="1_ph5ds"]
 
+[sub_resource type="Gradient" id="Gradient_ph5ds"]
+colors = PackedColorArray(0.38431373, 0, 0, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_4fd0n"]
+gradient = SubResource("Gradient_ph5ds")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+metadata/_snap_enabled = true
+
 [node name="ParticleBackground" type="Node2D"]
+self_modulate = Color(1, 1, 1, 0.49019608)
 script = ExtResource("1_ph5ds")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = -2
+position = Vector2(194.00002, 111.99999)
+scale = Vector2(6.109376, 5.3203125)
+texture = SubResource("GradientTexture2D_4fd0n")

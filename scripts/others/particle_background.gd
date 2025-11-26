@@ -1,9 +1,11 @@
 extends Node2D
 
-# 导出变量，可以在编辑器中调整粒子数量
+## 粒子数量
 @export var particle_count: int = 150
-# 粒子移动速度。较大的值意味着更快的移动。
+## 粒子移动速度。较大的值意味着更快的移动。
 @export var particle_speed: float = 1.0
+## 粒子半径, x表示最小值，y表示最大值
+@export var radius_range: Vector2 = Vector2(1.0, 3.0)
 
 # 内部类：定义每个粒子的属性 (位置、速度、大小、颜色)
 class Particle:
@@ -36,7 +38,7 @@ func initialize_particles():
 		p.velocity = Vector2( (randf() - 0.5) * particle_speed, (randf() - 0.5) * particle_speed)
 		
 		# 3. 随机半径 (1到3)
-		p.radius = randf() * 2.0 + 1.0
+		p.radius = randf_range(radius_range.x, radius_range.y)
 		
 		# 4. 颜色：半透明的红色/橙色，模拟炎症或能量光晕
 		var alpha = randf() * 0.4 + 0.1 # 0.1到0.5的透明度
