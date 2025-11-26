@@ -20,8 +20,6 @@ func _ready():
 	# 确保视图尺寸可用，等待一帧
 	await get_tree().process_frame
 	initialize_particles()
-	# 设置节点始终在背景绘制（可选，但推荐）
-	# self.z_index = -1 
 
 # 初始化所有粒子
 func initialize_particles():

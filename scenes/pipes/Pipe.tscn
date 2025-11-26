@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://bwc7siyf2lmfb"]
+
+[ext_resource type="Script" uid="uid://b8rju1sqpsymi" path="res://scenes/pipes/pipe.gd" id="1_ho2yw"]
+[ext_resource type="Texture2D" uid="uid://cu00m38phdg7v" path="res://assets/pipe/pipe_red.png" id="1_piu5u"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_faeng"]
+
+[node name="Pipe" type="Node2D"]
+script = ExtResource("1_ho2yw")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("1_piu5u")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, -18)
+shape = SubResource("CapsuleShape2D_faeng")
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
