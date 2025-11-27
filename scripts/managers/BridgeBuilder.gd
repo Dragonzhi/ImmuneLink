@@ -146,6 +146,12 @@ func _finish_building(end_pipe: Pipe, end_pos: Vector2i):
 	print("路径是否可用? ", is_available)
 
 	if is_available:
+		# 检查管道类型是否匹配
+		if start_pipe.pipe_type != end_pipe.pipe_type:
+			printerr("管道类型不匹配！无法连接 ", start_pipe.pipe_type, " 到 ", end_pipe.pipe_type)
+			_cancel_building()
+			return
+			
 		_create_bridge_segments()
 		connection_manager.add_connection(start_pipe, end_pipe)
 		
