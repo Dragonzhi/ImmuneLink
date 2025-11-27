@@ -11,17 +11,23 @@ var occupied_cells = {}
 # 网格线可视化
 var grid_lines: Array[Line2D] = []
 var is_grid_visible: bool = false
+var active_tween: Tween
+
+const GRID_COLOR = Color(1, 1, 1, 0.3)
+const FADE_DURATION = 0.25
 
 func _ready():
 	create_grid_visual()
-	hide_grid()
+	# Initially hide lines without fading
+	for line in grid_lines:
+		line.visible = false
 
 func create_grid_visual():
 	# 创建垂直线
 	for x in range(grid_width + 1):
 		var line = Line2D.new()
 		line.width = 2
-		line.default_color = Color(1, 1, 1, 0.3)
+		line.default_color = Color.TRANSPARENT # Start transparent
 		line.add_point(Vector2(x * grid_size, 0))
 		line.add_point(Vector2(x * grid_size, grid_height * grid_size))
 		add_child(line)
@@ -31,21 +37,40 @@ func create_grid_visual():
 	for y in range(grid_height + 1):
 		var line = Line2D.new()
 		line.width = 2
-		line.default_color = Color(1, 1, 1, 0.3)
+		line.default_color = Color.TRANSPARENT # Start transparent
 		line.add_point(Vector2(0, y * grid_size))
 		line.add_point(Vector2(grid_width * grid_size, y * grid_size))
 		add_child(line)
 		grid_lines.append(line)
 
 func show_grid():
+	if active_tween:
+		active_tween.kill()
+	
+	is_grid_visible = true
+	active_tween = create_tween().set_parallel()
+
 	for line in grid_lines:
 		line.visible = true
-	is_grid_visible = true
+		active_tween.tween_property(line, "default_color", GRID_COLOR, FADE_DURATION)
 
 func hide_grid():
+	if active_tween:
+		active_tween.kill()
+
+	is_grid_visible = false
+	active_tween = create_tween().set_parallel()
+	
+	var transparent_color = Color(GRID_COLOR.r, GRID_COLOR.g, GRID_COLOR.b, 0)
+	for line in grid_lines:
+		active_tween.tween_property(line, "default_color", transparent_color, FADE_DURATION)
+
+	# When the fade-out is complete, hide the nodes
+	active_tween.finished.connect(_on_hide_tween_finished)
+
+func _on_hide_tween_finished():
 	for line in grid_lines:
 		line.visible = false
-	is_grid_visible = false
 
 func toggle_grid():
 	if is_grid_visible:

@@ -12,6 +12,7 @@
 script = ExtResource("5_fghij")
 
 [node name="GridManager" parent="." instance=ExtResource("2_q24mn")]
+modulate = Color(1, 1, 1, 0.5882353)
 grid_size = 16
 grid_width = 50
 grid_height = 50
