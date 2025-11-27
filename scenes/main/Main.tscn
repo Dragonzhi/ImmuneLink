@@ -20,9 +20,9 @@ script = ExtResource("5_fghij")
 [node name="Bridges" type="Node2D" parent="."]
 
 [node name="GridManager" parent="." instance=ExtResource("2_q24mn")]
-grid_size = 16
-grid_width = 40
-grid_height = 40
+grid_size = 8
+grid_width = 60
+grid_height = 60
 
 [node name="BackGround" type="Node2D" parent="."]
 z_index = -100
@@ -33,11 +33,11 @@ radius_range = Vector2(0.5, 2)
 [node name="Midground" type="Node2D" parent="."]
 
 [node name="Pipe2" parent="Midground" instance=ExtResource("1_nha0i")]
-position = Vector2(270, 5)
+position = Vector2(264, 5)
 rotation = 3.1415927
 
 [node name="Pipe" parent="Midground" instance=ExtResource("1_nha0i")]
-position = Vector2(310, 210)
+position = Vector2(312, 210)
 
 [node name="Foreground" type="Node2D" parent="."]
 z_index = 100
