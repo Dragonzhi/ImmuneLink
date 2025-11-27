@@ -10,6 +10,7 @@ var connection_manager: ConnectionManager
 # 建造状态
 var build_mode: bool = false
 var start_pipe: Pipe = null
+var start_pos: Vector2i # 记录起始连接点的网格坐标
 var current_path: Array[Vector2i] = []
 
 @onready var preview_line: Line2D = $PreviewLine
@@ -122,6 +123,7 @@ func start_building(pipe: Pipe, start_pos: Vector2i):
 	
 	build_mode = true
 	start_pipe = pipe
+	self.start_pos = start_pos
 	current_path = [start_pos]
 	
 	preview_line.visible = true
@@ -146,6 +148,10 @@ func _finish_building(end_pipe: Pipe, end_pos: Vector2i):
 	if is_available:
 		_create_bridge_segments()
 		connection_manager.add_connection(start_pipe, end_pipe)
+		
+		# 标记连接点为已使用
+		start_pipe.mark_point_as_used(grid_manager.grid_to_world(start_pos))
+		end_pipe.mark_point_as_used(grid_manager.grid_to_world(end_pos))
 	else:
 		print("!!! 建造失败: 路径被阻挡")
 	

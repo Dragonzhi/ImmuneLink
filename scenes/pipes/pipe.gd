@@ -19,6 +19,9 @@ var is_connected_local: bool = false
 var grid_manager: GridManager
 var bridge_builder: BridgeBuilder
 
+# 存储已被使用的连接点
+var used_points: Array[Marker2D] = []
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# 获取单例引用
@@ -55,12 +58,25 @@ func on_connected():
 			pass
 			#SignalManager.activate_signal_zone(self)
 
+# 将一个连接点标记为已使用
+func mark_point_as_used(point_world_pos: Vector2):
+	var point_to_use = _get_closest_connection_point(point_world_pos)
+	if point_to_use and not used_points.has(point_to_use):
+		used_points.append(point_to_use)
+		# 可选：在这里改变已使用连接点的外观，比如颜色
+		# point_to_use.get_node("Sprite2D").modulate = Color.GRAY
+
 func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			# 找到最近的连接点
 			var closest_point = _get_closest_connection_point(event.global_position)
 			if closest_point:
+				# 检查连接点是否已被使用
+				if used_points.has(closest_point):
+					print("连接点已被使用!")
+					return
+
 				var start_grid_pos = grid_manager.world_to_grid(closest_point.global_position)
 				# 通知BridgeBuilder开始建造
 				if bridge_builder:
