@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dbitchmue8nm6"]
+
+[ext_resource type="Texture2D" uid="uid://i2s4wdd4g1te" path="res://assets/others/EnemySpawnPoint_png.png" id="1_2jexi"]
+
+[node name="EnemySpawnPoint" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_2jexi")

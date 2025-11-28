@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=7 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="PackedScene" uid="uid://h6j8i84x74hj" path="res://scenes/others/GridManager.tscn" id="2_q24mn"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="3_u1xfj"]
+[ext_resource type="PackedScene" uid="uid://dbitchmue8nm6" path="res://scenes/others/enemy_spawn_point.tscn" id="4_1rhdn"]
 [ext_resource type="PackedScene" uid="uid://cjvy6h27p17px" path="res://scenes/others/BridgeBuilder.tscn" id="4_abcde"]
 [ext_resource type="Script" uid="uid://b2n0qw8vqfgsl" path="res://scripts/managers/ConnectionManager.gd" id="5_fghij"]
 
@@ -23,6 +24,11 @@ z_index = -100
 [node name="ParticleBackground" parent="BackGround" instance=ExtResource("3_u1xfj")]
 self_modulate = Color(1, 1, 1, 0.29411766)
 radius_range = Vector2(0.5, 2)
+
+[node name="EnemySpawns" type="Node2D" parent="BackGround"]
+
+[node name="EnemySpawnPoint" parent="BackGround/EnemySpawns" instance=ExtResource("4_1rhdn")]
+position = Vector2(160, 48)
 
 [node name="Midground" type="Node2D" parent="."]
 
