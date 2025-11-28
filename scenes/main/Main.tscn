@@ -43,7 +43,7 @@ position = Vector2(88, 210)
 pipe_type = 1
 
 [node name="bluePipe2" parent="Midground/Pipes/Blue" instance=ExtResource("1_nha0i")]
-position = Vector2(-4, 56)
+position = Vector2(0, 56)
 rotation = 1.5707964
 pipe_type = 1
 

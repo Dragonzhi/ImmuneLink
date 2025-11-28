@@ -15,12 +15,21 @@ var active_tween: Tween
 
 const GRID_COLOR = Color(1, 1, 1, 0.3)
 const FADE_DURATION = 0.25
+const OCCUPIED_COLOR = Color(1, 0, 0, 0.5)
 
 func _ready():
 	create_grid_visual()
 	# Initially hide lines without fading
 	for line in grid_lines:
 		line.visible = false
+
+func _draw():
+	# Draw a rectangle over each occupied cell, only if the grid is visible
+	if is_grid_visible:
+		for grid_pos in occupied_cells.keys():
+			var rect_pos = grid_to_world(grid_pos) - Vector2(grid_size / 2, grid_size / 2)
+			var rect_size = Vector2(grid_size, grid_size)
+			draw_rect(Rect2(rect_pos, rect_size), OCCUPIED_COLOR)
 
 func create_grid_visual():
 	# 创建垂直线
@@ -53,6 +62,7 @@ func show_grid():
 	for line in grid_lines:
 		line.visible = true
 		active_tween.tween_property(line, "default_color", GRID_COLOR, FADE_DURATION)
+	queue_redraw()
 
 func hide_grid():
 	if active_tween:
@@ -67,6 +77,7 @@ func hide_grid():
 
 	# When the fade-out is complete, hide the nodes
 	active_tween.finished.connect(_on_hide_tween_finished)
+	queue_redraw()
 
 func _on_hide_tween_finished():
 	for line in grid_lines:
@@ -81,6 +92,7 @@ func toggle_grid():
 # 将节点设置到指定的网格位置
 func set_grid_occupied(grid_pos: Vector2i, node: Node2D):
 	occupied_cells[grid_pos] = node
+	queue_redraw()
 
 # 检查给定的网格路径是否可用
 func is_grid_available(grid_path: Array) -> bool:
