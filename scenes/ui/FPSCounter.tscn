@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://ddhalg244kw3t"]
+
+[ext_resource type="Script" uid="uid://bg6t8jlx367s7" path="res://scripts/ui/FPSCounter.gd" id="1_fps_script"]
+
+[node name="FPSCounter" type="CanvasLayer"]
+
+[node name="Label" type="Label" parent="."]
+offset_right = 120.0
+offset_bottom = 23.0
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_font_sizes/font_size = 8
+script = ExtResource("1_fps_script")
