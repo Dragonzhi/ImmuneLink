@@ -1,10 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://dpemoeolhg5ja"]
+[gd_scene load_steps=4 format=3 uid="uid://dpemoeolhg5ja"]
 
 [ext_resource type="PackedScene" uid="uid://cm325e0w41j3h" path="res://scenes/entities/BaseEnemy.tscn" id="1_a5nqt"]
 [ext_resource type="Texture2D" uid="uid://cse0vl85adcfx" path="res://assets/enemies/virus.png" id="2_4xn4g"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4xn4g"]
+radius = 5.0
 
 [node name="VirusEnemy" instance=ExtResource("1_a5nqt")]
 damage = 25.0
 
 [node name="Sprite2D" parent="." index="0"]
 texture = ExtResource("2_4xn4g")
+
+[node name="CollisionShape2D" parent="Area2D" index="0"]
+shape = SubResource("CircleShape2D_4xn4g")

@@ -34,3 +34,10 @@ folder_colors={
 "res://scenes/": "blue",
 "res://scripts/": "teal"
 }
+
+[layer_names]
+
+2d_physics/layer_1="UI"
+2d_physics/layer_2="敌人"
+2d_physics/layer_3="桥梁"
+2d_physics/layer_4="抛射物"
