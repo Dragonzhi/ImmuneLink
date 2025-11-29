@@ -1,9 +1,10 @@
 extends PathFollow2D
 class_name BaseEnemy
 
-@export var max_hp: float = 100.0 # 最大生命值/冷静值
-@export var current_hp: float = 100.0 # 当前生命值/冷静值
-@export var move_speed: float = 50.0 # 移动速度 (单位/秒)
+@export var max_hp: float = 100.0 ## 最大生命值/冷静值
+@export var current_hp: float = 100.0 ## 当前生命值/冷静值
+@export var move_speed: float = 50.0 ## 移动速度 (单位/秒)
+@export var attack_power : float = 10.0 ## 攻击力
 
 signal path_finished(enemy: BaseEnemy)
 
