@@ -1,6 +1,8 @@
 extends PathFollow2D
 class_name BaseEnemy
 
+const HitEffectScene = preload("res://scenes/effects/HitEffect.tscn")
+
 @export var max_hp: float = 100.0
 @export var current_hp: float = 100.0
 @export var move_speed: float = 50.0
@@ -16,13 +18,11 @@ var is_dying: bool = false
 func _ready() -> void:
 	current_hp = max_hp
 	rotates = false
-	# This connection is likely made in the editor, but connecting here is safer
 	if not area_2d.area_entered.is_connected(_on_area_2d_area_entered):
 		area_2d.area_entered.connect(_on_area_2d_area_entered)
 	
 func _physics_process(delta: float) -> void:
 	if is_dying:
-		#print("Physics process skipped, I am dying.")
 		return
 
 	var path_node = get_parent()
@@ -39,9 +39,7 @@ func _physics_process(delta: float) -> void:
 	if new_progress >= curve_length:
 		progress = curve_length
 		emit_signal("path_finished", self)
-		# This is the likely culprit, let's guard it
 		if not is_dying:
-			# print("Reached end of path, queue_free.")
 			queue_free()
 	else:
 		progress = new_progress
@@ -57,7 +55,15 @@ func take_damage(amount: float):
 	if is_dying: return
 
 	current_hp -= amount
-	print("Took damage, HP is now: ", current_hp)
+	
+	# --- Create Hit Effect ---
+	var hit_effect = HitEffectScene.instantiate()
+	get_tree().get_root().get_node("Main/Foreground/Particles").add_child(hit_effect) # Add to main scene
+	hit_effect.global_position = global_position
+	hit_effect.set_emitting(true)
+	# You can customize the color here if needed, e.g., based on damage type
+	# hit_effect.set_color(Color.YELLOW) 
+	
 	if current_hp <= 0:
 		start_death_sequence()
 
@@ -65,7 +71,6 @@ func start_death_sequence():
 	if is_dying: return
 
 	is_dying = true
-	print("Starting death sequence!")
 	
 	collision_shape.set_deferred("disabled", true)
 	
