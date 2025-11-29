@@ -133,7 +133,7 @@ func _on_reload_timer_timeout():
 	var shot = CalmingShotScene.instantiate()
 	
 	# 将子弹添加到主场景或一个专门的子弹容器中
-	get_tree().get_root().get_node("Main").add_child(shot)
+	get_tree().get_root().get_node("Main/Foreground/Particles").add_child(shot)
 	shot.global_position = global_position
 	shot.launch(target, attack_upgrade_damage)
 

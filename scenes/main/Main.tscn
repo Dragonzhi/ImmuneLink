@@ -109,6 +109,8 @@ z_index = 1
 [node name="Foreground" type="Node2D" parent="."]
 z_index = 100
 
+[node name="Particles" type="Node2D" parent="Foreground"]
+
 [node name="BridgeBuilder" parent="." node_paths=PackedStringArray("bridges_container") instance=ExtResource("4_abcde")]
 bridges_container = NodePath("../Midground/Bridges")
 
