@@ -6,14 +6,14 @@
 [ext_resource type="PackedScene" uid="uid://dbitchmue8nm6" path="res://scenes/others/enemy_spawn_point.tscn" id="4_1rhdn"]
 [ext_resource type="PackedScene" uid="uid://cjvy6h27p17px" path="res://scenes/others/BridgeBuilder.tscn" id="4_abcde"]
 [ext_resource type="Script" uid="uid://b2n0qw8vqfgsl" path="res://scripts/managers/ConnectionManager.gd" id="5_fghij"]
-[ext_resource type="PackedScene" uid="uid://cm325e0w41j3h" path="res://scenes/entities/BaseEnemy.tscn" id="5_sjxhf"]
-[ext_resource type="PackedScene" path="res://scenes/ui/FPSCounter.tscn" id="8_ko0rf"]
+[ext_resource type="PackedScene" uid="uid://dpemoeolhg5ja" path="res://scenes/enemies/VirusEnemy.tscn" id="5_ko0rf"]
+[ext_resource type="PackedScene" uid="uid://ddhalg244kw3t" path="res://scenes/ui/FPSCounter.tscn" id="8_ko0rf"]
 
 [sub_resource type="Curve2D" id="Curve2D_sjxhf"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 80, 0, 0, 0, 0, 110, 0, 0, 0, 0, 0, 0, 0)
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -90, 0, 0, 0, 0, 0, -90, 120, 0, 0, 0, 0, 60, 120, 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0)
 }
-point_count = 4
+point_count = 6
 
 [node name="Main" type="Node2D"]
 
@@ -37,7 +37,7 @@ radius_range = Vector2(0.5, 2)
 
 [node name="EnemySpawnPoint" parent="BackGround/EnemySpawns" instance=ExtResource("4_1rhdn")]
 position = Vector2(160, 48)
-enemy_scene = ExtResource("5_sjxhf")
+enemy_scene = ExtResource("5_ko0rf")
 
 [node name="Path" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="3"]
 curve = SubResource("Curve2D_sjxhf")

@@ -1,17 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://cm325e0w41j3h"]
+[gd_scene load_steps=3 format=3 uid="uid://cm325e0w41j3h"]
 
 [ext_resource type="Script" uid="uid://d3h8sn6d8h0gc" path="res://scripts/entities/BaseEnemy.gd" id="1_w51s3"]
-[ext_resource type="Texture2D" uid="uid://dihamj1mhtfuq" path="res://assets/enemies/enemy_white_cell.png" id="2_l6aj4"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_21t3f"]
-height = 24.0
+radius = 4.0
+height = 8.0
 
 [node name="BaseEnemy" type="PathFollow2D"]
+physics_interpolation_mode = 1
 script = ExtResource("1_w51s3")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.25, 0.25)
-texture = ExtResource("2_l6aj4")
 
 [node name="Area2D" type="Area2D" parent="."]
 
