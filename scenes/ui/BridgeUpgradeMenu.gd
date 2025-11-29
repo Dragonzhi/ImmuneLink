@@ -30,7 +30,7 @@ func generate_buttons(count: int, radius: float):
 			# 如果没有提供自定义按钮场景，则创建一个默认按钮
 			button = Button.new()
 			button.text = "升级 %s" % (i + 1)
-			button.size = Vector2(80, 30) # 设置默认大小
+			button.size = Vector2(40, 20) # 设置默认大小
 
 		add_child(button)
 		

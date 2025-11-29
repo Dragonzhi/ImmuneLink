@@ -17,13 +17,6 @@ func _ready() -> void:
 	if not ui_layer:
 		printerr("UIManager Error: UI Layer node not found at path: %s" % ui_layer_path)
 
-
-func _unhandled_input(event: InputEvent) -> void:
-	# If the menu is open and the player clicks anywhere, close it.
-	if current_menu and event is InputEventMouseButton and event.is_pressed():
-		close_upgrade_menu()
-		get_viewport().set_input_as_handled()
-
 func open_upgrade_menu(bridge: Bridge):
 	# If a menu is already open, close it first.
 	if current_menu:

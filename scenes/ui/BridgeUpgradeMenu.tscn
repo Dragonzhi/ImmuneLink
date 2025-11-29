@@ -1,8 +1,10 @@
 [gd_scene load_steps=2 format=3 uid="uid://b5w7hgsgsv6w5"]
 
-[ext_resource type="Script" path="res://scenes/ui/BridgeUpgradeMenu.gd" id="1_abcde"]
+[ext_resource type="Script" uid="uid://dyvph8lhqn7dv" path="res://scenes/ui/BridgeUpgradeMenu.gd" id="1_abcde"]
 
 [node name="BridgeUpgradeMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_abcde")
+button_radius = 50.0
+button_count = 3

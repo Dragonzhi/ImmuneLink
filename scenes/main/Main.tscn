@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=18 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="PackedScene" uid="uid://h6j8i84x74hj" path="res://scenes/others/GridManager.tscn" id="2_q24mn"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://iwunwmox6qk5" path="res://scripts/managers/UIManager.gd" id="5_abcde"]
 [ext_resource type="Script" uid="uid://b2n0qw8vqfgsl" path="res://scripts/managers/ConnectionManager.gd" id="5_fghij"]
 [ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="5_ko0rf"]
+[ext_resource type="Script" path="res://scripts/ui/Overlay.gd" id="6_overlay"]
 [ext_resource type="PackedScene" uid="uid://bf7mkrd3nmgig" path="res://scenes/enemies/GermEnemy.tscn" id="6_qkm1d"]
 [ext_resource type="PackedScene" uid="uid://dv8f6a6cpfla" path="res://scenes/enemies/MacrophageEnemy.tscn" id="7_p5fgu"]
 [ext_resource type="PackedScene" uid="uid://dpemoeolhg5ja" path="res://scenes/enemies/VirusEnemy.tscn" id="8_2tpxt"]
@@ -113,12 +114,14 @@ default_color = Color(0.4, 0.5, 1, 0.5)
 layer = 10
 
 [node name="Overlay" type="ColorRect" parent="UILayer"]
+visible = false
+mouse_filter = 1 # MOUSE_FILTER_STOP
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.5)
-visible = false
+script = ExtResource("6_overlay")
 
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint"]
