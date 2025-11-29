@@ -6,6 +6,7 @@ const BridgeScene = preload("res://scenes/bridge/bridge.tscn")
 # --- Exports ---
 @export var build_delay: float = 0.05
 @export var bridges_container: Node2D
+@export var bridge_segment_cost: int = 10
 
 # --- OnReady Vars ---
 @onready var preview_line: Line2D = $PreviewLine
@@ -115,11 +116,21 @@ func start_building(pipe: Pipe, pos: Vector2i):
 func _finish_building(end_pipe: Pipe, end_pos: Vector2i):
 	if not current_path.has(end_pos): _add_point_to_path(end_pos)
 	
+	# 检查路径和管道类型
 	var path_to_check = current_path.slice(1, current_path.size() - 1)
 	if not grid_manager.is_grid_available(path_to_check) or start_pipe.pipe_type != end_pipe.pipe_type:
 		_cancel_building()
 		return
+		
+	# 检查资源成本
+	var total_cost = current_path.size() * bridge_segment_cost
+	if not GameManager.spend_resource_value(total_cost):
+		print("建造失败: 资源不足!")
+		# 在这里可以添加一个UI提示，比如在屏幕上显示"资源不足"
+		_cancel_building()
+		return
 	
+	# --- Setup for Sequential Build ---
 	sequential_build_path = current_path
 	path_connection_set.clear()
 	for pos in sequential_build_path: path_connection_set[pos] = true

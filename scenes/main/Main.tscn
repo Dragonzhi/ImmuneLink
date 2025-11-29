@@ -1,6 +1,7 @@
-[gd_scene load_steps=18 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=20 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
+[ext_resource type="Script" uid="uid://bro8olv1xvfkn" path="res://scripts/managers/GameManager.gd" id="1_tck0d"]
 [ext_resource type="PackedScene" uid="uid://h6j8i84x74hj" path="res://scenes/others/GridManager.tscn" id="2_q24mn"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="3_u1xfj"]
 [ext_resource type="PackedScene" uid="uid://dbitchmue8nm6" path="res://scenes/others/enemy_spawn_point.tscn" id="4_1rhdn"]
@@ -13,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://dv8f6a6cpfla" path="res://scenes/enemies/MacrophageEnemy.tscn" id="7_p5fgu"]
 [ext_resource type="PackedScene" uid="uid://dpemoeolhg5ja" path="res://scenes/enemies/VirusEnemy.tscn" id="8_2tpxt"]
 [ext_resource type="PackedScene" uid="uid://ddhalg244kw3t" path="res://scenes/ui/FPSCounter.tscn" id="8_ko0rf"]
+[ext_resource type="PackedScene" uid="uid://dpsk4yq8w7h6g" path="res://scenes/ui/GameUI.tscn" id="9_gameui"]
 
 [sub_resource type="Resource" id="Resource_ostsq"]
 script = ExtResource("5_ko0rf")
@@ -38,6 +40,9 @@ _data = {
 point_count = 6
 
 [node name="Main" type="Node2D"]
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("1_tck0d")
 
 [node name="ConnectionManager" type="Node" parent="."]
 script = ExtResource("5_fghij")
@@ -107,10 +112,6 @@ z_index = 100
 [node name="BridgeBuilder" parent="." node_paths=PackedStringArray("bridges_container") instance=ExtResource("4_abcde")]
 bridges_container = NodePath("../Midground/Bridges")
 
-[node name="PreviewLine" type="Line2D" parent="BridgeBuilder"]
-width = 5.0
-default_color = Color(0.4, 0.5, 1, 0.5)
-
 [node name="FPSCounter" parent="." instance=ExtResource("8_ko0rf")]
 
 [node name="UILayer" type="CanvasLayer" parent="."]
@@ -126,5 +127,7 @@ grow_vertical = 2
 mouse_filter = 1
 color = Color(0, 0, 0, 0.5)
 script = ExtResource("6_overlay")
+
+[node name="GameUI" parent="UILayer" instance=ExtResource("9_gameui")]
 
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint"]

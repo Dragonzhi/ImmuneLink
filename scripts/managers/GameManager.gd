@@ -1,0 +1,46 @@
+extends Node
+
+signal repair_value_changed(new_value: float)
+signal resource_value_changed(new_value: float)
+
+@export var initial_resources: float = 200.0
+
+var _repair_value: float = 0.0:
+	set(value):
+		_repair_value = value
+		emit_signal("repair_value_changed", _repair_value)
+
+var _resource_value: float = 0.0:
+	set(value):
+		_resource_value = value
+		emit_signal("resource_value_changed", _resource_value)
+
+func _ready() -> void:
+	self._resource_value = initial_resources
+	self._repair_value = 0.0
+
+# --- Public Methods ---
+
+func add_repair_value(amount: float):
+	self._repair_value = min(_repair_value + amount, 100.0)
+	if _repair_value >= 100.0:
+		print("胜利条件已达成！")
+		# get_tree().change_scene_to_file("res://win_screen.tscn")
+
+func add_resource_value(amount: float):
+	self._resource_value += amount
+
+func spend_resource_value(amount: float) -> bool:
+	if _resource_value >= amount:
+		self._resource_value -= amount
+		return true
+	else:
+		print("资源不足！需要: %s, 当前拥有: %s" % [amount, _resource_value])
+		return false
+
+# --- Getters for UI ---
+func get_repair_value() -> float:
+	return _repair_value
+
+func get_resource_value() -> float:
+	return _resource_value

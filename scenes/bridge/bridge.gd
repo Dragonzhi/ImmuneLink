@@ -168,7 +168,7 @@ func _on_hurt_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: 
 
 func _on_hurt_area_2d_mouse_entered() -> void:
 	if not is_destroyed and repair_timer.is_stopped():
-		animated_sprite.modulate = Color(0.8, 0.8, 0.5)
+		animated_sprite.modulate = Color(0.8, 0.8, 0.8)
 
 
 func _on_hurt_area_2d_mouse_exited() -> void:
