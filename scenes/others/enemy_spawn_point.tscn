@@ -15,6 +15,10 @@ script = ExtResource("1_dwc2j")
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_h2y0g")
 
+[node name="PathVisualizer" type="Line2D" parent="."]
+width = 2.0
+default_color = Color(0, 0.6, 1, 0.8)
+
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
@@ -28,3 +32,6 @@ curve = SubResource("Curve2D_empty")
 [node name="SpawnTimer" type="Timer" parent="."]
 wait_time = 2.0
 autostart = true
+
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]

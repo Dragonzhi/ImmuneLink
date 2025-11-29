@@ -56,13 +56,13 @@ radius_range = Vector2(0.5, 2)
 [node name="EnemySpawns" type="Node2D" parent="BackGround"]
 
 [node name="EnemySpawnPoint" parent="BackGround/EnemySpawns" instance=ExtResource("4_1rhdn")]
-position = Vector2(160, 48)
+position = Vector2(200, 48)
 enemy_list = Array[ExtResource("5_ko0rf")]([SubResource("Resource_ostsq"), SubResource("Resource_jsdfw"), SubResource("Resource_tck0d")])
 
-[node name="Path" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="3"]
+[node name="Path" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="4"]
 curve = SubResource("Curve2D_sjxhf")
 
-[node name="SpawnTimer" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="4"]
+[node name="SpawnTimer" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="5"]
 wait_time = 5.0
 
 [node name="Midground" type="Node2D" parent="."]

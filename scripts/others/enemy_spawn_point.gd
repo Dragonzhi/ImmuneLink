@@ -1,6 +1,6 @@
 extends Node2D
 
-const EnemySpawnInfo = preload("res://scripts/others/EnemySpawnInfo.gd")
+#const EnemySpawnInfo = preload("res://scripts/others/EnemySpawnInfo.gd")
 
 @export var enemy_list: Array[EnemySpawnInfo]
 
@@ -8,6 +8,7 @@ var grid_manager: GridManager
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
 @onready var path_node: Path2D = $Path
 @onready var spawn_timer: Timer = $SpawnTimer
+@onready var path_visualizer: Line2D = $PathVisualizer # 路径可视化Line2D节点
 
 # 节点进入场景树时首次调用。
 func _ready() -> void:
@@ -18,6 +19,11 @@ func _ready() -> void:
 	# 连接计时器的timeout信号
 	if spawn_timer:
 		spawn_timer.timeout.connect(spawn_enemy)
+	
+	# 初始化路径可视化器
+	if path_node and path_node.curve:
+		path_visualizer.points = path_node.curve.get_baked_points()
+	path_visualizer.visible = false # 默认隐藏
 
 func spawn_enemy():
 	if enemy_list.is_empty():
@@ -96,3 +102,10 @@ func _register_occupied_cells():
 				grid_manager.set_grid_occupied(grid_pos, self)
 	
 	print("敌人生成点在 %s 占用了从 %s 到 %s 的格子" % [global_position, start_grid_pos, end_grid_pos])
+
+
+func _on_area_2d_mouse_entered() -> void:
+	path_visualizer.visible = true # 鼠标进入时显示路径
+
+func _on_area_2d_mouse_exited() -> void:
+	path_visualizer.visible = false # 鼠标离开时隐藏路径
