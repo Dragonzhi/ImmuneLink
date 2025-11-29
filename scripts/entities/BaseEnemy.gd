@@ -45,3 +45,10 @@ func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.owner is Bridge:
 		var bridge: Bridge = area.owner
 		bridge.take_damage(damage)
+
+func take_damage(amount: float):
+	current_hp -= amount
+	print("敌人受到 %s 点镇静效果, 剩余冷静值: %s" % [amount, current_hp])
+	if current_hp <= 0:
+		print("敌人已被完全镇静！")
+		queue_free()

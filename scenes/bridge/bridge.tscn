@@ -250,7 +250,7 @@ atlas = ExtResource("2_jnwta")
 size = Vector2(16, 16)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jnwta"]
-radius = 50.0
+radius = 100.0
 
 [node name="Bridge" type="Node2D"]
 script = ExtResource("1_c301t")
@@ -284,6 +284,8 @@ debug_color = Color(0.49865085, 0.5641095, 0.409438, 0.41960785)
 [node name="RepairTimer" type="Timer" parent="."]
 one_shot = true
 
-[connection signal="input_event" from="HurtArea2D" to="." method="_on_area_2d_input_event"]
-[connection signal="mouse_entered" from="HurtArea2D" to="." method="_on_area_2d_mouse_entered"]
-[connection signal="mouse_exited" from="HurtArea2D" to="." method="_on_area_2d_mouse_exited"]
+[node name="ReloadTimer" type="Timer" parent="."]
+
+[connection signal="input_event" from="HurtArea2D" to="." method="_on_hurt_area_2d_input_event"]
+[connection signal="mouse_entered" from="HurtArea2D" to="." method="_on_hurt_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="HurtArea2D" to="." method="_on_hurt_area_2d_mouse_exited"]
