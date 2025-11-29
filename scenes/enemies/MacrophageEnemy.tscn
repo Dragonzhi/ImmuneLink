@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dv8f6a6cpfla"]
+
+[ext_resource type="PackedScene" uid="uid://cm325e0w41j3h" path="res://scenes/entities/BaseEnemy.tscn" id="1_fcx73"]
+[ext_resource type="Texture2D" uid="uid://bup0nl875wui" path="res://assets/enemies/macrophage.png" id="2_1hdy3"]
+
+[node name="MacrophageEnemy" instance=ExtResource("1_fcx73")]
+
+[node name="Sprite2D" parent="." index="0"]
+scale = Vector2(0.125, 0.125)
+texture = ExtResource("2_1hdy3")

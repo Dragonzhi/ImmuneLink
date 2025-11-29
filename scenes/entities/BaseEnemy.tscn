@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://d3h8sn6d8h0gc" path="res://scripts/entities/BaseEnemy.gd" id="1_w51s3"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_21t3f"]
-radius = 4.0
-height = 8.0
+radius = 5.0
+height = 10.0
 
 [node name="BaseEnemy" type="PathFollow2D"]
 physics_interpolation_mode = 1

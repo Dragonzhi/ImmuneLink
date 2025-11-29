@@ -1,6 +1,8 @@
 extends Node2D
 
-@export var enemy_scene: PackedScene
+const EnemySpawnInfo = preload("res://scripts/others/EnemySpawnInfo.gd")
+
+@export var enemy_list: Array[EnemySpawnInfo]
 
 var grid_manager: GridManager
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
@@ -18,21 +20,43 @@ func _ready() -> void:
 		spawn_timer.timeout.connect(spawn_enemy)
 
 func spawn_enemy():
-	if not enemy_scene:
-		printerr("敌人生成点错误: 未在编辑器中设置 'Enemy Scene'！")
+	if enemy_list.is_empty():
+		printerr("敌人生成点错误: 'Enemy List' 为空！请在编辑器中添加敌人。")
 		return
 	
 	if not path_node:
 		printerr("敌人生成点错误: 未找到名为 'Path' 的Path2D子节点！")
 		return
 	
-	var enemy_instance = enemy_scene.instantiate()
+	var chosen_enemy_info = _get_random_enemy()
+	if not chosen_enemy_info or not chosen_enemy_info.enemy_scene:
+		printerr("敌人生成点错误: 选中的敌人信息无效或场景未设置！")
+		return
+		
+	var enemy_instance = chosen_enemy_info.enemy_scene.instantiate()
 	
 	# PathFollow2D通过成为Path2D的子节点来工作
 	# 我们直接将敌人实例添加到路径节点下
 	path_node.add_child(enemy_instance)
 	
-	print("一个敌人已被生成到路径上！")
+	print("一个敌人 (%s) 已被生成到路径上！" % enemy_instance.name)
+
+func _get_random_enemy() -> EnemySpawnInfo:
+	var total_weight = 0
+	for spawn_info in enemy_list:
+		total_weight += spawn_info.weight
+	
+	if total_weight <= 0:
+		return null # 如果总权重为0，则无法选择
+
+	var random_value = randi_range(1, total_weight)
+	
+	for spawn_info in enemy_list:
+		random_value -= spawn_info.weight
+		if random_value <= 0:
+			return spawn_info
+			
+	return null # 理论上不应到达这里
 
 func _register_occupied_cells():
 	grid_manager = get_node("/root/Main/GridManager")
