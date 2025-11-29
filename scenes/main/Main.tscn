@@ -63,7 +63,7 @@ enemy_list = Array[ExtResource("5_ko0rf")]([SubResource("Resource_ostsq"), SubRe
 curve = SubResource("Curve2D_sjxhf")
 
 [node name="SpawnTimer" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="4"]
-wait_time = 0.5
+wait_time = 5.0
 
 [node name="Midground" type="Node2D" parent="."]
 
