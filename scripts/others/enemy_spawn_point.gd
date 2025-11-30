@@ -6,6 +6,7 @@ const EnemySpawnInfo = preload("res://scripts/others/EnemySpawnInfo.gd")
 
 @export var enemy_list: Array[EnemySpawnInfo]
 @export var path_switch_interval: float = 30.0
+@export var delete_enemy_at_path_end: bool = true
 
 var grid_manager: GridManager
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
@@ -37,6 +38,8 @@ func _ready() -> void:
 		path_switch_timer.start()
 
 	_update_path_visualizer()
+	path_visualizer.visible = false
+	path_visualizer.modulate.a = 0.0
 	call_deferred("_register_occupied_cells")
 
 # --- Public Methods for WaveManager Control ---
@@ -71,7 +74,8 @@ func spawn_enemy():
 		printerr("敌人生成点错误: 选中的敌人信息无效或场景未设置！")
 		return
 		
-	var enemy_instance = chosen_enemy_info.enemy_scene.instantiate()
+	var enemy_instance: BaseEnemy = chosen_enemy_info.enemy_scene.instantiate()
+	enemy_instance.should_delete_at_end = delete_enemy_at_path_end
 	active_path.add_child(enemy_instance)
 	
 	emit_signal("enemy_spawned")

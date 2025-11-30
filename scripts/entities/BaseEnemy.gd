@@ -14,6 +14,7 @@ signal path_finished(enemy: BaseEnemy)
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
 
 var is_dying: bool = false
+var should_delete_at_end: bool = true
 
 func _ready() -> void:
 	current_hp = max_hp
@@ -37,10 +38,17 @@ func _physics_process(delta: float) -> void:
 	var new_progress: float = progress + move_speed * delta
 
 	if new_progress >= curve_length:
-		progress = curve_length
 		emit_signal("path_finished", self)
 		if not is_dying:
-			queue_free()
+			if should_delete_at_end:
+				progress = curve_length
+				queue_free()
+			else:
+				# Loop back to the beginning, carrying over the remainder
+				progress = new_progress - curve_length
+		else:
+			# If it's dying, just stop at the end
+			progress = curve_length
 	else:
 		progress = new_progress
 
