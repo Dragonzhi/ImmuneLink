@@ -14,13 +14,13 @@ var grid_manager: GridManager
 @onready var path_switch_timer: Timer = $PathSwitchTimer
 
 var tween: Tween
-var _paths: Array[Path2D]
+@export var _paths: Array[Path2D]
 var current_path_index: int = 0
 
 func _ready() -> void:
-	for child in get_children():
-		if child is Path2D:
-			_paths.append(child)
+	#for child in get_children():
+		#if child is Path2D:
+			#_paths.append(child)
 	
 	if _paths.is_empty():
 		printerr("敌人生成点错误: 未找到任何Path2D子节点！")

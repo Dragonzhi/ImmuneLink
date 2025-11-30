@@ -36,6 +36,12 @@ script = ExtResource("5_ko0rf")
 enemy_scene = ExtResource("8_2tpxt")
 metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
 
+[sub_resource type="Curve2D" id="Curve2D_hjnkw"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -32, 0, 0, 0, 0, -144, -32, 0, 0, 0, 0, -144, 0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
+
 [sub_resource type="Curve2D" id="Curve2D_tck0d"]
 _data = {
 "points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -32, 0, 0, 0, 0, 0, -32, 128, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0)
@@ -48,18 +54,12 @@ _data = {
 }
 point_count = 6
 
-[sub_resource type="Curve2D" id="Curve2D_hjnkw"]
-_data = {
-"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -32, 0, 0, 0, 0, -144, -32, 0, 0, 0, 0, -144, 0, 0, 0, 0, 0, 0, 0)
-}
-point_count = 5
-
 [node name="Main" type="Node2D"]
 
 [node name="WaveManager" type="Node" parent="." node_paths=PackedStringArray("spawners")]
 script = ExtResource("1_rikml")
 waves = Array[ExtResource("2_vc03v")]([ExtResource("3_grv7h")])
-spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint")]
+spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01"), NodePath("../BackGround/EnemySpawns/EnemySpawnPoint02")]
 
 [node name="WaveTimer" type="Timer" parent="WaveManager"]
 
@@ -89,20 +89,33 @@ radius_range = Vector2(0.5, 2)
 
 [node name="EnemySpawns" type="Node2D" parent="BackGround"]
 
-[node name="EnemySpawnPoint" parent="BackGround/EnemySpawns" instance=ExtResource("4_1rhdn")]
-position = Vector2(200, 48)
+[node name="EnemySpawnPoint02" parent="BackGround/EnemySpawns" node_paths=PackedStringArray("_paths") instance=ExtResource("4_1rhdn")]
+position = Vector2(356, 171)
 enemy_list = Array[ExtResource("5_ko0rf")]([SubResource("Resource_ostsq"), SubResource("Resource_jsdfw"), SubResource("Resource_tck0d")])
+_paths = [NodePath("Path03")]
 
-[node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="4"]
-curve = SubResource("Curve2D_tck0d")
-
-[node name="Path02" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="5"]
-curve = SubResource("Curve2D_u8lgh")
-
-[node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="6"]
+[node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint02" index="6"]
 curve = SubResource("Curve2D_hjnkw")
 
-[node name="SpawnTimer" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="7"]
+[node name="SpawnTimer" parent="BackGround/EnemySpawns/EnemySpawnPoint02" index="7"]
+wait_time = 5.0
+autostart = false
+
+[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" node_paths=PackedStringArray("_paths") instance=ExtResource("4_1rhdn")]
+position = Vector2(200, 48)
+enemy_list = Array[ExtResource("5_ko0rf")]([SubResource("Resource_ostsq"), SubResource("Resource_jsdfw"), SubResource("Resource_tck0d")])
+_paths = [NodePath("Path01"), NodePath("Path02"), NodePath("Path03")]
+
+[node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
+curve = SubResource("Curve2D_tck0d")
+
+[node name="Path02" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="5"]
+curve = SubResource("Curve2D_u8lgh")
+
+[node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="6"]
+curve = SubResource("Curve2D_hjnkw")
+
+[node name="SpawnTimer" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="7"]
 wait_time = 5.0
 autostart = false
 
@@ -163,4 +176,5 @@ script = ExtResource("6_overlay")
 
 [node name="GameUI" parent="UILayer" instance=ExtResource("9_gameui")]
 
-[editable path="BackGround/EnemySpawns/EnemySpawnPoint"]
+[editable path="BackGround/EnemySpawns/EnemySpawnPoint02"]
+[editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

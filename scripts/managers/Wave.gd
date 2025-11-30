@@ -3,15 +3,19 @@ class_name Wave
 
 # This resource defines the properties of a single enemy wave.
 
-# An array of enemy types that can spawn in this wave.
-# The spawner will use the weights from this list.
-@export var enemy_spawn_infos: Array[EnemySpawnInfo]
+# --- Default Settings ---
+# These settings will be used by any spawner that doesn't have a specific override below.
+@export_group("Default Settings")
+@export var default_spawn_infos: Array[EnemySpawnInfo]
+@export var default_enemy_count: int = 10
+@export var default_spawn_interval: float = 1.0
 
-# The total number of enemies to spawn in this wave.
-@export var enemy_count: int = 10
+# --- Overrides ---
+# A list of special configurations for specific spawners.
+@export_group("Spawner Overrides")
+@export var spawner_overrides: Array[SpawnerWaveConfig]
 
-# The time interval between each enemy spawn during this wave.
-@export var spawn_interval: float = 1.0
-
+# --- General ---
+@export_group("General")
 # The delay in seconds after this wave is completed before the next one starts.
 @export var post_wave_delay: float = 5.0
