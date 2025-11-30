@@ -1,6 +1,7 @@
 extends Node2D
 
-signal enemy_spawned # Emitted when an enemy is spawned, for the WaveManager to count.
+signal enemy_spawned # Emitted when an enemy is spawned.
+signal spawner_finished(spawner) # Emitted when this spawner has met its wave quota.
 
 const EnemySpawnInfo = preload("res://scripts/others/EnemySpawnInfo.gd")
 
@@ -18,19 +19,17 @@ var tween: Tween
 @export var _paths: Array[Path2D]
 var current_path_index: int = 0
 
+# --- Wave Control Variables ---
+var _enemies_to_spawn_this_wave: int = 0
+var _enemies_spawned_this_wave: int = 0
+
 func _ready() -> void:
-	#for child in get_children():
-		#if child is Path2D:
-			#_paths.append(child)
-	
 	if _paths.is_empty():
 		printerr("敌人生成点错误: 未找到任何Path2D子节点！")
 		set_process_mode(Node.PROCESS_MODE_DISABLED)
 		return
 	
 	current_path_index = clamp(current_path_index, 0, _paths.size() - 1)
-
-	# The WaveManager will now control the spawn_timer, so we don't connect it here automatically.
 	
 	if _paths.size() > 1 and path_switch_timer:
 		path_switch_timer.wait_time = path_switch_interval
@@ -43,16 +42,20 @@ func _ready() -> void:
 	call_deferred("_register_occupied_cells")
 
 # --- Public Methods for WaveManager Control ---
-func start_spawning(new_enemy_list: Array[EnemySpawnInfo], interval: float):
-	if new_enemy_list.is_empty() or interval <= 0:
-		printerr("start_spawning called with invalid arguments on spawner %s." % self.name)
+func start_spawning(new_enemy_list: Array[EnemySpawnInfo], interval: float, count: int):
+	if new_enemy_list.is_empty() or interval <= 0 or count <= 0:
 		return
+		
 	self.enemy_list = new_enemy_list
+	_enemies_to_spawn_this_wave = count
+	_enemies_spawned_this_wave = 0
+	
 	if not spawn_timer.timeout.is_connected(spawn_enemy):
 		spawn_timer.timeout.connect(spawn_enemy)
+		
 	spawn_timer.wait_time = interval
 	spawn_timer.start()
-	print("Spawner %s started spawning." % self.name)
+	print("Spawner %s started spawning. Quota: %s" % [self.name, _enemies_to_spawn_this_wave])
 
 func stop_spawning():
 	if not spawn_timer.is_stopped():
@@ -61,6 +64,11 @@ func stop_spawning():
 
 # --- Internal Functions ---
 func spawn_enemy():
+	if _enemies_spawned_this_wave >= _enemies_to_spawn_this_wave:
+		stop_spawning()
+		emit_signal("spawner_finished", self)
+		return
+
 	if enemy_list.is_empty():
 		return
 	
@@ -78,8 +86,12 @@ func spawn_enemy():
 	enemy_instance.should_delete_at_end = delete_enemy_at_path_end
 	active_path.add_child(enemy_instance)
 	
+	_enemies_spawned_this_wave += 1
 	emit_signal("enemy_spawned")
-	# print("一个敌人 (%s) 已被生成到路径上！" % enemy_instance.name) # Optional: Can be noisy
+	
+	if _enemies_spawned_this_wave >= _enemies_to_spawn_this_wave:
+		stop_spawning()
+		emit_signal("spawner_finished", self)
 
 func _get_random_enemy() -> EnemySpawnInfo:
 	var total_weight = 0

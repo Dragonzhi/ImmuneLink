@@ -11,9 +11,8 @@ signal all_waves_completed
 @onready var _wave_timer: Timer = $WaveTimer
 
 var _current_wave_index: int = -1
-var _enemies_spawned_in_current_wave: int = 0
-var _total_enemies_in_current_wave: int = 0
 var _is_running: bool = false
+var _active_spawners_count: int = 0
 
 func _ready() -> void:
 	if not _wave_timer:
@@ -33,11 +32,11 @@ func start_wave_system():
 		return
 
 	for spawner in spawners:
-		if not spawner.has_signal("enemy_spawned"):
-			printerr("Spawner %s is missing the 'enemy_spawned' signal." % spawner.name)
+		if not spawner.has_signal("spawner_finished"):
+			printerr("Spawner %s is missing the 'spawner_finished' signal." % spawner.name)
 			continue
-		if not spawner.enemy_spawned.is_connected(_on_enemy_spawned):
-			spawner.enemy_spawned.connect(_on_enemy_spawned)
+		if not spawner.spawner_finished.is_connected(_on_spawner_finished):
+			spawner.spawner_finished.connect(_on_spawner_finished)
 
 	_current_wave_index = -1
 	_is_running = true
@@ -63,18 +62,12 @@ func _start_next_wave():
 		return
 
 	var current_wave: Wave = waves[_current_wave_index]
-	_enemies_spawned_in_current_wave = 0
-	_total_enemies_in_current_wave = _calculate_total_enemies_for_wave(current_wave)
-
-	if _total_enemies_in_current_wave == 0:
-		print("Wave %s has no enemies to spawn. Skipping." % (_current_wave_index + 1))
-		_finish_current_wave()
-		return
+	_active_spawners_count = 0
 
 	emit_signal("wave_started", _current_wave_index + 1)
-	print("Starting Wave %s with %s enemies." % [_current_wave_index + 1, _total_enemies_in_current_wave])
+	print("Starting Wave ", _current_wave_index + 1)
 
-	# For each spawner, find its config (override or default) and start it.
+	# For each spawner, find its config and start it if it has a quota.
 	for spawner in spawners:
 		var override_config = _get_override_for_spawner(current_wave, spawner)
 		
@@ -91,18 +84,22 @@ func _start_next_wave():
 			count_for_this_spawner = current_wave.default_enemy_count
 			spawn_interval = current_wave.default_spawn_interval
 		
-		# FIX: Only start the spawner if it's supposed to spawn enemies in this wave.
 		if count_for_this_spawner > 0:
+			_active_spawners_count += 1
 			if spawner.has_method("start_spawning"):
-				spawner.start_spawning(enemy_infos, spawn_interval)
-
-
-func _on_enemy_spawned():
-	if not _is_running: return
-	_enemies_spawned_in_current_wave += 1
-	print("Enemy spawned. Total for wave: %s / %s" % [_enemies_spawned_in_current_wave, _total_enemies_in_current_wave])
+				spawner.start_spawning(enemy_infos, spawn_interval, count_for_this_spawner)
 	
-	if _enemies_spawned_in_current_wave >= _total_enemies_in_current_wave:
+	if _active_spawners_count == 0:
+		print("Wave %s has no active spawners. Skipping." % (_current_wave_index + 1))
+		_finish_current_wave()
+
+func _on_spawner_finished(spawner):
+	if not _is_running: return
+	
+	print("Spawner %s has finished its quota." % spawner.name)
+	_active_spawners_count -= 1
+	
+	if _active_spawners_count <= 0:
 		_finish_current_wave()
 
 func _finish_current_wave():
@@ -111,6 +108,7 @@ func _finish_current_wave():
 	emit_signal("wave_finished", _current_wave_index + 1)
 	print("Wave ", _current_wave_index + 1, " finished.")
 	
+	# This is now redundant as spawners stop themselves, but good for safety.
 	for spawner in spawners:
 		if spawner.has_method("stop_spawning"):
 			spawner.stop_spawning()
@@ -119,30 +117,6 @@ func _finish_current_wave():
 	_wave_timer.start(post_wave_delay)
 
 # --- Helper Methods ---
-
-func _calculate_total_enemies_for_wave(wave: Wave) -> int:
-	var total_enemies = 0
-	var overridden_spawners = []
-	print("== Calculating total enemies for Wave %s ==" % (_current_wave_index + 1))
-
-	# Add counts from overrides
-	for override in wave.spawner_overrides:
-		if get_node_or_null(override.spawner_nodepath):
-			total_enemies += override.override_enemy_count
-			overridden_spawners.append(override.spawner_nodepath)
-			print(" - Spawner '%s' has override. Adding %s enemies." % [override.spawner_nodepath, override.override_enemy_count])
-		else:
-			push_warning("Wave %s has an override for a non-existent spawner: %s" % [_current_wave_index + 1, override.spawner_nodepath])
-	
-	# Add counts from spawners that DON'T have an override
-	for spawner in spawners:
-		var spawner_path = get_path_to(spawner)
-		if not spawner_path in overridden_spawners:
-			total_enemies += wave.default_enemy_count
-			print(" - Spawner '%s' uses default. Adding %s enemies." % [spawner.name, wave.default_enemy_count])
-			
-	print("== Calculated total: %s enemies. ==" % total_enemies)
-	return total_enemies
 
 func _get_override_for_spawner(wave: Wave, spawner: Node) -> SpawnerWaveConfig:
 	var spawner_path = get_path_to(spawner)
