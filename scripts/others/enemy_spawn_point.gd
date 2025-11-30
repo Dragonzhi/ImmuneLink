@@ -3,37 +3,58 @@ extends Node2D
 const EnemySpawnInfo = preload("res://scripts/others/EnemySpawnInfo.gd")
 
 @export var enemy_list: Array[EnemySpawnInfo]
+@export var path_switch_interval: float = 30.0 # New export variable for interval
 
 var grid_manager: GridManager
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
-@onready var path_node: Path2D = $Path
+# @onready var path_node: Path2D = $Path # REMOVED: Managed by _paths now
 @onready var spawn_timer: Timer = $SpawnTimer
 @onready var path_visualizer: Line2D = $PathVisualizer # 路径可视化Line2D节点
+@onready var path_switch_timer: Timer = $PathSwitchTimer # Onready for the new timer node
+
 var tween: Tween # 用于存储当前活动的Tween
+
+var _paths: Array[Path2D]
+var current_path_index: int = 0
 
 # 节点进入场景树时首次调用。
 func _ready() -> void:
-	# 延迟执行占用逻辑到下一帧，确保GridManager已准备就绪
-	# 并且全局位置准确。
-	call_deferred("_register_occupied_cells")
+	# Populate _paths array with all Path2D children
+	for child in get_children():
+		if child is Path2D:
+			_paths.append(child)
 	
-	# 连接计时器的timeout信号
+	if _paths.is_empty():
+		printerr("敌人生成点错误: 未找到任何Path2D子节点！")
+		set_process_mode(Node.PROCESS_MODE_DISABLED) # Disable processing if no path
+		return
+	
+	# Ensure current_path_index is valid
+	current_path_index = clamp(current_path_index, 0, _paths.size() - 1)
+
+	# Connect spawn_timer timeout
 	if spawn_timer:
 		spawn_timer.timeout.connect(spawn_enemy)
 	
-	# 初始化路径可视化器
-	if path_node and path_node.curve:
-		path_visualizer.points = path_node.curve.get_baked_points()
-	path_visualizer.visible = false # 默认隐藏
-	path_visualizer.modulate.a = 0.0 # 初始透明度为0
+	# Connect path_switch_timer if multiple paths exist
+	if _paths.size() > 1 and path_switch_timer:
+		path_switch_timer.wait_time = path_switch_interval
+		path_switch_timer.timeout.connect(_on_path_switch_timer_timeout)
+		path_switch_timer.start() # Start the path switching timer
+
+	# Initialize path visualizer for the current active path
+	_update_path_visualizer()
+
+	call_deferred("_register_occupied_cells")
 
 func spawn_enemy():
 	if enemy_list.is_empty():
 		printerr("敌人生成点错误: 'Enemy List' 为空！请在编辑器中添加敌人。")
 		return
 	
-	if not path_node:
-		printerr("敌人生成点错误: 未找到名为 'Path' 的Path2D子节点！")
+	var active_path = _paths[current_path_index]
+	if not is_instance_valid(active_path) or not active_path.curve:
+		printerr("敌人生成点错误: 当前活跃路径无效！")
 		return
 	
 	var chosen_enemy_info = _get_random_enemy()
@@ -43,10 +64,9 @@ func spawn_enemy():
 		
 	var enemy_instance = chosen_enemy_info.enemy_scene.instantiate()
 	
-	# PathFollow2D通过成为Path2D的子节点来工作
-	# 我们直接将敌人实例添加到路径节点下
-	path_node.add_child(enemy_instance)
-	
+	# Enemies are PathFollow2D, so they need to be added as children of the Path2D
+	active_path.add_child(enemy_instance)
+		
 	print("一个敌人 (%s) 已被生成到路径上！" % enemy_instance.name)
 
 func _get_random_enemy() -> EnemySpawnInfo:
@@ -104,6 +124,18 @@ func _register_occupied_cells():
 				grid_manager.set_grid_occupied(grid_pos, self)
 	
 	print("敌人生成点在 %s 占用了从 %s 到 %s 的格子" % [global_position, start_grid_pos, end_grid_pos])
+
+func _on_path_switch_timer_timeout():
+	if _paths.size() < 2: return # No need to switch if less than 2 paths
+	current_path_index = (current_path_index + 1) % _paths.size()
+	_update_path_visualizer()
+	print("路径已切换到: ", _paths[current_path_index].name)
+
+func _update_path_visualizer():
+	if path_visualizer and not _paths.is_empty() and _paths[current_path_index].curve:
+		path_visualizer.points = _paths[current_path_index].curve.get_baked_points()
+	else:
+		path_visualizer.points = [] # Clear if no valid path
 
 func _on_area_2d_mouse_entered() -> void:
 	path_visualizer.visible = true

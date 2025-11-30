@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=22 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="Script" uid="uid://bro8olv1xvfkn" path="res://scripts/managers/GameManager.gd" id="1_tck0d"]
@@ -33,11 +33,23 @@ script = ExtResource("5_ko0rf")
 enemy_scene = ExtResource("8_2tpxt")
 metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
 
-[sub_resource type="Curve2D" id="Curve2D_sjxhf"]
+[sub_resource type="Curve2D" id="Curve2D_tck0d"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -90, 0, 0, 0, 0, 0, -90, 120, 0, 0, 0, 0, 60, 120, 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0)
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -32, 0, 0, 0, 0, 0, -32, 128, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[sub_resource type="Curve2D" id="Curve2D_u8lgh"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 128, 144, 0, 0, 0, 0, 64, 144, 0, 0, 0, 0, 64, 64, 0, 0, 0, 0, 0, 0)
 }
 point_count = 6
+
+[sub_resource type="Curve2D" id="Curve2D_hjnkw"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -32, 0, 0, 0, 0, -144, -32, 0, 0, 0, 0, -144, 0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
 
 [node name="Main" type="Node2D"]
 
@@ -71,12 +83,16 @@ radius_range = Vector2(0.5, 2)
 position = Vector2(200, 48)
 enemy_list = Array[ExtResource("5_ko0rf")]([SubResource("Resource_ostsq"), SubResource("Resource_jsdfw"), SubResource("Resource_tck0d")])
 
-[node name="Path" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="4"]
-z_index = 5
-z_as_relative = false
-curve = SubResource("Curve2D_sjxhf")
+[node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="4"]
+curve = SubResource("Curve2D_tck0d")
 
-[node name="SpawnTimer" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="5"]
+[node name="Path02" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="5"]
+curve = SubResource("Curve2D_u8lgh")
+
+[node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="6"]
+curve = SubResource("Curve2D_hjnkw")
+
+[node name="SpawnTimer" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="7"]
 wait_time = 5.0
 
 [node name="Midground" type="Node2D" parent="."]
