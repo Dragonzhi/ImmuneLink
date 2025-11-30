@@ -1,8 +1,11 @@
-[gd_scene load_steps=22 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=25 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
+[ext_resource type="Script" path="res://scripts/managers/WaveManager.gd" id="1_rikml"]
 [ext_resource type="Script" uid="uid://bro8olv1xvfkn" path="res://scripts/managers/GameManager.gd" id="1_tck0d"]
 [ext_resource type="PackedScene" uid="uid://h6j8i84x74hj" path="res://scenes/others/GridManager.tscn" id="2_q24mn"]
+[ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_vc03v"]
+[ext_resource type="Resource" uid="uid://bktbxy4finrku" path="res://scripts/managers/waves/wave_01.tres" id="3_grv7h"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="3_u1xfj"]
 [ext_resource type="PackedScene" uid="uid://dbitchmue8nm6" path="res://scenes/others/enemy_spawn_point.tscn" id="4_1rhdn"]
 [ext_resource type="PackedScene" uid="uid://cjvy6h27p17px" path="res://scenes/others/BridgeBuilder.tscn" id="4_abcde"]
@@ -53,6 +56,13 @@ point_count = 5
 
 [node name="Main" type="Node2D"]
 
+[node name="WaveManager" type="Node" parent="." node_paths=PackedStringArray("spawners")]
+script = ExtResource("1_rikml")
+waves = Array[ExtResource("2_vc03v")]([ExtResource("3_grv7h")])
+spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint")]
+
+[node name="WaveTimer" type="Timer" parent="WaveManager"]
+
 [node name="GameManager" type="Node" parent="."]
 script = ExtResource("1_tck0d")
 
@@ -94,6 +104,7 @@ curve = SubResource("Curve2D_hjnkw")
 
 [node name="SpawnTimer" parent="BackGround/EnemySpawns/EnemySpawnPoint" index="7"]
 wait_time = 5.0
+autostart = false
 
 [node name="Midground" type="Node2D" parent="."]
 
