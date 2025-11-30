@@ -6,6 +6,7 @@ const BridgeUpgradeMenu = preload("res://scenes/ui/BridgeUpgradeMenu.gd") # Add 
 @export var overlay_path: NodePath
 @export var ui_layer_path: NodePath
 @export var fade_duration: float = 0.2
+@export var attack_upgrade_cost: int = 20 # Cost for attack upgrade
 
 var overlay: ColorRect
 var ui_layer: CanvasLayer
@@ -72,11 +73,21 @@ func _on_fade_out_finished():
 	if overlay:
 		overlay.visible = false
 
-
-
 # 处理 BridgeUpgradeMenu 发出的升级信号
 func _on_upgrade_selected(index: int, bridge: Bridge):
 	print("UIManager 收到升级选择信号: 按钮索引 ", index, " 桥梁: ", bridge.grid_pos)
+	
+	# Assuming index 0 is the attack upgrade button
+	if index == 0: # Attack Upgrade
+		print("尝试升级攻击，花费: ", attack_upgrade_cost, " 资源")
+		if GameManager.spend_resource_value(attack_upgrade_cost):
+			print("资源足够，应用攻击升级！")
+			bridge.apply_attack_upgrade()
+		else:
+			print("资源不足，无法应用攻击升级！")
+	else:
+		print("其他升级类型 (索引: %s) 尚未实现." % index)
+
 	close_upgrade_menu() # 选择升级后关闭菜单
 	GameManager.deselect_all_turrets() # Clear selection state
 	# 在这里可以添加更多基于升级类型和桥梁实例的逻辑

@@ -65,6 +65,7 @@ script = ExtResource("7_tck0d")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="UICancel/Area2D"]
 position = Vector2(192, 108)
 shape = SubResource("RectangleShape2D_u8lgh")
+debug_color = Color(5.2943824e-07, 0.23340449, 0.27829906, 0.41960785)
 
 [node name="GridManager" parent="." instance=ExtResource("2_q24mn")]
 modulate = Color(1, 1, 1, 0.5882353)

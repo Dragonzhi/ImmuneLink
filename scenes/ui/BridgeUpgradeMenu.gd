@@ -46,11 +46,6 @@ func generate_buttons(count: int, radius: float):
 
 # 按钮点击处理函数
 func _on_button_pressed(index: int):
-	print("点击了升级按钮，索引: ", index)
-	
-	if selected_bridge:
-		if index == attack_upgrade_button_index:
-			selected_bridge.apply_attack_upgrade()
-			
+	# The menu's only job is to signal which button was pressed.
+	# All game logic (spending resources, applying upgrades) is handled by UIManager.
 	emit_signal("upgrade_selected", index, selected_bridge)
-	# 在这里可以添加关闭菜单的逻辑，或者让父节点处理
