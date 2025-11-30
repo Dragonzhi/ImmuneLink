@@ -11,6 +11,7 @@ const BridgeScene = preload("res://scenes/bridge/bridge.tscn")
 # --- OnReady Vars ---
 @onready var preview_line: Line2D = $PreviewLine
 @onready var build_timer: Timer = $BuildTimer
+@onready var cost_label: Label = $CostLabel
 
 # --- Node Refs ---
 var grid_manager: GridManager
@@ -44,17 +45,28 @@ func _ready() -> void:
 	build_timer.wait_time = build_delay
 	build_timer.timeout.connect(_on_BuildTimer_timeout)
 	get_tree().get_root().mouse_exited.connect(_on_mouse_exited)
+	
+	cost_label.hide()
 
 # --- Input Handling ---
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not build_mode: return
-	if event is InputEventMouseMotion: _handle_mouse_motion(event)
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+	
+	if event is InputEventMouseMotion:
+		_handle_mouse_motion(event)
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 		_handle_left_mouse_release(event)
+	
+	# Update label position even if path doesn't change
+	if cost_label.visible:
+		cost_label.global_position = event.position + Vector2(15, 15)
+
 
 func _handle_mouse_motion(event: InputEventMouseMotion):
 	var new_grid_pos = grid_manager.world_to_grid(event.position)
+	_update_cost_label() # Update cost and color on every mouse motion
+	
 	if current_path.is_empty() or new_grid_pos == current_path.back():
 		return
 
@@ -112,6 +124,8 @@ func start_building(pipe: Pipe, pos: Vector2i, direction: Vector2i):
 	start_direction = direction
 	current_path = [pos]
 	preview_line.visible = true
+	cost_label.show()
+	_update_cost_label()
 	grid_manager.show_grid()
 	Input.set_default_cursor_shape(Input.CURSOR_CROSS)
 
@@ -208,6 +222,7 @@ func _reset_build_mode(clear_path: bool):
 	if clear_path: current_path.clear()
 	preview_line.clear_points()
 	preview_line.visible = false
+	cost_label.hide()
 	grid_manager.hide_grid()
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 
@@ -219,3 +234,14 @@ func _update_preview():
 	if current_path.size() < 2: return
 	for grid_pos in current_path:
 		preview_line.add_point(grid_manager.grid_to_world(grid_pos))
+
+func _update_cost_label():
+	var current_cost = current_path.size() * bridge_segment_cost
+	var player_resources = GameManager.get_resource_value()
+	
+	cost_label.text = str(current_cost)
+	
+	if current_cost > player_resources:
+		cost_label.modulate = Color.RED
+	else:
+		cost_label.modulate = Color.WHITE
