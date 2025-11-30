@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dihamj1mhtfuq"
-path="res://.godot/imported/enemy_white_cell.png-9f958c9fa5dda9f5f25435657c9d821c.ctex"
+uid="uid://6fy3juav3w16"
+path="res://.godot/imported/NK_cell.png-2aaa1373713ff8fa5c2ab5fc09bc8568.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/enemies/enemy_white_cell.png"
-dest_files=["res://.godot/imported/enemy_white_cell.png-9f958c9fa5dda9f5f25435657c9d821c.ctex"]
+source_file="res://assets/cells/normall/NK_cell.png"
+dest_files=["res://.godot/imported/NK_cell.png-2aaa1373713ff8fa5c2ab5fc09bc8568.ctex"]
 
 [params]
 

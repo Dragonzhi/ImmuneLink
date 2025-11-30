@@ -12,6 +12,13 @@ enum PipeType {
 }
 
 @export var pipe_type : PipeType
+'''
+* 朝右： (-1, 0)
+* 朝下： (0, -1)
+* 朝左： (1, 0)
+* 朝上： (0, 1)
+'''
+@export var direction: Vector2i = Vector2i.ZERO
 ## 每秒传输的资源量
 @export var resource_per_second: float = 1.0
 
@@ -84,7 +91,7 @@ func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int
 				var start_grid_pos = grid_manager.world_to_grid(closest_point.global_position)
 				# 通知BridgeBuilder开始建造
 				if bridge_builder:
-					bridge_builder.start_building(self, start_grid_pos)
+					bridge_builder.start_building(self, start_grid_pos, direction)
 		else:
 			# 释放鼠标按钮的逻辑（如果需要的话）现在由BridgeBuilder处理
 			pass

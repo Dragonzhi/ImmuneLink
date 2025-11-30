@@ -21,6 +21,7 @@ var ui_manager: Node
 var build_mode: bool = false
 var start_pipe: Pipe = null
 var start_pos: Vector2i
+var start_direction: Vector2i
 var current_path: Array[Vector2i] = []
 
 # --- Sequential Build State ---
@@ -103,11 +104,12 @@ func _interpolate_path_cardinal(start: Vector2i, end: Vector2i):
 
 # --- Build Process ---
 
-func start_building(pipe: Pipe, pos: Vector2i):
+func start_building(pipe: Pipe, pos: Vector2i, direction: Vector2i):
 	if build_mode: return
 	build_mode = true
 	start_pipe = pipe
 	start_pos = pos
+	start_direction = direction
 	current_path = [pos]
 	preview_line.visible = true
 	grid_manager.show_grid()
@@ -136,10 +138,18 @@ func _finish_building(end_pipe: Pipe, end_pos: Vector2i):
 	for pos in sequential_build_path: path_connection_set[pos] = true
 	
 	if sequential_build_path.size() >= 2:
-		var start_dir = sequential_build_path[0] - sequential_build_path[1]
-		path_connection_set[sequential_build_path[0] + start_dir] = true
-		var end_dir = sequential_build_path.back() - sequential_build_path[sequential_build_path.size() - 2]
-		path_connection_set[sequential_build_path.back() + end_dir] = true
+		# Use the stored direction from the start_pipe
+		path_connection_set[sequential_build_path[0] + start_direction] = true
+		# Use the direction from the end_pipe directly
+		path_connection_set[sequential_build_path.back() + end_pipe.direction] = true
+	elif sequential_build_path.size() == 1 and start_pipe and end_pipe and start_pos == end_pos:
+		# This case should ideally not result in a build, but as a fallback:
+		path_connection_set[start_pos + start_direction] = true
+		path_connection_set[end_pos + end_pipe.direction] = true
+	elif sequential_build_path.size() >= 1: # For single-segment bridges between adjacent pipes
+		path_connection_set[start_pos + start_direction] = true
+		if end_pipe:
+			path_connection_set[end_pos + end_pipe.direction] = true
 
 	front_build_index = 0
 	back_build_index = sequential_build_path.size() - 1

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bup0nl875wui"
-path="res://.godot/imported/macrophage.png-4706d07e7d878c846c26d17c7df8acbd.ctex"
+uid="uid://dihamj1mhtfuq"
+path="res://.godot/imported/enemy_white_cell.png-1ea7ef70ebca9b3a2df9c8c02582ef8f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/enemies/macrophage.png"
-dest_files=["res://.godot/imported/macrophage.png-4706d07e7d878c846c26d17c7df8acbd.ctex"]
+source_file="res://assets/cells/enemies/enemy_white_cell.png"
+dest_files=["res://.godot/imported/enemy_white_cell.png-1ea7ef70ebca9b3a2df9c8c02582ef8f.ctex"]
 
 [params]
 
