@@ -104,11 +104,14 @@ func take_damage(amount: float):
 			up_level_sprite.visible = false
 			hit_area.monitorable = false
 			hit_area.monitoring = false
+		print("Bridge at %s destroyed. Reporting to GridManager." % grid_pos)
+		grid_manager.set_bridge_status(grid_pos, true)
 		print("桥段 %s 已被摧毁！" % grid_pos)
 
 func repair():
 	is_destroyed = false
 	current_health = max_health
+	grid_manager.set_bridge_status(grid_pos, false)
 	animated_sprite.modulate = Color.WHITE
 	animated_sprite.animation = tile_animation_name
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count(tile_animation_name) - 1

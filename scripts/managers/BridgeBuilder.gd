@@ -154,7 +154,8 @@ func _finish_building(end_pipe: Pipe, end_pos: Vector2i):
 	front_build_index = 0
 	back_build_index = sequential_build_path.size() - 1
 	
-	connection_manager.add_connection(start_pipe, end_pipe)
+	print("BridgeBuilder: Registering connection with path: ", current_path)
+	connection_manager.add_connection(start_pipe, end_pipe, current_path.duplicate())
 	start_pipe.mark_pipe_as_used()
 	end_pipe.mark_pipe_as_used()
 	

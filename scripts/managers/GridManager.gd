@@ -126,3 +126,26 @@ func grid_to_world(grid_pos: Vector2i) -> Vector2:
 		grid_pos.x * grid_size + grid_size / 2,
 		grid_pos.y * grid_size + grid_size / 2
 	)
+
+# --- Bridge Status Tracking ---
+var _destroyed_bridge_cells: Dictionary = {}
+
+func set_bridge_status(grid_pos: Vector2i, is_destroyed: bool):
+	"""
+	Called by Bridge segments to report their status.
+	"""
+	if is_destroyed:
+		_destroyed_bridge_cells[grid_pos] = true
+	else:
+		if _destroyed_bridge_cells.has(grid_pos):
+			_destroyed_bridge_cells.erase(grid_pos)
+	print("GridManager: Status updated for %s. Destroyed cells are now: %s" % [grid_pos, _destroyed_bridge_cells.keys()])
+
+func is_path_intact(path_points: Array[Vector2i]) -> bool:
+	"""
+	Checks if a given path of grid points contains any destroyed bridges.
+	"""
+	for point in path_points:
+		if _destroyed_bridge_cells.has(point):
+			return false # Path is broken
+	return true # Path is intact

@@ -27,7 +27,6 @@ shape = SubResource("CapsuleShape2D_faeng")
 position = Vector2(0, -13)
 
 [node name="ConnectionPoint2" type="Marker2D" parent="ConnectionPoints"]
-position = Vector2(0, 8)
 
 [connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
 [connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
