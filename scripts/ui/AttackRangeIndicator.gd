@@ -15,6 +15,7 @@ func set_attributes(new_radius: float, new_color: Color = Color(1, 1, 1, 0.2)):
 	"""
 	Sets the radius and color of the circle and queues it for redrawing.
 	"""
+	self.z_index = 100 # Draw on top of other elements
 	radius = new_radius
 	color = new_color
 	# This is crucial. It tells the engine that this node's drawing is

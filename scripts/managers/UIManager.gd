@@ -78,4 +78,5 @@ func _on_fade_out_finished():
 func _on_upgrade_selected(index: int, bridge: Bridge):
 	print("UIManager 收到升级选择信号: 按钮索引 ", index, " 桥梁: ", bridge.grid_pos)
 	close_upgrade_menu() # 选择升级后关闭菜单
+	GameManager.deselect_all_turrets() # Clear selection state
 	# 在这里可以添加更多基于升级类型和桥梁实例的逻辑

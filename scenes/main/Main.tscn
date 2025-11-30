@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=20 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="Script" path="res://scripts/managers/WaveManager.gd" id="1_rikml"]
@@ -12,8 +12,12 @@
 [ext_resource type="Script" uid="uid://iwunwmox6qk5" path="res://scripts/managers/UIManager.gd" id="5_abcde"]
 [ext_resource type="Script" uid="uid://b2n0qw8vqfgsl" path="res://scripts/managers/ConnectionManager.gd" id="5_fghij"]
 [ext_resource type="Script" uid="uid://dy1nyxpe7sr7n" path="res://scripts/ui/Overlay.gd" id="6_overlay"]
+[ext_resource type="Script" uid="uid://cwq4oeccwuocx" path="res://scenes/main/ui_cancel.gd" id="7_tck0d"]
 [ext_resource type="PackedScene" uid="uid://ddhalg244kw3t" path="res://scenes/ui/FPSCounter.tscn" id="8_ko0rf"]
 [ext_resource type="PackedScene" uid="uid://dpsk4yq8w7h6g" path="res://scenes/ui/GameUI.tscn" id="9_gameui"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u8lgh"]
+size = Vector2(404, 236)
 
 [sub_resource type="Curve2D" id="Curve2D_hjnkw"]
 _data = {
@@ -52,6 +56,15 @@ script = ExtResource("5_fghij")
 script = ExtResource("5_abcde")
 overlay_path = NodePath("../UILayer/Overlay")
 ui_layer_path = NodePath("../UILayer")
+
+[node name="UICancel" type="Node2D" parent="."]
+script = ExtResource("7_tck0d")
+
+[node name="Area2D" type="Area2D" parent="UICancel"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UICancel/Area2D"]
+position = Vector2(192, 108)
+shape = SubResource("RectangleShape2D_u8lgh")
 
 [node name="GridManager" parent="." instance=ExtResource("2_q24mn")]
 modulate = Color(1, 1, 1, 0.5882353)
@@ -154,6 +167,8 @@ color = Color(0, 0, 0, 0.5)
 script = ExtResource("6_overlay")
 
 [node name="GameUI" parent="UILayer" instance=ExtResource("9_gameui")]
+
+[connection signal="input_event" from="UICancel/Area2D" to="UICancel" method="_on_area_2d_input_event"]
 
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint02"]
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]
