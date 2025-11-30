@@ -15,6 +15,7 @@ signal path_finished(enemy: BaseEnemy)
 
 var is_dying: bool = false
 var should_delete_at_end: bool = true
+var spawner: Node = null # Reference to the spawner that created this enemy
 
 func _ready() -> void:
 	current_hp = max_hp
@@ -44,7 +45,17 @@ func _physics_process(delta: float) -> void:
 				progress = curve_length
 				queue_free()
 			else:
-				# Loop back to the beginning, carrying over the remainder
+				# Check for new path from spawner
+				if spawner and is_instance_valid(spawner) and spawner.has_method("get_active_path"):
+					var active_spawner_path = spawner.get_active_path()
+					if is_instance_valid(active_spawner_path) and active_spawner_path != path_node:
+						# Switch to new path: reparenting resets progress
+						path_node.remove_child(self) # Remove from old path
+						active_spawner_path.add_child(self) # Add to new path (reparents)
+						progress = 0 # Start from the beginning of the new path
+						return # Path switched, exit for this frame
+				
+				# If no path switch, invalid spawner, or path is the same, just loop on current path
 				progress = new_progress - curve_length
 		else:
 			# If it's dying, just stop at the end

@@ -84,6 +84,7 @@ func spawn_enemy():
 		
 	var enemy_instance: BaseEnemy = chosen_enemy_info.enemy_scene.instantiate()
 	enemy_instance.should_delete_at_end = delete_enemy_at_path_end
+	enemy_instance.spawner = self # Pass a reference of the spawner to the enemy
 	active_path.add_child(enemy_instance)
 	
 	_enemies_spawned_this_wave += 1
@@ -92,6 +93,11 @@ func spawn_enemy():
 	if _enemies_spawned_this_wave >= _enemies_to_spawn_this_wave:
 		stop_spawning()
 		emit_signal("spawner_finished", self)
+
+func get_active_path() -> Path2D:
+	if not _paths.is_empty():
+		return _paths[current_path_index]
+	return null
 
 func _get_random_enemy() -> EnemySpawnInfo:
 	var total_weight = 0
