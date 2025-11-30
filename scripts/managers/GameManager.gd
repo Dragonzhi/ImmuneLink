@@ -44,3 +44,38 @@ func get_repair_value() -> float:
 
 func get_resource_value() -> float:
 	return _resource_value
+
+# --- Selection Management ---
+@onready var ui_manager: Node = get_node("/root/Main/UIManager")
+var _selected_turret: Node = null
+
+func select_turret(turret: Node):
+	# If we click the same turret again, deselect it.
+	if _selected_turret == turret:
+		deselect_all_turrets()
+		return
+
+	# If a different turret was selected, deselect it first.
+	if is_instance_valid(_selected_turret):
+		if _selected_turret.has_method("deselect"):
+			_selected_turret.deselect()
+		if ui_manager and ui_manager.has_method("close_upgrade_menu"):
+			ui_manager.close_upgrade_menu()
+
+	# Select the new turret.
+	_selected_turret = turret
+	if is_instance_valid(_selected_turret):
+		if _selected_turret.has_method("select"):
+			_selected_turret.select()
+		if ui_manager and ui_manager.has_method("open_upgrade_menu"):
+			ui_manager.open_upgrade_menu(_selected_turret)
+
+func deselect_all_turrets():
+	if is_instance_valid(_selected_turret):
+		if _selected_turret.has_method("deselect"):
+			_selected_turret.deselect()
+	
+	if ui_manager and ui_manager.has_method("close_upgrade_menu"):
+		ui_manager.close_upgrade_menu()
+		
+	_selected_turret = null

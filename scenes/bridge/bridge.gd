@@ -2,6 +2,7 @@ extends Node2D
 class_name Bridge
 
 const CalmingShotScene = preload("res://scenes/projectiles/CalmingShot.tscn")
+const AttackRangeIndicatorScene = preload("res://scripts/ui/AttackRangeIndicator.gd")
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var repair_timer: Timer = $RepairTimer
@@ -21,8 +22,7 @@ var is_destroyed: bool = false
 var is_attack_upgraded: bool = false
 var tile_animation_name: String
 var enemies_in_range: Array = []
-
-signal bridge_selected(bridge: Bridge)
+var _range_indicator # No type hint to avoid parse error
 
 func _ready() -> void:
 	current_health = max_health
@@ -40,6 +40,11 @@ func _ready() -> void:
 	up_level_sprite.visible = false
 	hit_area.monitorable = false
 	hit_area.monitoring = false
+
+	# Create and setup the range indicator
+	_range_indicator = AttackRangeIndicatorScene.new()
+	add_child(_range_indicator)
+	_range_indicator.hide()
 
 func setup_segment(grid_pos: Vector2i):
 	self.grid_pos = grid_pos
@@ -120,11 +125,22 @@ func apply_attack_upgrade():
 	reload_timer.start()
 	print("桥段 %s 应用了攻击升级！" % grid_pos)
 
+func select():
+	if not is_attack_upgraded: return
+	
+	var collision_shape = hit_area.get_node_or_null("CollisionShape2D")
+	if collision_shape and collision_shape.shape is CircleShape2D:
+		var radius = collision_shape.shape.radius
+		_range_indicator.set_attributes(radius, Color(0.2, 0.5, 1.0, 0.2)) # Example color
+		_range_indicator.show()
+
+func deselect():
+	_range_indicator.hide()
+
 func _on_reload_timer_timeout():
 	if enemies_in_range.is_empty():
 		return
 
-	# 清理无效的目标
 	enemies_in_range = enemies_in_range.filter(func(e): return is_instance_valid(e))
 	if enemies_in_range.is_empty():
 		return
@@ -132,7 +148,6 @@ func _on_reload_timer_timeout():
 	var target = enemies_in_range[0]
 	var shot = CalmingShotScene.instantiate()
 	
-	# 将子弹添加到主场景或一个专门的子弹容器中
 	get_tree().get_root().get_node("Main/Foreground/Particles").add_child(shot)
 	shot.global_position = global_position
 	shot.launch(target, attack_upgrade_damage)
@@ -149,20 +164,13 @@ func _on_hit_area_area_exited(area: Area2D):
 
 func _on_hurt_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
-
 		if is_destroyed and repair_timer.is_stopped():
-
 			animated_sprite.modulate = Color(0.2, 0.5, 1.0)
-
 			animated_sprite.animation = tile_animation_name
-
 			animated_sprite.play()
-
 			repair_timer.start()
-
 		elif not is_destroyed:
-
-			emit_signal("bridge_selected", self)
+			GameManager.select_turret(self)
 
 		get_viewport().set_input_as_handled()
 

@@ -193,7 +193,8 @@ func _create_single_bridge_segment(grid_pos: Vector2i):
 	bridges_container.add_child(bridge_segment)
 	bridge_segment.global_position = grid_manager.grid_to_world(grid_pos)
 	
-	bridge_segment.bridge_selected.connect(ui_manager._on_bridge_selected)
+	# The bridge selection is now handled by GameManager directly.
+	# bridge_segment.bridge_selected.connect(ui_manager._on_bridge_selected) // This line is now obsolete
 	bridge_segment.setup_segment(grid_pos)
 	bridge_segment.setup_bridge_tile(neighbors)
 

@@ -72,9 +72,7 @@ func _on_fade_out_finished():
 	if overlay:
 		overlay.visible = false
 
-# This function will be connected to the bridge's 'bridge_selected' signal.
-func _on_bridge_selected(bridge: Bridge):
-	open_upgrade_menu(bridge)
+
 
 # 处理 BridgeUpgradeMenu 发出的升级信号
 func _on_upgrade_selected(index: int, bridge: Bridge):
