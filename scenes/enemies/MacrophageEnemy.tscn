@@ -7,7 +7,9 @@
 radius = 5.0
 
 [node name="MacrophageEnemy" instance=ExtResource("1_fcx73")]
-damage = 30.0
+max_hp = 75.0
+move_speed = 26.0
+damage = 20.0
 
 [node name="Sprite2D" parent="." index="0"]
 texture_filter = 1
@@ -16,3 +18,9 @@ texture = ExtResource("2_1hdy3")
 
 [node name="CollisionShape2D" parent="Area2D" index="0"]
 shape = SubResource("CircleShape2D_1hdy3")
+
+[node name="HealthBar" parent="." index="2"]
+offset_left = -7.0
+offset_top = -11.0
+offset_right = 49.0
+offset_bottom = -3.0

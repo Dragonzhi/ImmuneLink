@@ -7,10 +7,18 @@
 radius = 5.0
 
 [node name="VirusEnemy" instance=ExtResource("1_a5nqt")]
-damage = 25.0
+max_hp = 15.0
+move_speed = 30.0
+damage = 5.0
 
 [node name="Sprite2D" parent="." index="0"]
 texture = ExtResource("2_4xn4g")
 
 [node name="CollisionShape2D" parent="Area2D" index="0"]
 shape = SubResource("CircleShape2D_4xn4g")
+
+[node name="HealthBar" parent="." index="2"]
+offset_left = -7.0
+offset_top = -11.0
+offset_right = 49.0
+offset_bottom = -3.0

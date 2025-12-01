@@ -4,7 +4,7 @@ class_name BaseEnemy
 const HitEffectScene = preload("res://scenes/effects/HitEffect.tscn")
 
 @export var max_hp: float = 100.0
-@export var current_hp: float = 100.0
+@export var current_hp: float
 @export var move_speed: float = 50.0
 @export var damage: float = 10.0
 
@@ -12,6 +12,7 @@ signal path_finished(enemy: BaseEnemy)
 
 @onready var area_2d: Area2D = $Area2D
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
+@onready var health_bar: ProgressBar = $HealthBar
 
 var is_dying: bool = false
 var should_delete_at_end: bool = true
@@ -22,6 +23,7 @@ func _ready() -> void:
 	rotates = false
 	if not area_2d.area_entered.is_connected(_on_area_2d_area_entered):
 		area_2d.area_entered.connect(_on_area_2d_area_entered)
+	_update_health_bar()
 	
 func _physics_process(delta: float) -> void:
 	if is_dying:
@@ -74,6 +76,7 @@ func take_damage(amount: float):
 	if is_dying: return
 
 	current_hp -= amount
+	_update_health_bar()
 	
 	# --- Create Hit Effect ---
 	var hit_effect = HitEffectScene.instantiate()
@@ -100,3 +103,15 @@ func start_death_sequence():
 	tween.tween_property(self, "rotation_degrees", rotation_degrees + 360, 0.5)
 	
 	tween.finished.connect(queue_free)
+
+func _update_health_bar() -> void:
+	if not is_instance_valid(health_bar):
+		return
+	
+	var health_percent = (current_hp / max_hp) * 100.0
+	health_bar.value = health_percent
+	
+	if current_hp < max_hp:
+		health_bar.show()
+	else:
+		health_bar.hide()
