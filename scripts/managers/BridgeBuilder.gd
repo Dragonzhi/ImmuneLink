@@ -60,7 +60,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	# Update label position even if path doesn't change
 	if cost_label.visible:
-		cost_label.global_position = event.position + Vector2(15, 15)
+		cost_label.global_position = event.position + Vector2(5, 5)
 
 
 func _handle_mouse_motion(event: InputEventMouseMotion):

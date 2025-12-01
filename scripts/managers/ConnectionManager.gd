@@ -24,9 +24,9 @@ func _process(delta: float):
 		# The path to check is the entire path of bridge segments.
 		var path_to_check = connection.path
 		
-		print("ConnectionManager: Checking path: ", path_to_check)
+		#print("ConnectionManager: Checking path: ", path_to_check)
 		var is_intact = _grid_manager.is_path_intact(path_to_check)
-		print("ConnectionManager: Path is intact? ", is_intact)
+		#print("ConnectionManager: Path is intact? ", is_intact)
 		
 		if is_intact:
 			if connection.type == 0: # Red Pipe

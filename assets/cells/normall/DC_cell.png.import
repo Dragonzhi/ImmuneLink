@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bj558u2prml87"
-path="res://.godot/imported/temp-bridge-centre.png-ee732df76e721bbfae5757ba78d75375.ctex"
+uid="uid://cla3pc0y5hajs"
+path="res://.godot/imported/DC_cell.png-2d9967d53df8825ba489cb239862a23d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bridge/temp-bridge-centre.png"
-dest_files=["res://.godot/imported/temp-bridge-centre.png-ee732df76e721bbfae5757ba78d75375.ctex"]
+source_file="res://assets/cells/normall/DC_cell.png"
+dest_files=["res://.godot/imported/DC_cell.png-2d9967d53df8825ba489cb239862a23d.ctex"]
 
 [params]
 
