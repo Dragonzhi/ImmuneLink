@@ -14,20 +14,27 @@ signal path_finished(enemy: BaseEnemy)
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
 @onready var health_bar_container: Node2D = $HealthBarContainer
 @onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar
+@onready var sprite: Sprite2D = $Sprite2D
 
 var is_dying: bool = false
+var is_spawning: bool = true
 var should_delete_at_end: bool = true
 var spawner: Node = null # Reference to the spawner that created this enemy
 var health_tween: Tween
 
 func _ready() -> void:
 	current_hp = max_hp
+	rotation_degrees = randf_range(0, 360)
 	rotates = false
 	if not area_2d.area_entered.is_connected(_on_area_2d_area_entered):
 		area_2d.area_entered.connect(_on_area_2d_area_entered)
 	_update_health_bar()
+	_play_spawn_animation()
 	
 func _physics_process(delta: float) -> void:
+	if is_spawning:
+		return
+		
 	if is_instance_valid(health_bar_container):
 		health_bar_container.global_rotation = 0
 
@@ -132,3 +139,19 @@ func _update_health_bar() -> void:
 		health_bar.show()
 	else:
 		health_bar.hide()
+
+func _play_spawn_animation():
+	scale = Vector2.ZERO
+	if is_instance_valid(sprite):
+		sprite.modulate.a = 0.0
+
+	var spawn_tween = create_tween()
+	spawn_tween.set_parallel()
+	spawn_tween.set_ease(Tween.EASE_OUT)
+	spawn_tween.set_trans(Tween.TRANS_SINE)
+
+	spawn_tween.tween_property(self, "scale", Vector2.ONE, 0.4)
+	if is_instance_valid(sprite):
+		spawn_tween.tween_property(sprite, "modulate:a", 1.0, 0.4)
+
+	spawn_tween.finished.connect(func(): is_spawning = false)
