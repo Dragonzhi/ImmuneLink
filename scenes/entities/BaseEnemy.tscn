@@ -18,7 +18,11 @@ collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 
-[node name="HealthBar" type="ProgressBar" parent="."]
+[node name="HealthBarContainer" type="Node2D" parent="."]
+
+[node name="HealthBar" type="ProgressBar" parent="HealthBarContainer"]
+z_index = 50
+z_as_relative = false
 offset_right = 56.0
 offset_bottom = 8.0
 scale = Vector2(0.25, 0.25)

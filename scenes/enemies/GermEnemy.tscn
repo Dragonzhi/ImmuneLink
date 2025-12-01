@@ -17,8 +17,8 @@ texture = ExtResource("2_jd13f")
 [node name="CollisionShape2D" parent="Area2D" index="0"]
 shape = SubResource("CircleShape2D_jd13f")
 
-[node name="HealthBar" parent="." index="2"]
+[node name="HealthBar" parent="HealthBarContainer" index="0"]
 offset_left = -7.0
-offset_top = -9.0
+offset_top = -10.0
 offset_right = 49.0
-offset_bottom = -1.0
+offset_bottom = -2.0

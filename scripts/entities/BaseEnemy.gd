@@ -12,11 +12,13 @@ signal path_finished(enemy: BaseEnemy)
 
 @onready var area_2d: Area2D = $Area2D
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
-@onready var health_bar: ProgressBar = $HealthBar
+@onready var health_bar_container: Node2D = $HealthBarContainer
+@onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar
 
 var is_dying: bool = false
 var should_delete_at_end: bool = true
 var spawner: Node = null # Reference to the spawner that created this enemy
+var health_tween: Tween
 
 func _ready() -> void:
 	current_hp = max_hp
@@ -26,6 +28,9 @@ func _ready() -> void:
 	_update_health_bar()
 	
 func _physics_process(delta: float) -> void:
+	if is_instance_valid(health_bar_container):
+		health_bar_container.global_rotation = 0
+
 	if is_dying:
 		return
 
@@ -94,6 +99,9 @@ func start_death_sequence():
 
 	is_dying = true
 	
+	if is_instance_valid(health_bar):
+		health_bar.hide()
+	
 	collision_shape.set_deferred("disabled", true)
 	
 	var tween = create_tween().set_parallel()
@@ -109,8 +117,17 @@ func _update_health_bar() -> void:
 		return
 	
 	var health_percent = (current_hp / max_hp) * 100.0
-	health_bar.value = health_percent
 	
+	# Stop the previous tween if it's running
+	if health_tween and health_tween.is_running():
+		health_tween.kill()
+
+	# Create and configure the new tween
+	health_tween = create_tween()
+	health_tween.set_trans(Tween.TRANS_CUBIC)
+	health_tween.set_ease(Tween.EASE_OUT)
+	health_tween.tween_property(health_bar, "value", health_percent, 0.4)
+
 	if current_hp < max_hp:
 		health_bar.show()
 	else:
