@@ -21,7 +21,20 @@ func _ready() -> void:
 	_wave_timer.timeout.connect(_start_next_wave)
 	
 	await get_tree().create_timer(0.1).timeout
+	
+	# Connect to other nodes that need to react to waves
+	_connect_to_listeners()
+	
 	start_wave_system()
+
+func _connect_to_listeners():
+	# Find the particle background and connect to it.
+	# This is more robust than having the listener try to find the manager.
+	var particle_bg = get_tree().get_root().find_child("ParticleBackground", true, false)
+	if particle_bg and particle_bg.has_method("_on_wave_started"):
+		wave_started.connect(particle_bg._on_wave_started)
+	else:
+		print("WaveManager did not find ParticleBackground, or it's missing the '_on_wave_started' method.")
 
 func start_wave_system():
 	if waves.is_empty():
