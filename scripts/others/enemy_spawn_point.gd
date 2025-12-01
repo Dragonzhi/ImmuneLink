@@ -146,6 +146,10 @@ func _register_occupied_cells():
 func _on_path_switch_timer_timeout():
 	if _paths.size() < 2: return
 	current_path_index = (current_path_index + 1) % _paths.size()
+	
+	if PathFXManager:
+		PathFXManager.play_path_animation(_paths[current_path_index])
+	
 	_update_path_visualizer()
 	print("路径已切换到: ", _paths[current_path_index].name)
 
