@@ -99,6 +99,8 @@ func spawn_enemy():
 	
 	# 将路径信息传递给敌人
 	enemy_instance.set_path(active_path)
+	# 将生成点自身的引用传递给敌人，以便后续进行路线切换检查
+	enemy_instance.spawner = self
 	
 	_enemies_spawned_this_wave += 1
 	emit_signal("enemy_spawned")
@@ -106,6 +108,11 @@ func spawn_enemy():
 	if _enemies_spawned_this_wave >= _enemies_to_spawn_this_wave:
 		stop_spawning()
 		emit_signal("spawner_finished", self)
+
+func get_active_path() -> Path2D:
+	if not _paths.is_empty():
+		return _paths[current_path_index]
+	return null
 
 func _get_random_enemy() -> EnemySpawnInfo:
 	var total_weight = 0

@@ -10,12 +10,16 @@ enum State { MOVING, ATTACKING }
 @export var move_speed: float = 50.0
 @export var damage: float = 10.0 # 对桥梁的伤害
 @export var attack_rate: float = 1.0 # 每秒攻击次数
+@export_group("Wiggle Movement")
+@export var sine_frequency: float = 0.1 # 摆动频率
+@export var sine_amplitude: float = 20.0 # 摆动幅度
 
 var current_hp: float
 var current_state: State = State.MOVING
 var target_bridge: Bridge = null
 var is_dying: bool = false
 var is_spawning: bool = true
+var spawner: Node2D # 用于存储生成点的引用
 
 # 路径相关变量
 var path_node: Path2D
@@ -25,7 +29,8 @@ signal path_finished(enemy: BaseEnemy)
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar
-@onready var attack_timer: Timer = Timer.new() # 代码创建Timer
+@onready var attack_timer: Timer = $AttackTimer
+@onready var path_check_timer: Timer = $PathCheckTimer
 
 func _ready() -> void:
 	current_hp = max_hp
@@ -36,7 +41,12 @@ func _ready() -> void:
 	attack_timer.one_shot = false
 	attack_timer.wait_time = 1.0 / attack_rate
 	attack_timer.timeout.connect(_on_attack_timer_timeout)
-	add_child(attack_timer)
+	
+	# 设置路径检查计时器
+	path_check_timer.one_shot = false
+	path_check_timer.wait_time = randf_range(3.0, 5.0) # 3到5秒随机检查一次
+	path_check_timer.timeout.connect(_on_path_check_timer_timeout)
+	path_check_timer.start()
 
 func _physics_process(delta: float) -> void:
 	if is_spawning or is_dying:
@@ -65,21 +75,31 @@ func _execute_movement(delta: float):
 		return
 	
 	var path_length = path_node.curve.get_baked_length()
-	if distance_along_path >= path_length:
+	# 如果路径长度为0，则不进行任何移动
+	if path_length <= 0:
 		velocity = Vector2.ZERO
 		move_and_slide()
-		emit_signal("path_finished", self)
 		return
 
-	# 累加沿路径的距离
-	distance_along_path += move_speed * delta
+	# 使用fmod实现路径循环
+	distance_along_path = fmod(distance_along_path + move_speed * delta, path_length)
 
-	# 在路径上采样一个目标点
+	# 在路径上采样一个中心目标点
 	var target_point_local = path_node.curve.sample_baked(distance_along_path, true)
 	var target_point_global = path_node.to_global(target_point_local)
 
-	# 计算方向和速度
-	var direction = (target_point_global - global_position).normalized()
+	# --- 正弦波移动逻辑 ---
+	var path_direction = (target_point_global - global_position).normalized()
+	# 计算垂直于路径方向的向量
+	var perpendicular_dir = path_direction.orthogonal()
+	# 基于沿路径的距离计算正弦偏移
+	var offset = sin(distance_along_path * sine_frequency) * sine_amplitude
+	# 计算最终的、带有偏移的目标点
+	var final_target = target_point_global + perpendicular_dir * offset
+	# --- 正弦波逻辑结束 ---
+
+	# 计算朝向最终目标点的方向和速度
+	var direction = (final_target - global_position).normalized()
 	velocity = direction * move_speed
 
 	# 移动并检测碰撞
@@ -133,6 +153,27 @@ func set_path(new_path_node: Path2D) -> void:
 func _on_attack_timer_timeout():
 	if current_state == State.ATTACKING and is_instance_valid(target_bridge):
 		target_bridge.take_damage(damage)
+
+func _on_path_check_timer_timeout():
+	print("--- 敌人路径检查 ---")
+	# 检查spawner是否存在且有获取路径的方法
+	if not is_instance_valid(spawner) or not spawner.has_method("get_active_path"):
+		print("检查失败: 生成点无效或没有 get_active_path 方法。")
+		return
+	
+	print("生成点有效。")
+	var spawner_path = spawner.get_active_path()
+	
+	print("自己的路径: ", path_node.name if is_instance_valid(path_node) else "null")
+	print("生成点的路径: ", spawner_path.name if is_instance_valid(spawner_path) else "null")
+	
+	# 如果spawner的当前路径和自己的不一样，就切换过去
+	if is_instance_valid(spawner_path) and spawner_path != path_node:
+		print(">>>>> 检测到新路径，正在切换...")
+		set_path(spawner_path)
+	else:
+		print("路径相同，无需切换。")
+	print("--------------------")
 
 
 # --- 原有的辅助函数 (部分保留和适配) ---
