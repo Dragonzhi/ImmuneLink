@@ -13,6 +13,8 @@ enum State { MOVING, ATTACKING }
 @export_group("Wiggle Movement")
 @export var sine_frequency: float = 0.1 # 摆动频率
 @export var sine_amplitude: float = 20.0 # 摆动幅度
+@export_group("Path Switching")
+@export var check_path_on_loop_only: bool = true # 是否仅在循环回到起点时才检查路径切换
 
 var current_hp: float
 var current_state: State = State.MOVING
@@ -30,7 +32,7 @@ signal path_finished(enemy: BaseEnemy)
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar
 @onready var attack_timer: Timer = $AttackTimer
-@onready var path_check_timer: Timer = $PathCheckTimer
+# PathCheckTimer is now removed, logic is handled in _physics_process
 
 func _ready() -> void:
 	current_hp = max_hp
@@ -41,12 +43,6 @@ func _ready() -> void:
 	attack_timer.one_shot = false
 	attack_timer.wait_time = 1.0 / attack_rate
 	attack_timer.timeout.connect(_on_attack_timer_timeout)
-	
-	# 设置路径检查计时器
-	path_check_timer.one_shot = false
-	path_check_timer.wait_time = randf_range(3.0, 5.0) # 3到5秒随机检查一次
-	path_check_timer.timeout.connect(_on_path_check_timer_timeout)
-	path_check_timer.start()
 
 func _physics_process(delta: float) -> void:
 	if is_spawning or is_dying:
@@ -81,9 +77,15 @@ func _execute_movement(delta: float):
 		move_and_slide()
 		return
 
+	var old_distance = distance_along_path
 	# 使用fmod实现路径循环
-	distance_along_path = fmod(distance_along_path + move_speed * delta, path_length)
+	distance_along_path = fmod(old_distance + move_speed * delta, path_length)
 
+	# --- 路径切换逻辑 ---
+	# 当路径循环完成时 (新的距离小于旧的距离)，检查是否需要切换路径
+	if check_path_on_loop_only and distance_along_path < old_distance:
+		_check_for_path_switch()
+		
 	# 在路径上采样一个中心目标点
 	var target_point_local = path_node.curve.sample_baked(distance_along_path, true)
 	var target_point_global = path_node.to_global(target_point_local)
@@ -154,26 +156,17 @@ func _on_attack_timer_timeout():
 	if current_state == State.ATTACKING and is_instance_valid(target_bridge):
 		target_bridge.take_damage(damage)
 
-func _on_path_check_timer_timeout():
-	print("--- 敌人路径检查 ---")
+func _check_for_path_switch():
 	# 检查spawner是否存在且有获取路径的方法
 	if not is_instance_valid(spawner) or not spawner.has_method("get_active_path"):
-		print("检查失败: 生成点无效或没有 get_active_path 方法。")
 		return
 	
-	print("生成点有效。")
 	var spawner_path = spawner.get_active_path()
-	
-	print("自己的路径: ", path_node.name if is_instance_valid(path_node) else "null")
-	print("生成点的路径: ", spawner_path.name if is_instance_valid(spawner_path) else "null")
 	
 	# 如果spawner的当前路径和自己的不一样，就切换过去
 	if is_instance_valid(spawner_path) and spawner_path != path_node:
-		print(">>>>> 检测到新路径，正在切换...")
+		# print(">>>>> 敌人 %s 检测到新路径，正在切换..." % self.name)
 		set_path(spawner_path)
-	else:
-		print("路径相同，无需切换。")
-	print("--------------------")
 
 
 # --- 原有的辅助函数 (部分保留和适配) ---
