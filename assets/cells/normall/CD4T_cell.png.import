@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ddk1yk2ay0a5w"
-path="res://.godot/imported/CTL_cell.png-73dc24755c13a775d06550ad50fd5387.ctex"
+uid="uid://b4mofg4y2bl13"
+path="res://.godot/imported/CD4T_cell.png-b16689612cd57d2dbfb7d90ad6ab5a73.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/cells/normall/CTL_cell.png"
-dest_files=["res://.godot/imported/CTL_cell.png-73dc24755c13a775d06550ad50fd5387.ctex"]
+source_file="res://assets/cells/normall/CD4T_cell.png"
+dest_files=["res://.godot/imported/CD4T_cell.png-b16689612cd57d2dbfb7d90ad6ab5a73.ctex"]
 
 [params]
 

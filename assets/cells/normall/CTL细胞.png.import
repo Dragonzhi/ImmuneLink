@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://6fy3juav3w16"
-path="res://.godot/imported/NK_cell.png-2aaa1373713ff8fa5c2ab5fc09bc8568.ctex"
+uid="uid://lubqls6l7jsh"
+path="res://.godot/imported/CTL细胞.png-653f381921931be4e9a6039a34957535.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/cells/normall/NK_cell.png"
-dest_files=["res://.godot/imported/NK_cell.png-2aaa1373713ff8fa5c2ab5fc09bc8568.ctex"]
+source_file="res://assets/cells/normall/CTL细胞.png"
+dest_files=["res://.godot/imported/CTL细胞.png-653f381921931be4e9a6039a34957535.ctex"]
 
 [params]
 

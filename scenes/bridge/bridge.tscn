@@ -269,6 +269,7 @@ scale = Vector2(0.1, 0.1)
 texture = SubResource("AtlasTexture_b42ll")
 hframes = 10
 vframes = 10
+frame = 5
 
 [node name="HurtArea2D" type="Area2D" parent="."]
 collision_layer = 4

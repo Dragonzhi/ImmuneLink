@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b4mofg4y2bl13"
-path="res://.godot/imported/CD4_T_cell.png-cc3da5d3408acadcd850a47289611690.ctex"
+uid="uid://ddk1yk2ay0a5w"
+path="res://.godot/imported/NKcell.png-a82d67aa3afbc2f9a4b9a345050d3eb5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/cells/enemies/CD4_T_cell.png"
-dest_files=["res://.godot/imported/CD4_T_cell.png-cc3da5d3408acadcd850a47289611690.ctex"]
+source_file="res://assets/cells/normall/NKcell.png"
+dest_files=["res://.godot/imported/NKcell.png-a82d67aa3afbc2f9a4b9a345050d3eb5.ctex"]
 
 [params]
 

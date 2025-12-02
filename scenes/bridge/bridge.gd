@@ -122,7 +122,7 @@ func apply_attack_upgrade():
 	if is_attack_upgraded: return
 	is_attack_upgraded = true
 	up_level_sprite.visible = true
-	up_level_sprite.frame = 0
+	up_level_sprite.frame = 5
 	hit_area.monitorable = true
 	hit_area.monitoring = true
 	reload_timer.start()
