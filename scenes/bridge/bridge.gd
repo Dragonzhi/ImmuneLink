@@ -9,6 +9,7 @@ const AttackRangeIndicatorScene = preload("res://scripts/ui/AttackRangeIndicator
 @onready var reload_timer: Timer = $ReloadTimer
 @onready var up_level_sprite: Sprite2D = $UpLevelSprite2D
 @onready var hit_area: Area2D = $HitArea2D
+@onready var blocking_shape: CollisionShape2D = $BlockingShape
 
 @export var max_health: float = 100.0
 @export var repair_time: float = 3.0
@@ -100,6 +101,7 @@ func take_damage(amount: float):
 		animated_sprite.modulate = Color(0.4, 0.4, 0.4)
 		animated_sprite.stop()
 		reload_timer.stop()
+		blocking_shape.disabled = true
 		if is_attack_upgraded:
 			up_level_sprite.visible = false
 			hit_area.monitorable = false
@@ -111,6 +113,7 @@ func take_damage(amount: float):
 func repair():
 	is_destroyed = false
 	current_health = max_health
+	blocking_shape.disabled = false
 	grid_manager.set_bridge_status(grid_pos, false)
 	animated_sprite.modulate = Color.WHITE
 	animated_sprite.animation = tile_animation_name

@@ -1,88 +1,141 @@
-extends PathFollow2D
+extends CharacterBody2D
 class_name BaseEnemy
 
 const HitEffectScene = preload("res://scenes/effects/HitEffect.tscn")
 
+# 定义状态枚举，用于管理敌人行为
+enum State { MOVING, ATTACKING }
+
 @export var max_hp: float = 100.0
-@export var current_hp: float
 @export var move_speed: float = 50.0
-@export var damage: float = 10.0
+@export var damage: float = 10.0 # 对桥梁的伤害
+@export var attack_rate: float = 1.0 # 每秒攻击次数
+
+var current_hp: float
+var current_state: State = State.MOVING
+var target_bridge: Bridge = null
+var is_dying: bool = false
+var is_spawning: bool = true
+
+# 路径相关变量
+var path_node: Path2D
+var distance_along_path: float = 0.0
 
 signal path_finished(enemy: BaseEnemy)
 
-@onready var area_2d: Area2D = $Area2D
-@onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
-@onready var health_bar_container: Node2D = $HealthBarContainer
-@onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar
 @onready var sprite: Sprite2D = $Sprite2D
-
-var is_dying: bool = false
-var is_spawning: bool = true
-var should_delete_at_end: bool = true
-var spawner: Node = null # Reference to the spawner that created this enemy
-var health_tween: Tween
+@onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar
+@onready var attack_timer: Timer = Timer.new() # 代码创建Timer
 
 func _ready() -> void:
 	current_hp = max_hp
-	rotation_degrees = randf_range(0, 360)
-	rotates = false
-	if not area_2d.area_entered.is_connected(_on_area_2d_area_entered):
-		area_2d.area_entered.connect(_on_area_2d_area_entered)
 	_update_health_bar()
 	_play_spawn_animation()
 	
+	# 设置攻击计时器
+	attack_timer.one_shot = false
+	attack_timer.wait_time = 1.0 / attack_rate
+	attack_timer.timeout.connect(_on_attack_timer_timeout)
+	add_child(attack_timer)
+
 func _physics_process(delta: float) -> void:
-	if is_spawning:
-		return
-		
-	if is_instance_valid(health_bar_container):
-		health_bar_container.global_rotation = 0
-
-	if is_dying:
+	if is_spawning or is_dying:
+		velocity = Vector2.ZERO # 确保在生成或死亡时停止移动
+		move_and_slide()
 		return
 
-	var path_node = get_parent()
-	if not path_node is Path2D:
+	match current_state:
+		State.MOVING:
+			_execute_movement(delta)
+		State.ATTACKING:
+			_execute_attack(delta)
+	
+	# 保证血条始终是水平的
+	if is_instance_valid(health_bar):
+		health_bar.get_parent().global_rotation = 0
+
+
+# --- 状态处理 ---
+
+func _execute_movement(delta: float):
+	# 如果没有路径，就原地待命
+	if not is_instance_valid(path_node) or not is_instance_valid(path_node.curve):
+		velocity = Vector2.ZERO
+		move_and_slide()
 		return
 	
-	var path_curve: Curve2D = path_node.curve
-	if not path_curve:
-		return
-
-	var curve_length: float = path_curve.get_baked_length()
-	var new_progress: float = progress + move_speed * delta
-
-	if new_progress >= curve_length:
+	var path_length = path_node.curve.get_baked_length()
+	if distance_along_path >= path_length:
+		velocity = Vector2.ZERO
+		move_and_slide()
 		emit_signal("path_finished", self)
-		if not is_dying:
-			if should_delete_at_end:
-				progress = curve_length
-				queue_free()
-			else:
-				# Check for new path from spawner
-				if spawner and is_instance_valid(spawner) and spawner.has_method("get_active_path"):
-					var active_spawner_path = spawner.get_active_path()
-					if is_instance_valid(active_spawner_path) and active_spawner_path != path_node:
-						# Switch to new path: reparenting resets progress
-						path_node.remove_child(self) # Remove from old path
-						active_spawner_path.add_child(self) # Add to new path (reparents)
-						progress = 0 # Start from the beginning of the new path
-						return # Path switched, exit for this frame
-				
-				# If no path switch, invalid spawner, or path is the same, just loop on current path
-				progress = new_progress - curve_length
-		else:
-			# If it's dying, just stop at the end
-			progress = curve_length
-	else:
-		progress = new_progress
+		return
 
-func _on_area_2d_area_entered(area: Area2D) -> void:
-	if is_dying: return
+	# 累加沿路径的距离
+	distance_along_path += move_speed * delta
+
+	# 在路径上采样一个目标点
+	var target_point_local = path_node.curve.sample_baked(distance_along_path, true)
+	var target_point_global = path_node.to_global(target_point_local)
+
+	# 计算方向和速度
+	var direction = (target_point_global - global_position).normalized()
+	velocity = direction * move_speed
+
+	# 移动并检测碰撞
+	move_and_slide()
 	
-	if area.owner is Bridge:
-		var bridge: Bridge = area.owner
-		bridge.take_damage(damage)
+	# 检查碰撞
+	for i in get_slide_collision_count():
+		var collision = get_slide_collision(i)
+		if collision:
+			var collider = collision.get_collider()
+			if collider is Bridge and collider.is_in_group("bridges"):
+				# 撞到桥了，切换到攻击状态
+				_enter_attack_state(collider)
+				return # 本帧不再继续移动逻辑
+
+
+func _execute_attack(delta: float):
+	# 攻击状态下，停止移动
+	velocity = Vector2.ZERO
+	move_and_slide()
+
+	# 检查目标桥梁是否还存在或者已经被摧毁
+	if not is_instance_valid(target_bridge) or target_bridge.is_destroyed:
+		_enter_move_state()
+
+
+func _enter_attack_state(bridge: Bridge):
+	# print("敌人 %s 开始攻击桥梁 %s" % [self.name, bridge.name])
+	current_state = State.ATTACKING
+	target_bridge = bridge
+	attack_timer.start()
+
+func _enter_move_state():
+	# print("敌人 %s 停止攻击，继续移动" % self.name)
+	current_state = State.MOVING
+	target_bridge = null
+	attack_timer.stop()
+
+
+# --- 外部调用和信号处理 ---
+
+# 新的设置路径方法
+func set_path(new_path_node: Path2D) -> void:
+	if not is_instance_valid(new_path_node):
+		path_node = null
+		return
+	path_node = new_path_node
+	distance_along_path = 0.0
+	_enter_move_state()
+
+func _on_attack_timer_timeout():
+	if current_state == State.ATTACKING and is_instance_valid(target_bridge):
+		target_bridge.take_damage(damage)
+
+
+# --- 原有的辅助函数 (部分保留和适配) ---
 
 func take_damage(amount: float):
 	if is_dying: return
@@ -90,51 +143,37 @@ func take_damage(amount: float):
 	current_hp -= amount
 	_update_health_bar()
 	
-	# --- Create Hit Effect ---
 	var hit_effect = HitEffectScene.instantiate()
-	get_tree().get_root().get_node("Main/Foreground/Particles").add_child(hit_effect) # Add to main scene
+	get_tree().get_root().get_node("Main/Foreground/Particles").add_child(hit_effect)
 	hit_effect.global_position = global_position
 	hit_effect.set_emitting(true)
-	# You can customize the color here if needed, e.g., based on damage type
-	# hit_effect.set_color(Color.YELLOW) 
 	
 	if current_hp <= 0:
 		start_death_sequence()
 
 func start_death_sequence():
 	if is_dying: return
-
 	is_dying = true
+	attack_timer.stop() # 死亡时停止攻击
 	
 	if is_instance_valid(health_bar):
 		health_bar.hide()
 	
-	collision_shape.set_deferred("disabled", true)
+	# 禁用碰撞
+	get_node("CollisionShape2D").set_deferred("disabled", true)
+	get_node("Area2D/CollisionShape2D").set_deferred("disabled", true)
 	
 	var tween = create_tween().set_parallel()
 	tween.set_trans(Tween.TRANS_QUINT)
-	
 	tween.tween_property(self, "scale", Vector2.ZERO, 0.5)
 	tween.tween_property(self, "rotation_degrees", rotation_degrees + 360, 0.5)
-	
 	tween.finished.connect(queue_free)
 
 func _update_health_bar() -> void:
 	if not is_instance_valid(health_bar):
 		return
-	
 	var health_percent = (current_hp / max_hp) * 100.0
-	
-	# Stop the previous tween if it's running
-	if health_tween and health_tween.is_running():
-		health_tween.kill()
-
-	# Create and configure the new tween
-	health_tween = create_tween()
-	health_tween.set_trans(Tween.TRANS_CUBIC)
-	health_tween.set_ease(Tween.EASE_OUT)
-	health_tween.tween_property(health_bar, "value", health_percent, 0.4)
-
+	health_bar.value = health_percent
 	if current_hp < max_hp:
 		health_bar.show()
 	else:
@@ -155,3 +194,7 @@ func _play_spawn_animation():
 		spawn_tween.tween_property(sprite, "modulate:a", 1.0, 0.4)
 
 	spawn_tween.finished.connect(func(): is_spawning = false)
+
+# 物理碰撞现在处理桥梁交互，这里可以留空或用于其他逻辑
+func _on_area_2d_area_entered(area: Area2D) -> void:
+	pass

@@ -83,9 +83,22 @@ func spawn_enemy():
 		return
 		
 	var enemy_instance: BaseEnemy = chosen_enemy_info.enemy_scene.instantiate()
-	enemy_instance.should_delete_at_end = delete_enemy_at_path_end
-	enemy_instance.spawner = self # Pass a reference of the spawner to the enemy
-	active_path.add_child(enemy_instance)
+	var main_node = get_tree().get_root().get_node("Main")
+	if not main_node:
+		printerr("敌人生成点 %s 无法找到 Main 节点！" % self.name)
+		return
+
+	# 将敌人添加到主场景，而不是路径节点
+	main_node.add_child(enemy_instance)
+	
+	# 设置敌人的初始位置为路径的第一个点
+	if not active_path.curve.get_baked_points().is_empty():
+		enemy_instance.global_position = active_path.to_global(active_path.curve.get_baked_points()[0])
+	else:
+		enemy_instance.global_position = self.global_position # 备用方案
+	
+	# 将路径信息传递给敌人
+	enemy_instance.set_path(active_path)
 	
 	_enemies_spawned_this_wave += 1
 	emit_signal("enemy_spawned")
@@ -93,11 +106,6 @@ func spawn_enemy():
 	if _enemies_spawned_this_wave >= _enemies_to_spawn_this_wave:
 		stop_spawning()
 		emit_signal("spawner_finished", self)
-
-func get_active_path() -> Path2D:
-	if not _paths.is_empty():
-		return _paths[current_path_index]
-	return null
 
 func _get_random_enemy() -> EnemySpawnInfo:
 	var total_weight = 0
