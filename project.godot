@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 GridManager="*res://scripts/managers/GridManager.gd"
 GameManager="*res://scripts/managers/GameManager.gd"
 PathFXManager="*res://scripts/managers/PathFXManager.gd"
+GameCamera="*res://scripts/camera/ShakeableCamera.gd"
 
 [display]
 

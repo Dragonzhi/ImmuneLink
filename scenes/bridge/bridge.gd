@@ -105,6 +105,7 @@ func take_damage(amount: float):
 		current_health = 0
 		is_destroyed = true
 		health_bar.hide() # 桥梁摧毁时隐藏血条
+		GameCamera.shake(2, 0.3) # 触发相机震动
 		animated_sprite.modulate = Color(0.4, 0.4, 0.4)
 		animated_sprite.stop()
 		reload_timer.stop()
