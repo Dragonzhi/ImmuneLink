@@ -17,6 +17,10 @@ enum State { MOVING, ATTACKING }
 @export var check_path_on_loop_only: bool = true # 是否仅在循环回到起点时才检查路径切换
 @export_group("UI")
 @export var health_bar: ProgressBar
+@export_group("Separation")
+@export var separation_strength: float = 50.0 # 与其他敌人分离的推力强度
+@onready var separation_detector: Area2D = $SeparationDetector
+
 
 var current_hp: float
 var current_state: State = State.MOVING
@@ -63,6 +67,30 @@ func _physics_process(delta: float) -> void:
 
 # --- 状态处理 ---
 
+func _get_separation_vector() -> Vector2:
+	# 从分离探测器获取所有重叠的物体（即邻近的敌人）
+	var neighbors = separation_detector.get_overlapping_bodies()
+	var push_vector = Vector2.ZERO
+	
+	# 如果没有邻居，则不产生任何推力
+	if neighbors.is_empty():
+		return Vector2.ZERO
+		
+	# 遍历所有邻居，计算一个总的推开方向
+	for neighbor in neighbors:
+		# 计算一个从邻居指向“我”的向量
+		var away_from_neighbor = global_position - neighbor.global_position
+		# 累加这个向量，越近的邻居贡献的向量长度越大，推力也越强
+		if away_from_neighbor.length_squared() > 0:
+			push_vector += away_from_neighbor.normalized() / away_from_neighbor.length()
+
+	# 返回归一化后的推力向量，乘以设定的强度
+	if push_vector.length_squared() > 0:
+		return push_vector.normalized() * separation_strength
+	
+	return Vector2.ZERO
+
+
 func _execute_movement(delta: float):
 	# 如果没有路径，就原地待命
 	if not is_instance_valid(path_node) or not is_instance_valid(path_node.curve):
@@ -100,9 +128,14 @@ func _execute_movement(delta: float):
 	var final_target = target_point_global + perpendicular_dir * offset
 	# --- 正弦波逻辑结束 ---
 
-	# 计算朝向最终目标点的方向和速度
-	var direction = (final_target - global_position).normalized()
-	velocity = direction * move_speed
+	# 计算朝向最终目标点的路径速度
+	var path_velocity = (final_target - global_position).normalized() * move_speed
+	
+	# 获取分离（推挤）力
+	var separation_velocity = _get_separation_vector()
+	
+	# 将路径速度和分离速度结合
+	velocity = path_velocity + separation_velocity
 
 	# 移动并检测碰撞
 	move_and_slide()

@@ -12,7 +12,6 @@ move_speed = 26.0
 damage = 20.0
 
 [node name="Sprite2D" parent="." index="1"]
-texture_filter = 1
 texture = ExtResource("2_1hdy3")
 
 [node name="CollisionShape2D" parent="Area2D" index="0"]
