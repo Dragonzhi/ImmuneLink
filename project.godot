@@ -45,3 +45,7 @@ folder_colors={
 2d_physics/layer_2="敌人"
 2d_physics/layer_3="桥梁"
 2d_physics/layer_4="抛射物"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0

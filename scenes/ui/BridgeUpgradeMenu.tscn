@@ -1,10 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://b5w7hgsgsv6w5"]
+[gd_scene load_steps=3 format=3 uid="uid://b5w7hgsgsv6w5"]
 
 [ext_resource type="Script" uid="uid://dyvph8lhqn7dv" path="res://scenes/ui/BridgeUpgradeMenu.gd" id="1_abcde"]
+[ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="1_mpc51"]
 
 [node name="BridgeUpgradeMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 0
+theme = ExtResource("1_mpc51")
 script = ExtResource("1_abcde")
-button_radius = 50.0
-button_count = 3
+button_radius = 30.0
+button_default_size = Vector2(30, 15)
+button_font_size = 6

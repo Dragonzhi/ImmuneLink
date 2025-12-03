@@ -5,6 +5,8 @@ signal upgrade_selected(upgrade: Upgrade)
 
 @export var button_scene: PackedScene # 如果有自定义按钮场景，可以在这里设置
 @export var button_radius: float = 60.0
+@export var button_default_size: Vector2 = Vector2(100, 60) # 调整默认尺寸以适应24x24图标和文本
+@export var button_font_size: int = 14 # 新增：按钮文本的字体大小
 
 var selected_bridge: Bridge = null # 对当前选中的桥梁的引用
 
@@ -31,9 +33,14 @@ func populate_menu(upgrades: Array[Upgrade], target_bridge: Bridge):
 		else:
 			button = Button.new()
 			# 从Upgrade资源获取信息来设置按钮
+			button.icon = upgrade_res.icon
 			button.text = "%s\n(%s G)" % [upgrade_res.upgrade_name, upgrade_res.cost]
-			button.size = Vector2(80, 40) # Give it a bit more space
-
+			button.add_theme_font_size_override("font_size", button_font_size) # 应用字体大小
+		
+		# 强制应用尺寸，无论按钮是如何创建的
+		button.custom_minimum_size = button_default_size
+		# 移除测试：button.clip_text = true 
+		
 		add_child(button)
 		
 		var x = button_radius * cos(angle)
