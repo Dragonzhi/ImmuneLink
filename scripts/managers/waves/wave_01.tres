@@ -27,9 +27,11 @@ script = ExtResource("5_45o5c")
 spawner_nodepath = NodePath("../BackGround/EnemySpawns/EnemySpawnPoint02")
 override_spawn_infos = Array[ExtResource("1_e0th3")]([SubResource("Resource_aefbw")])
 override_enemy_count = 5
-override_spawn_interval = 5.0
+override_spawn_interval = 7.0
 
 [resource]
 script = ExtResource("4_hqy3h")
 default_spawn_infos = Array[ExtResource("1_e0th3")]([SubResource("Resource_3r2pv"), SubResource("Resource_h7bdk")])
+default_enemy_count = 5
+default_spawn_interval = 4.0
 spawner_overrides = Array[ExtResource("5_45o5c")]([SubResource("Resource_al1d8")])

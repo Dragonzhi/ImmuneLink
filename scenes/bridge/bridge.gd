@@ -38,9 +38,23 @@ var _range_indicator # No type hint to avoid parse error
 ## 获取当前可用的升级列表
 func get_available_upgrades() -> Array[Upgrade]:
 	var upgrades_to_return: Array[Upgrade] = []
-	# 示例逻辑：如果还未升级过攻击，则允许所有升级
-	if not is_attack_upgraded: # 这里的逻辑可以根据您的设计调整
-		upgrades_to_return = available_upgrades
+	# 查询桥梁是否在一条激活的连接线路上
+	var on_active_line = false
+	if ConnectionManager and ConnectionManager.has_method("is_bridge_on_active_line"):
+		on_active_line = ConnectionManager.is_bridge_on_active_line(self)
+
+	for upgrade_resource in available_upgrades:
+		if upgrade_resource is AttackUpgrade:
+			if not is_attack_upgraded: # 只有未进行攻击升级时才显示
+				upgrades_to_return.append(upgrade_resource)
+		elif upgrade_resource is DefenseUpgrade:
+			# 防御升级目前没有特殊条件，始终可升级（或根据需要添加条件）
+			upgrades_to_return.append(upgrade_resource)
+		elif upgrade_resource is ConnectionRateUpgrade:
+			if on_active_line: # 只有在激活的线路上才显示“泵”升级
+				upgrades_to_return.append(upgrade_resource)
+		# 可以在这里添加其他升级类型的条件
+	
 	return upgrades_to_return
 
 ## 公共接口：尝试将一个升级应用到此桥梁

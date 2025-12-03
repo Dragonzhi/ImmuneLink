@@ -22,6 +22,7 @@ PathFXManager="*res://scripts/managers/PathFXManager.gd"
 GameCamera="*res://scripts/camera/ShakeableCamera.gd"
 VFXManager="*res://scenes/managers/VFXManager.tscn"
 GameManager="*res://scenes/managers/GameManager.tscn"
+ConnectionManager="*res://scenes/managers/ConnectionManager.tscn"
 
 [display]
 

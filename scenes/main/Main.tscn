@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=19 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="Script" path="res://scripts/managers/WaveManager.gd" id="1_rikml"]
@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" uid="uid://dbitchmue8nm6" path="res://scenes/others/enemy_spawn_point.tscn" id="4_1rhdn"]
 [ext_resource type="PackedScene" uid="uid://cjvy6h27p17px" path="res://scenes/others/BridgeBuilder.tscn" id="4_abcde"]
 [ext_resource type="Script" uid="uid://iwunwmox6qk5" path="res://scripts/managers/UIManager.gd" id="5_abcde"]
-[ext_resource type="Script" uid="uid://b2n0qw8vqfgsl" path="res://scripts/managers/ConnectionManager.gd" id="5_fghij"]
 [ext_resource type="Script" uid="uid://dy1nyxpe7sr7n" path="res://scripts/ui/Overlay.gd" id="6_overlay"]
 [ext_resource type="Script" uid="uid://cwq4oeccwuocx" path="res://scenes/main/ui_cancel.gd" id="7_tck0d"]
 [ext_resource type="PackedScene" uid="uid://ddhalg244kw3t" path="res://scenes/ui/FPSCounter.tscn" id="8_ko0rf"]
@@ -48,9 +47,6 @@ spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01"), NodePath(".
 
 [node name="GameManager" type="Node" parent="."]
 script = ExtResource("1_tck0d")
-
-[node name="ConnectionManager" type="Node" parent="."]
-script = ExtResource("5_fghij")
 
 [node name="UIManager" type="Node" parent="."]
 script = ExtResource("5_abcde")
@@ -122,9 +118,9 @@ autostart = false
 
 [node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" node_paths=PackedStringArray("_paths") instance=ExtResource("4_1rhdn")]
 position = Vector2(200, 48)
-path_switch_interval = 5.0
+path_switch_interval = 12.0
 delete_enemy_at_path_end = false
-_paths = [NodePath("Path01"), NodePath("Path02"), NodePath("Path03")]
+_paths = [NodePath("Path02"), NodePath("Path01"), NodePath("Path03")]
 
 [node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
 curve = SubResource("Curve2D_tck0d")

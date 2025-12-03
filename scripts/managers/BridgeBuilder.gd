@@ -34,7 +34,7 @@ var back_build_index: int = 0
 
 func _ready() -> void:
 	grid_manager = get_node("/root/Main/GridManager")
-	connection_manager = get_node("/root/Main/ConnectionManager")
+	connection_manager = ConnectionManager
 	ui_manager = get_node("/root/Main/UIManager")
 	
 	if not bridges_container: printerr("BridgeBuilder: 'bridges_container' not set!")
@@ -147,6 +147,7 @@ func _finish_building(end_pipe: Pipe, end_pos: Vector2i):
 		return
 	
 	# --- Setup for Sequential Build ---
+	path_to_check = current_path.slice(1, current_path.size() - 1)
 	sequential_build_path = current_path
 	path_connection_set.clear()
 	for pos in sequential_build_path: path_connection_set[pos] = true
@@ -168,8 +169,8 @@ func _finish_building(end_pipe: Pipe, end_pos: Vector2i):
 	front_build_index = 0
 	back_build_index = sequential_build_path.size() - 1
 	
-	print("BridgeBuilder: Registering connection with path: ", current_path)
-	connection_manager.add_connection(start_pipe, end_pipe, current_path.duplicate())
+	print("DEBUG [BridgeBuilder]: 正在注册连接。 起点: %s, 终点: %s, 桥梁路径: %s" % [start_pipe.name, end_pipe.name, path_to_check])
+	connection_manager.add_connection(start_pipe, end_pipe, path_to_check.duplicate())
 	start_pipe.mark_pipe_as_used()
 	end_pipe.mark_pipe_as_used()
 	
