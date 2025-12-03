@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://de0pjmcrfoc5m"]
+[gd_scene load_steps=40 format=3 uid="uid://de0pjmcrfoc5m"]
 
 [ext_resource type="Script" uid="uid://nq74hij6o8fv" path="res://scenes/bridge/bridge.gd" id="1_c301t"]
 [ext_resource type="Texture2D" uid="uid://bkwnyigbpfhsu" path="res://assets/bridge/upLevel/uplevel_sheet.png" id="2_jnwta"]
@@ -249,6 +249,9 @@ animations = [{
 [sub_resource type="AtlasTexture" id="AtlasTexture_b42ll"]
 atlas = ExtResource("2_jnwta")
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yh2x3"]
+bg_color = Color(0, 0.956863, 0.0941176, 1)
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_bqf5l"]
 radius = 100.0
 
@@ -275,6 +278,19 @@ texture = SubResource("AtlasTexture_b42ll")
 hframes = 10
 vframes = 10
 frame = 5
+
+[node name="HealthBarContainer" type="Node2D" parent="."]
+
+[node name="HealthBar" type="ProgressBar" parent="HealthBarContainer"]
+z_index = 50
+z_as_relative = false
+offset_left = -7.0
+offset_top = -11.0
+offset_right = 49.0
+offset_bottom = -3.0
+scale = Vector2(0.25, 0.25)
+theme_override_styles/fill = SubResource("StyleBoxFlat_yh2x3")
+show_percentage = false
 
 [node name="HurtArea2D" type="Area2D" parent="."]
 collision_layer = 16

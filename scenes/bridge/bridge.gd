@@ -10,6 +10,7 @@ const AttackRangeIndicatorScene = preload("res://scripts/ui/AttackRangeIndicator
 @onready var up_level_sprite: Sprite2D = $UpLevelSprite2D
 @onready var hit_area: Area2D = $HitArea2D
 @onready var blocking_shape: CollisionShape2D = $BlockingShape
+@onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar # 血条
 
 @export var max_health: float = 100.0
 @export var repair_time: float = 3.0
@@ -29,6 +30,10 @@ func _ready() -> void:
 	current_health = max_health
 	grid_manager = get_node("/root/Main/GridManager")
 	
+	# 初始化血条
+	health_bar.max_value = max_health
+	health_bar.value = current_health
+	
 	repair_timer.wait_time = repair_time
 	repair_timer.timeout.connect(repair)
 	
@@ -46,6 +51,8 @@ func _ready() -> void:
 	_range_indicator = AttackRangeIndicatorScene.new()
 	add_child(_range_indicator)
 	_range_indicator.hide()
+	
+	_update_health_bar()
 
 func setup_segment(grid_pos: Vector2i):
 	self.grid_pos = grid_pos
@@ -95,6 +102,7 @@ func setup_bridge_tile(neighbors: Dictionary):
 func take_damage(amount: float):
 	if is_destroyed: return
 	current_health -= amount
+	_update_health_bar()
 	if current_health <= 0:
 		current_health = 0
 		is_destroyed = true
@@ -109,6 +117,7 @@ func take_damage(amount: float):
 		print("Bridge at %s destroyed. Reporting to GridManager." % grid_pos)
 		grid_manager.set_bridge_status(grid_pos, true)
 		print("桥段 %s 已被摧毁！" % grid_pos)
+		health_bar.visible = false
 
 func repair():
 	is_destroyed = false
@@ -120,6 +129,12 @@ func repair():
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count(tile_animation_name) - 1
 	if is_attack_upgraded:
 		apply_attack_upgrade()
+	_update_health_bar()
+
+func _update_health_bar():
+	# 更新血条值，并根据生命值是否已满决定是否显示
+	health_bar.value = current_health
+	health_bar.visible = current_health < max_health
 
 func apply_attack_upgrade():
 	if is_attack_upgraded: return
