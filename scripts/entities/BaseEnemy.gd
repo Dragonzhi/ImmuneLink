@@ -136,6 +136,8 @@ func _execute_movement(delta: float):
 	
 	# 将路径速度和分离速度结合
 	velocity = path_velocity + separation_velocity
+	# 限制最终速度不超过 move_speed，这可以防止抖动
+	velocity = velocity.limit_length(move_speed)
 
 	# 移动并检测碰撞
 	move_and_slide()

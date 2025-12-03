@@ -104,6 +104,7 @@ func take_damage(amount: float):
 	if current_health <= 0:
 		current_health = 0
 		is_destroyed = true
+		health_bar.hide() # 桥梁摧毁时隐藏血条
 		animated_sprite.modulate = Color(0.4, 0.4, 0.4)
 		animated_sprite.stop()
 		reload_timer.stop()
