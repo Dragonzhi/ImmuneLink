@@ -11,13 +11,13 @@ max_hp = 20.0
 move_speed = 25.0
 damage = 5.0
 
-[node name="Sprite2D" parent="." index="0"]
+[node name="Sprite2D" parent="." index="1"]
 texture = ExtResource("2_jd13f")
 
 [node name="CollisionShape2D" parent="Area2D" index="0"]
 shape = SubResource("CircleShape2D_jd13f")
 
-[node name="HealthBar" parent="HealthBarContainer" index="0"]
+[node name="HealthBar" parent="." index="3"]
 offset_left = -7.0
 offset_top = -10.0
 offset_right = 49.0

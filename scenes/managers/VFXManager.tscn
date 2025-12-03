@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dpsa71omayl1j"]
+
+[ext_resource type="Script" uid="uid://cng5nadyd1u85" path="res://scripts/managers/VFXManager.gd" id="1_abcde"]
+[ext_resource type="PackedScene" uid="uid://b1x2y304a5b6c" path="res://scenes/effects/HitEffect.tscn" id="2_q28md"]
+
+[node name="VFXManager" type="Node"]
+script = ExtResource("1_abcde")
+effect_scenes = {
+"hit": ExtResource("2_q28md")
+}

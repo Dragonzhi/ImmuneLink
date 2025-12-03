@@ -299,7 +299,6 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea2D"]
-position = Vector2(-42, -10)
 shape = SubResource("CircleShape2D_bqf5l")
 debug_color = Color(0.44497895, 0.5837057, 0.37361607, 0.41960785)
 

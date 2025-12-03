@@ -1,8 +1,6 @@
 extends CharacterBody2D
 class_name BaseEnemy
 
-const HitEffectScene = preload("res://scenes/effects/HitEffect.tscn")
-
 # 定义状态枚举，用于管理敌人行为
 enum State { MOVING, ATTACKING }
 
@@ -212,10 +210,7 @@ func take_damage(amount: float):
 	current_hp -= amount
 	health_bar.update_health(current_hp) # 调用血条场景的更新方法
 	
-	var hit_effect = HitEffectScene.instantiate()
-	get_tree().get_root().get_node("Main/Foreground/Particles").add_child(hit_effect)
-	hit_effect.global_position = global_position
-	hit_effect.set_emitting(true)
+	VFXManager.play_effect("hit", global_position)
 	
 	if current_hp <= 0:
 		start_death_sequence()

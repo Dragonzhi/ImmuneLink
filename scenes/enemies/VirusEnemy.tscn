@@ -10,15 +10,16 @@ radius = 5.0
 max_hp = 15.0
 move_speed = 30.0
 damage = 5.0
+attack_rate = 2.0
 
-[node name="Sprite2D" parent="." index="0"]
+[node name="Sprite2D" parent="." index="1"]
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_4xn4g")
 
 [node name="CollisionShape2D" parent="Area2D" index="0"]
 shape = SubResource("CircleShape2D_4xn4g")
 
-[node name="HealthBar" parent="HealthBarContainer" index="0"]
+[node name="HealthBar" parent="." index="3"]
 offset_left = -7.0
 offset_top = -11.0
 offset_right = 49.0
