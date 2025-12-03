@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://b4qswggpaov0n"]
+
+[ext_resource type="Script" uid="uid://dwwq53obv1ffw" path="res://scripts/effects/AutoDestroyParticle.gd" id="1_wylfg"]
+
+[sub_resource type="Curve" id="Curve_f3hha"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.7324841, 0.79065204), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_tqfn5"]
+curve = SubResource("Curve_f3hha")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_j8e0c"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 5.0
+spread = 180.0
+initial_velocity_min = 40.0
+initial_velocity_max = 90.0
+gravity = Vector3(0, 0, 0)
+damping_min = 90.0
+damping_max = 110.0
+scale_min = 2.0
+scale_max = 3.0
+scale_curve = SubResource("CurveTexture_tqfn5")
+color = Color(1, 0.7, 0, 1)
+
+[node name="EnemyDeathEffect" type="GPUParticles2D"]
+emitting = false
+amount = 50
+lifetime = 0.6
+one_shot = true
+speed_scale = 1.2
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_j8e0c")
+script = ExtResource("1_wylfg")

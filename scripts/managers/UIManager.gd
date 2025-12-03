@@ -27,7 +27,7 @@ func _ready() -> void:
 		overlay.color = Color(initial_color.r, initial_color.g, initial_color.b, 0.0)
 		overlay.visible = false
 
-func open_upgrade_menu(bridge: Bridge):
+func open_upgrade_menu(upgrades: Array[Upgrade], bridge: Bridge):
 	if tween and tween.is_running():
 		tween.kill()
 	
@@ -37,13 +37,15 @@ func open_upgrade_menu(bridge: Bridge):
 	# Show overlay and create menu
 	overlay.visible = true
 	current_menu = BridgeUpgradeMenuScene.instantiate() as BridgeUpgradeMenu # 实例化时转换为正确类型
-	current_menu.selected_bridge = bridge # 传递选中的桥梁实例
+	# 调用菜单的新方法来动态填充升级按钮
+	current_menu.populate_menu(upgrades, bridge)
+	
 	current_menu.modulate = Color(1, 1, 1, 0) # Start transparent
 	ui_layer.add_child(current_menu)
 	current_menu.global_position = bridge.global_position
 
-	# 连接菜单的升级信号
-	current_menu.upgrade_selected.connect(_on_upgrade_selected)
+	# 连接菜单发出的新的、更通用的升级信号
+	current_menu.upgrade_selected.connect(_on_upgrade_chosen)
 
 	# Create fade-in tween
 	tween = create_tween()
@@ -73,21 +75,16 @@ func _on_fade_out_finished():
 	if overlay:
 		overlay.visible = false
 
-# 处理 BridgeUpgradeMenu 发出的升级信号
-func _on_upgrade_selected(index: int, bridge: Bridge):
-	print("UIManager 收到升级选择信号: 按钮索引 ", index, " 桥梁: ", bridge.grid_pos)
+# 处理来自 BridgeUpgradeMenu 的新信号
+func _on_upgrade_chosen(upgrade: Upgrade):
+	if not current_menu or not is_instance_valid(current_menu.selected_bridge):
+		return
+		
+	var bridge = current_menu.selected_bridge
+	print("UIManager 收到升级选择: %s, 应用于桥梁: %s" % [upgrade.upgrade_name, bridge.grid_pos])
 	
-	# Assuming index 0 is the attack upgrade button
-	if index == 0: # Attack Upgrade
-		print("尝试升级攻击，花费: ", attack_upgrade_cost, " 资源")
-		if GameManager.spend_resource_value(attack_upgrade_cost):
-			print("资源足够，应用攻击升级！")
-			bridge.apply_attack_upgrade()
-		else:
-			print("资源不足，无法应用攻击升级！")
-	else:
-		print("其他升级类型 (索引: %s) 尚未实现." % index)
+	# 将升级请求转发给 GameManager
+	GameManager.request_upgrade(upgrade, bridge)
 
-	close_upgrade_menu() # 选择升级后关闭菜单
-	GameManager.deselect_all_turrets() # Clear selection state
-	# 在这里可以添加更多基于升级类型和桥梁实例的逻辑
+	# 无论升级成功与否，都关闭菜单
+	close_upgrade_menu()

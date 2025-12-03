@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AttackUpgrade" load_steps=3 format=3 uid="uid://jhfi5kv16pws"]
+
+[ext_resource type="Script" uid="uid://bicdkqf8h8yan" path="res://scripts/upgrades/AttackUpgrade.gd" id="1_0i3a8"]
+[ext_resource type="Texture2D" uid="uid://ek8cya4hw47s" path="res://assets/bridge/upLevel/icon/attack_1.png" id="1_xm7l3"]
+
+[resource]
+script = ExtResource("1_0i3a8")
+upgrade_name = "镇静火力"
+description = "Attact_1"
+cost = 20
+icon = ExtResource("1_xm7l3")
+metadata/_custom_type_script = "uid://bicdkqf8h8yan"

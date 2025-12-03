@@ -7,13 +7,14 @@
 radius = 8.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_l6aj4"]
-radius = 4.0
+radius = 3.0
 
 [node name="BaseEnemy" type="CharacterBody2D" node_paths=PackedStringArray("health_bar")]
 collision_layer = 2
 collision_mask = 12
 script = ExtResource("1_w51s3")
 health_bar = NodePath("HealthBar")
+separation_strength = 75.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_abcde")

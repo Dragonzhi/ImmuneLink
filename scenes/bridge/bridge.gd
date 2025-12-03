@@ -13,19 +13,55 @@ const AttackRangeIndicatorScene = preload("res://scripts/ui/AttackRangeIndicator
 
 @export var max_health: float = 100.0
 @export var repair_time: float = 3.0
-@export var attack_upgrade_damage: float = 5.0
-@export var attack_rate: float = 1.0 # Attacks per second
+
 @export_group("UI")
 @export var health_bar: ProgressBar
+@export_group("Upgrades")
+@export var available_upgrades: Array[Upgrade] = []
 
 var current_health: float
 var grid_manager: GridManager
 var grid_pos: Vector2i
 var is_destroyed: bool = false
+# 升级相关状态和数据，将由外部的 Upgrade 资源进行写入
 var is_attack_upgraded: bool = false
+var attack_upgrade_damage: float = 0.0
+var attack_rate: float = 1.0 # Default value, will be overwritten by upgrade
+
 var tile_animation_name: String
 var enemies_in_range: Array = []
 var _range_indicator # No type hint to avoid parse error
+
+# --- Public API ---
+
+## 获取当前可用的升级列表
+func get_available_upgrades() -> Array[Upgrade]:
+	var upgrades_to_return: Array[Upgrade] = []
+	# 如果桥梁还未进行攻击升级，则返回所有可用的升级
+	# 未来可以扩展更复杂的逻辑，例如多级或分支升级
+	if not is_attack_upgraded:
+		upgrades_to_return = available_upgrades
+	
+	return upgrades_to_return
+
+## 公共接口：尝试将一个升级应用到此桥梁
+func attempt_upgrade(upgrade: Upgrade):
+	# 未来可以在此添加各种检查，例如金钱是否足够、前置条件是否满足等
+	# 目前，我们直接应用它
+	if upgrade:
+		upgrade.apply(self)
+
+# 这个新方法由外部的 Upgrade 资源调用，用来激活桥梁自身的攻击模式
+func activate_attack_mode():
+	up_level_sprite.visible = true
+	up_level_sprite.frame = 5
+	hit_area.monitorable = true
+	hit_area.monitoring = true
+	reload_timer.wait_time = 1.0 / attack_rate
+	reload_timer.start()
+	print("桥段 %s 攻击模式已激活！" % grid_pos)
+
+# --- Godot Lifecycle & Internal Methods ---
 
 func _ready() -> void:
 	current_health = max_health
@@ -37,7 +73,7 @@ func _ready() -> void:
 	repair_timer.wait_time = repair_time
 	repair_timer.timeout.connect(repair)
 	
-	reload_timer.wait_time = 1.0 / attack_rate
+	# 注意：攻击相关的计时器设置已移至 activate_attack_mode()
 	reload_timer.timeout.connect(_on_reload_timer_timeout)
 	
 	hit_area.area_entered.connect(_on_hit_area_area_entered)
@@ -105,7 +141,7 @@ func take_damage(amount: float):
 		current_health = 0
 		is_destroyed = true
 		health_bar.hide() # 桥梁摧毁时隐藏血条
-		GameCamera.shake(2, 0.3) # 触发相机震动
+		GameCamera.shake(15, 0.3) # 触发相机震动
 		animated_sprite.modulate = Color(0.4, 0.4, 0.4)
 		animated_sprite.stop()
 		reload_timer.stop()
@@ -126,19 +162,14 @@ func repair():
 	animated_sprite.modulate = Color.WHITE
 	animated_sprite.animation = tile_animation_name
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count(tile_animation_name) - 1
+	
+	# 检查此桥梁在被摧毁前是否已升级，如果是，则重新应用升级
 	if is_attack_upgraded:
-		apply_attack_upgrade()
+		var attack_upgrade = load("res://scripts/upgrades/attack_upgrade_level_1.tres")
+		if attack_upgrade:
+			attack_upgrade.apply(self)
+			
 	health_bar.update_health(current_health) # 调用血条场景的更新方法
-
-func apply_attack_upgrade():
-	if is_attack_upgraded: return
-	is_attack_upgraded = true
-	up_level_sprite.visible = true
-	up_level_sprite.frame = 5
-	hit_area.monitorable = true
-	hit_area.monitoring = true
-	reload_timer.start()
-	print("桥段 %s 应用了攻击升级！" % grid_pos)
 
 func select():
 	if not is_attack_upgraded: return
@@ -188,6 +219,7 @@ func _on_hurt_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: 
 			GameManager.select_turret(self)
 
 		get_viewport().set_input_as_handled()
+
 
 func _on_hurt_area_2d_mouse_entered() -> void:
 	if not is_destroyed and repair_timer.is_stopped():

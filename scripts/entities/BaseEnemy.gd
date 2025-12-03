@@ -218,6 +218,10 @@ func take_damage(amount: float):
 func start_death_sequence():
 	if is_dying: return
 	is_dying = true
+	
+	# 播放死亡特效
+	#VFXManager.play_effect("enemy_death", global_position)
+	
 	attack_timer.stop() # 死亡时停止攻击
 	
 	if is_instance_valid(health_bar):
