@@ -15,6 +15,8 @@ enum State { MOVING, ATTACKING }
 @export var sine_amplitude: float = 20.0 # 摆动幅度
 @export_group("Path Switching")
 @export var check_path_on_loop_only: bool = true # 是否仅在循环回到起点时才检查路径切换
+@export_group("UI")
+@export var health_bar: ProgressBar
 
 var current_hp: float
 var current_state: State = State.MOVING
@@ -28,17 +30,15 @@ var path_node: Path2D
 var distance_along_path: float = 0.0
 
 signal path_finished(enemy: BaseEnemy)
-
 @onready var sprite: Sprite2D = $Sprite2D
-@onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar
 @onready var attack_timer: Timer = $AttackTimer
 # PathCheckTimer is now removed, logic is handled in _physics_process
 
 func _ready() -> void:
 	current_hp = max_hp
-	_update_health_bar()
+	# 初始化血条，传递当前生命值和最大生命值，并且不播放动画
+	health_bar.update_health(current_hp, max_hp, false)
 	_play_spawn_animation()
-	
 	# 设置攻击计时器
 	attack_timer.one_shot = false
 	attack_timer.wait_time = 1.0 / attack_rate
@@ -175,7 +175,7 @@ func take_damage(amount: float):
 	if is_dying: return
 
 	current_hp -= amount
-	_update_health_bar()
+	health_bar.update_health(current_hp) # 调用血条场景的更新方法
 	
 	var hit_effect = HitEffectScene.instantiate()
 	get_tree().get_root().get_node("Main/Foreground/Particles").add_child(hit_effect)
@@ -202,16 +202,6 @@ func start_death_sequence():
 	tween.tween_property(self, "scale", Vector2.ZERO, 0.5)
 	tween.tween_property(self, "rotation_degrees", rotation_degrees + 360, 0.5)
 	tween.finished.connect(queue_free)
-
-func _update_health_bar() -> void:
-	if not is_instance_valid(health_bar):
-		return
-	var health_percent = (current_hp / max_hp) * 100.0
-	health_bar.value = health_percent
-	if current_hp < max_hp:
-		health_bar.show()
-	else:
-		health_bar.hide()
 
 func _play_spawn_animation():
 	scale = Vector2.ZERO

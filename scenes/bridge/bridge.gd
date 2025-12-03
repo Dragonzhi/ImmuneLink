@@ -10,12 +10,13 @@ const AttackRangeIndicatorScene = preload("res://scripts/ui/AttackRangeIndicator
 @onready var up_level_sprite: Sprite2D = $UpLevelSprite2D
 @onready var hit_area: Area2D = $HitArea2D
 @onready var blocking_shape: CollisionShape2D = $BlockingShape
-@onready var health_bar: ProgressBar = $HealthBarContainer/HealthBar # 血条
 
 @export var max_health: float = 100.0
 @export var repair_time: float = 3.0
 @export var attack_upgrade_damage: float = 5.0
 @export var attack_rate: float = 1.0 # Attacks per second
+@export_group("UI")
+@export var health_bar: ProgressBar
 
 var current_health: float
 var grid_manager: GridManager
@@ -30,9 +31,8 @@ func _ready() -> void:
 	current_health = max_health
 	grid_manager = get_node("/root/Main/GridManager")
 	
-	# 初始化血条
-	health_bar.max_value = max_health
-	health_bar.value = current_health
+	# 初始化血条，传递当前生命值和最大生命值
+	health_bar.update_health(current_health, max_health)
 	
 	repair_timer.wait_time = repair_time
 	repair_timer.timeout.connect(repair)
@@ -51,8 +51,6 @@ func _ready() -> void:
 	_range_indicator = AttackRangeIndicatorScene.new()
 	add_child(_range_indicator)
 	_range_indicator.hide()
-	
-	_update_health_bar()
 
 func setup_segment(grid_pos: Vector2i):
 	self.grid_pos = grid_pos
@@ -102,7 +100,7 @@ func setup_bridge_tile(neighbors: Dictionary):
 func take_damage(amount: float):
 	if is_destroyed: return
 	current_health -= amount
-	_update_health_bar()
+	health_bar.update_health(current_health) # 调用血条场景的更新方法
 	if current_health <= 0:
 		current_health = 0
 		is_destroyed = true
@@ -117,7 +115,6 @@ func take_damage(amount: float):
 		print("Bridge at %s destroyed. Reporting to GridManager." % grid_pos)
 		grid_manager.set_bridge_status(grid_pos, true)
 		print("桥段 %s 已被摧毁！" % grid_pos)
-		health_bar.visible = false
 
 func repair():
 	is_destroyed = false
@@ -129,12 +126,7 @@ func repair():
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count(tile_animation_name) - 1
 	if is_attack_upgraded:
 		apply_attack_upgrade()
-	_update_health_bar()
-
-func _update_health_bar():
-	# 更新血条值，并根据生命值是否已满决定是否显示
-	health_bar.value = current_health
-	health_bar.visible = current_health < max_health
+	health_bar.update_health(current_health) # 调用血条场景的更新方法
 
 func apply_attack_upgrade():
 	if is_attack_upgraded: return

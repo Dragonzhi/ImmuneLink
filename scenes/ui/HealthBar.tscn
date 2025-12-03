@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://b5w5j3y5w5j3y"]
+
+[ext_resource type="Script" path="res://scenes/ui/HealthBar.gd" id="1_abcde"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yh2x3"]
+bg_color = Color(0.95686275, 0, 0, 1)
+
+[node name="HealthBar" type="ProgressBar"]
+z_index = 50
+z_as_relative = false
+offset_right = 56.0
+offset_bottom = 8.0
+scale = Vector2(0.25, 0.25)
+theme_override_styles/fill = SubResource("StyleBoxFlat_yh2x3")
+show_percentage = false
+script = ExtResource("1_abcde")

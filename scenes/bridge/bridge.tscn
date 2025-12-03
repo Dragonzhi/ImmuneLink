@@ -1,9 +1,10 @@
-[gd_scene load_steps=40 format=3 uid="uid://de0pjmcrfoc5m"]
+[gd_scene load_steps=41 format=3 uid="uid://de0pjmcrfoc5m"]
 
 [ext_resource type="Script" uid="uid://nq74hij6o8fv" path="res://scenes/bridge/bridge.gd" id="1_c301t"]
 [ext_resource type="Texture2D" uid="uid://bkwnyigbpfhsu" path="res://assets/bridge/upLevel/uplevel_sheet.png" id="2_jnwta"]
 [ext_resource type="Texture2D" uid="uid://d35j2wd643idj" path="res://assets/bridge/bridge-sheet.png" id="2_ll4hc"]
 [ext_resource type="Texture2D" uid="uid://cc64e7rt4tt6v" path="res://assets/bridge/bridge_sheet.png" id="3_v3gq5"]
+[ext_resource type="PackedScene" uid="uid://b5w5j3y5w5j3y" path="res://scenes/ui/HealthBar.tscn" id="4_xxxxx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jnwta"]
 size = Vector2(14, 14)
@@ -249,16 +250,17 @@ animations = [{
 [sub_resource type="AtlasTexture" id="AtlasTexture_b42ll"]
 atlas = ExtResource("2_jnwta")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yh2x3"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_greend"]
 bg_color = Color(0, 0.956863, 0.0941176, 1)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bqf5l"]
 radius = 100.0
 
-[node name="Bridge" type="StaticBody2D" groups=["bridges"]]
+[node name="Bridge" type="StaticBody2D" node_paths=PackedStringArray("health_bar") groups=["bridges"]]
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_c301t")
+health_bar = NodePath("HealthBar")
 
 [node name="BlockingShape" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_jnwta")
@@ -279,18 +281,12 @@ hframes = 10
 vframes = 10
 frame = 5
 
-[node name="HealthBarContainer" type="Node2D" parent="."]
-
-[node name="HealthBar" type="ProgressBar" parent="HealthBarContainer"]
-z_index = 50
-z_as_relative = false
+[node name="HealthBar" parent="." instance=ExtResource("4_xxxxx")]
 offset_left = -7.0
 offset_top = -11.0
 offset_right = 49.0
 offset_bottom = -3.0
-scale = Vector2(0.25, 0.25)
-theme_override_styles/fill = SubResource("StyleBoxFlat_yh2x3")
-show_percentage = false
+theme_override_styles/fill = SubResource("StyleBoxFlat_greend")
 
 [node name="HurtArea2D" type="Area2D" parent="."]
 collision_layer = 16
@@ -303,6 +299,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea2D"]
+position = Vector2(-42, -10)
 shape = SubResource("CircleShape2D_bqf5l")
 debug_color = Color(0.44497895, 0.5837057, 0.37361607, 0.41960785)
 
