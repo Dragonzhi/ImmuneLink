@@ -19,10 +19,7 @@ func apply(target: Node) -> void:
 	bridge.attack_rate = attack_rate
 	
 	# 2. 调用桥梁自己的方法来更新其内部状态和视觉效果
-	#    这比从这里直接操作桥的子节点要更清晰、更解耦
-	if bridge.has_method("activate_attack_mode"):
-		bridge.activate_attack_mode()
-	else:
-		push_error("Target bridge does not have 'activate_attack_mode' method.")
+	bridge.apply_visual_upgrade(self)
+	bridge.activate_attack_mode()
 
 	print("攻击升级已应用到桥段 %s" % bridge.grid_pos)

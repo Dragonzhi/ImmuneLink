@@ -1,11 +1,11 @@
-[gd_scene load_steps=43 format=3 uid="uid://de0pjmcrfoc5m"]
+[gd_scene load_steps=42 format=3 uid="uid://de0pjmcrfoc5m"]
 
 [ext_resource type="Script" uid="uid://nq74hij6o8fv" path="res://scenes/bridge/bridge.gd" id="1_c301t"]
-[ext_resource type="Texture2D" uid="uid://bkwnyigbpfhsu" path="res://assets/bridge/upLevel/uplevel_sheet.png" id="2_jnwta"]
 [ext_resource type="Texture2D" uid="uid://d35j2wd643idj" path="res://assets/bridge/bridge-sheet.png" id="2_ll4hc"]
 [ext_resource type="Script" uid="uid://cw5ggjrjjcikj" path="res://scripts/upgrades/Upgrade.gd" id="2_xo3fo"]
 [ext_resource type="Texture2D" uid="uid://cc64e7rt4tt6v" path="res://assets/bridge/bridge_sheet.png" id="3_v3gq5"]
 [ext_resource type="Resource" uid="uid://jhfi5kv16pws" path="res://scripts/upgrades/resourses/attack_upgrade_level_1.tres" id="3_xr3tc"]
+[ext_resource type="Resource" uid="uid://ks18yvku3dvg" path="res://scripts/upgrades/resourses/defense_upgrade_level_1.tres" id="4_xo3fo"]
 [ext_resource type="PackedScene" uid="uid://b5w5j3y5w5j3y" path="res://scenes/ui/HealthBar.tscn" id="4_xxxxx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jnwta"]
@@ -249,9 +249,6 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_b42ll"]
-atlas = ExtResource("2_jnwta")
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_greend"]
 bg_color = Color(0, 0.956863, 0.0941176, 1)
 
@@ -263,7 +260,7 @@ collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_c301t")
 health_bar = NodePath("HealthBar")
-available_upgrades = Array[ExtResource("2_xo3fo")]([ExtResource("3_xr3tc")])
+available_upgrades = Array[ExtResource("2_xo3fo")]([ExtResource("3_xr3tc"), ExtResource("4_xo3fo")])
 
 [node name="BlockingShape" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_jnwta")
@@ -278,11 +275,7 @@ frame_progress = 1.0
 
 [node name="UpLevelSprite2D" type="Sprite2D" parent="."]
 position = Vector2(9.536743e-07, 0)
-scale = Vector2(0.1, 0.1)
-texture = SubResource("AtlasTexture_b42ll")
-hframes = 10
-vframes = 10
-frame = 5
+scale = Vector2(0.5, 0.5)
 
 [node name="HealthBar" parent="." instance=ExtResource("4_xxxxx")]
 offset_left = -7.0

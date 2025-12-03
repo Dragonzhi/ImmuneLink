@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DefenseUpgrade" load_steps=3 format=3 uid="uid://ks18yvku3dvg"]
+
+[ext_resource type="Script" uid="uid://dmfq4u2dyqho1" path="res://scripts/upgrades/DefenseUpgrade.gd" id="1_4yncp"]
+[ext_resource type="Texture2D" uid="uid://cno6r12a2gge3" path="res://assets/bridge/upLevel/icon/defense_1.png" id="1_cb4io"]
+
+[resource]
+script = ExtResource("1_4yncp")
+upgrade_name = "纳米装甲"
+description = "Defense_1"
+cost = 30
+icon = ExtResource("1_cb4io")

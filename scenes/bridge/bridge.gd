@@ -23,10 +23,11 @@ var current_health: float
 var grid_manager: GridManager
 var grid_pos: Vector2i
 var is_destroyed: bool = false
-# 升级相关状态和数据，将由外部的 Upgrade 资源进行写入
+# --- 升级相关状态和数据 ---
 var is_attack_upgraded: bool = false
 var attack_upgrade_damage: float = 0.0
-var attack_rate: float = 1.0 # Default value, will be overwritten by upgrade
+var attack_rate: float = 1.0
+var health_regen: float = 0.0 # 新增：每秒生命恢复值
 
 var tile_animation_name: String
 var enemies_in_range: Array = []
@@ -37,24 +38,31 @@ var _range_indicator # No type hint to avoid parse error
 ## 获取当前可用的升级列表
 func get_available_upgrades() -> Array[Upgrade]:
 	var upgrades_to_return: Array[Upgrade] = []
-	# 如果桥梁还未进行攻击升级，则返回所有可用的升级
-	# 未来可以扩展更复杂的逻辑，例如多级或分支升级
-	if not is_attack_upgraded:
+	# 示例逻辑：如果还未升级过攻击，则允许所有升级
+	if not is_attack_upgraded: # 这里的逻辑可以根据您的设计调整
 		upgrades_to_return = available_upgrades
-	
 	return upgrades_to_return
 
 ## 公共接口：尝试将一个升级应用到此桥梁
 func attempt_upgrade(upgrade: Upgrade):
-	# 未来可以在此添加各种检查，例如金钱是否足够、前置条件是否满足等
-	# 目前，我们直接应用它
 	if upgrade:
 		upgrade.apply(self)
 
-# 这个新方法由外部的 Upgrade 资源调用，用来激活桥梁自身的攻击模式
+# 由 Upgrade 资源调用，用来更新视觉表现
+func apply_visual_upgrade(upgrade: Upgrade):
+	if upgrade.icon:
+		up_level_sprite.texture = upgrade.icon
+		up_level_sprite.visible = true
+		#animated_sprite.visible = false # 隐藏原动画
+	else:
+		# 如果升级没有图标，则使用旧的视觉表现
+		up_level_sprite.texture = null # 清除之前的图标
+		up_level_sprite.frame = 0
+		up_level_sprite.visible = true
+
+
+# 由 AttackUpgrade 资源调用，用来激活桥梁自身的攻击模式
 func activate_attack_mode():
-	up_level_sprite.visible = true
-	up_level_sprite.frame = 5
 	hit_area.monitorable = true
 	hit_area.monitoring = true
 	reload_timer.wait_time = 1.0 / attack_rate
@@ -67,13 +75,11 @@ func _ready() -> void:
 	current_health = max_health
 	grid_manager = get_node("/root/Main/GridManager")
 	
-	# 初始化血条，传递当前生命值和最大生命值
-	health_bar.update_health(current_health, max_health)
+	health_bar.update_health(current_health, max_health, false)
 	
 	repair_timer.wait_time = repair_time
 	repair_timer.timeout.connect(repair)
 	
-	# 注意：攻击相关的计时器设置已移至 activate_attack_mode()
 	reload_timer.timeout.connect(_on_reload_timer_timeout)
 	
 	hit_area.area_entered.connect(_on_hit_area_area_entered)
@@ -83,10 +89,16 @@ func _ready() -> void:
 	hit_area.monitorable = false
 	hit_area.monitoring = false
 
-	# Create and setup the range indicator
 	_range_indicator = AttackRangeIndicatorScene.new()
 	add_child(_range_indicator)
 	_range_indicator.hide()
+
+func _physics_process(delta: float) -> void:
+	# 处理生命恢复
+	if health_regen > 0 and not is_destroyed and current_health < max_health:
+		current_health += health_regen * delta
+		current_health = min(current_health, max_health)
+		health_bar.update_health(current_health)
 
 func setup_segment(grid_pos: Vector2i):
 	self.grid_pos = grid_pos
@@ -141,15 +153,19 @@ func take_damage(amount: float):
 		current_health = 0
 		is_destroyed = true
 		health_bar.hide() # 桥梁摧毁时隐藏血条
-		GameCamera.shake(15, 0.3) # 触发相机震动
+		GameCamera.shake(2, 0.3) # 触发相机震动
+		animated_sprite.visible = true # 确保摧毁时，原始动画精灵可见
 		animated_sprite.modulate = Color(0.4, 0.4, 0.4)
 		animated_sprite.stop()
 		reload_timer.stop()
 		blocking_shape.disabled = true
+		
+		# 隐藏所有升级相关的视觉效果
+		up_level_sprite.visible = false
 		if is_attack_upgraded:
-			up_level_sprite.visible = false
 			hit_area.monitorable = false
 			hit_area.monitoring = false
+
 		print("Bridge at %s destroyed. Reporting to GridManager." % grid_pos)
 		grid_manager.set_bridge_status(grid_pos, true)
 		print("桥段 %s 已被摧毁！" % grid_pos)
@@ -159,9 +175,13 @@ func repair():
 	current_health = max_health
 	blocking_shape.disabled = false
 	grid_manager.set_bridge_status(grid_pos, false)
+	
+	# 恢复视觉
+	animated_sprite.visible = true
 	animated_sprite.modulate = Color.WHITE
 	animated_sprite.animation = tile_animation_name
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count(tile_animation_name) - 1
+	up_level_sprite.visible = false
 	
 	# 检查此桥梁在被摧毁前是否已升级，如果是，则重新应用升级
 	if is_attack_upgraded:
@@ -169,9 +189,10 @@ func repair():
 		if attack_upgrade:
 			attack_upgrade.apply(self)
 			
-	health_bar.update_health(current_health) # 调用血条场景的更新方法
+	health_bar.update_health(current_health, max_health, false)
 
 func select():
+	# 只有攻击升级后才有攻击范围指示
 	if not is_attack_upgraded: return
 	
 	var collision_shape = hit_area.get_node_or_null("CollisionShape2D")
