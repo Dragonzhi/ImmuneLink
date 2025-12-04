@@ -6,7 +6,7 @@ var _connections: Dictionary = {}
 var _grid_manager: GridManager
 
 func _ready() -> void:
-	_grid_manager = get_node("/root/Main/GridManager")
+	_grid_manager = get_node("/root/GridManager")
 	if not _grid_manager:
 		printerr("ConnectionManager: GridManager not found!")
 

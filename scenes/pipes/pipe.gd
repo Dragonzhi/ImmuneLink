@@ -32,7 +32,7 @@ var is_pipe_used: bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# 获取单例引用
-	grid_manager = get_node("/root/Main/GridManager")
+	grid_manager = get_node("/root/GridManager")
 	bridge_builder = get_node("/root/Main/BridgeBuilder")
 	if not grid_manager:
 		printerr("错误: 找不到GridManager")

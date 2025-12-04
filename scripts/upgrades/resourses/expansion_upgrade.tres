@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ExpansionUpgrade" load_steps=3 format=3 uid="uid://8um4q2h0i84s"]
+
+[ext_resource type="Script" uid="uid://curn4433e5rnd" path="res://scripts/upgrades/ExpansionUpgrade.gd" id="1_gvf52"]
+[ext_resource type="Texture2D" uid="uid://bcf8vkh53ltaa" path="res://assets/bridge/upLevel/icon/expansion.png" id="1_kdoyb"]
+
+[resource]
+script = ExtResource("1_gvf52")
+upgrade_name = "桥梁扩展"
+description = "从此桥梁段延伸出新的连接。"
+icon = ExtResource("1_kdoyb")
+metadata/_custom_type_script = "uid://curn4433e5rnd"

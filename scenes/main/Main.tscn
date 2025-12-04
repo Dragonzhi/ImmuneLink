@@ -1,9 +1,8 @@
-[gd_scene load_steps=19 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=18 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="Script" path="res://scripts/managers/WaveManager.gd" id="1_rikml"]
 [ext_resource type="Script" uid="uid://bro8olv1xvfkn" path="res://scripts/managers/GameManager.gd" id="1_tck0d"]
-[ext_resource type="PackedScene" uid="uid://h6j8i84x74hj" path="res://scenes/others/GridManager.tscn" id="2_q24mn"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_vc03v"]
 [ext_resource type="Resource" uid="uid://bktbxy4finrku" path="res://scripts/managers/waves/wave_01.tres" id="3_grv7h"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="3_u1xfj"]
@@ -62,12 +61,6 @@ script = ExtResource("7_tck0d")
 position = Vector2(192, 108)
 shape = SubResource("RectangleShape2D_u8lgh")
 debug_color = Color(5.2943824e-07, 0.23340449, 0.27829906, 0.41960785)
-
-[node name="GridManager" parent="." instance=ExtResource("2_q24mn")]
-modulate = Color(1, 1, 1, 0.5882353)
-grid_size = 16
-grid_width = 50
-grid_height = 50
 
 [node name="BackGround" type="Node2D" parent="."]
 z_index = -100

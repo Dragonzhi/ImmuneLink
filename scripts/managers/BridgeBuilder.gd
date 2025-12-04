@@ -1,12 +1,13 @@
 extends Node2D
-class_name BridgeBuilder
-
-const BridgeScene = preload("res://scenes/bridge/bridge.tscn")
+class_name  BridgeBuilder
+#const BridgeScene = preload("res://scenes/bridge/bridge.tscn")
+const BridgeScene = preload("uid://de0pjmcrfoc5m")
 
 # --- Exports ---
 @export var build_delay: float = 0.05
 @export var bridges_container: Node2D
 @export var bridge_segment_cost: int = 10
+@export var secondary_bridge_color: Color = Color(0.7, 0.7, 1.0) # 扩展桥梁的颜色
 
 # --- OnReady Vars ---
 @onready var preview_line: Line2D = $PreviewLine
@@ -20,7 +21,9 @@ var ui_manager: Node
 
 # --- Build State ---
 var build_mode: bool = false
+var _is_building_secondary: bool = false # 新增：是否在建造扩展线路
 var start_pipe: Pipe = null
+var start_bridge: Bridge = null # 新增：用于记录起始桥梁
 var start_pos: Vector2i
 var start_direction: Vector2i
 var current_path: Array[Vector2i] = []
@@ -33,7 +36,7 @@ var back_build_index: int = 0
 
 
 func _ready() -> void:
-	grid_manager = get_node("/root/Main/GridManager")
+	grid_manager = GridManager
 	connection_manager = ConnectionManager
 	ui_manager = get_node("/root/Main/UIManager")
 	
@@ -87,8 +90,16 @@ func _handle_mouse_motion(event: InputEventMouseMotion):
 
 func _handle_left_mouse_release(event: InputEventMouseButton):
 	var grid_pos = grid_manager.world_to_grid(event.position)
+	print("--- BUILDER_LOOKUP ---")
+	print("Looking for grid_pos: ", grid_pos)
+	print("Full grid content: ", grid_manager.get_occupied_cells_debug())
 	var target_node = grid_manager.get_grid_object(grid_pos)
-	if target_node is Pipe and target_node != start_pipe:
+	print("Found node: ", target_node)
+
+	var is_valid_pipe_target = (start_pipe and target_node is Pipe and target_node != start_pipe)
+	var is_valid_bridge_target = (start_bridge and target_node is Bridge and target_node != start_bridge and target_node.current_bridge_state == Bridge.State.EXPANSION_WAITING)
+
+	if is_valid_pipe_target or is_valid_bridge_target:
 		_finish_building(target_node, grid_pos)
 	else:
 		_cancel_building()
@@ -119,7 +130,9 @@ func _interpolate_path_cardinal(start: Vector2i, end: Vector2i):
 func start_building(pipe: Pipe, pos: Vector2i, direction: Vector2i):
 	if build_mode: return
 	build_mode = true
+	_is_building_secondary = false # 明确这是在建造主线路
 	start_pipe = pipe
+	start_bridge = null
 	start_pos = pos
 	start_direction = direction
 	current_path = [pos]
@@ -129,63 +142,125 @@ func start_building(pipe: Pipe, pos: Vector2i, direction: Vector2i):
 	grid_manager.show_grid()
 	Input.set_default_cursor_shape(Input.CURSOR_CROSS)
 
-func _finish_building(end_pipe: Pipe, end_pos: Vector2i):
+## 从一个已升级的桥梁开始建造
+func start_building_from_bridge(bridge: Bridge):
+	if build_mode: return
+	
+	build_mode = true
+	_is_building_secondary = true # 明确这是在建造扩展线路
+	start_bridge = bridge
+	start_pipe = null # 确保我们知道是从桥梁开始的
+	start_pos = bridge.grid_pos
+	# The start_direction will be determined by the user's drawing action.
+	start_direction = Vector2i.ZERO 
+	
+	current_path = [start_pos]
+	preview_line.visible = true
+	cost_label.show()
+	_update_cost_label()
+	grid_manager.show_grid()
+	Input.set_default_cursor_shape(Input.CURSOR_CROSS)
+
+func _finish_building(end_node: Node, end_pos: Vector2i):
 	if not current_path.has(end_pos): _add_point_to_path(end_pos)
 	
-	# 检查路径和管道类型
 	var path_to_check = current_path.slice(1, current_path.size() - 1)
-	if not grid_manager.is_grid_available(path_to_check) or start_pipe.pipe_type != end_pipe.pipe_type:
-		_cancel_building()
-		return
-		
-	# 检查资源成本
+	
+	# 检查资源成本（两种模式通用）
 	var total_cost = current_path.size() * bridge_segment_cost
 	if not GameManager.spend_resource_value(total_cost):
 		print("建造失败: 资源不足!")
-		# 在这里可以添加一个UI提示，比如在屏幕上显示"资源不足"
 		_cancel_building()
 		return
 	
-	# --- Setup for Sequential Build ---
-	path_to_check = current_path.slice(1, current_path.size() - 1)
+	# 根据不同的建造模式执行不同逻辑
+	if end_node is Pipe:
+		# --- 模式一: 管道 -> 管道 ---
+		var end_pipe = end_node as Pipe
+		if not grid_manager.is_grid_available(path_to_check) or start_pipe.pipe_type != end_pipe.pipe_type:
+			_cancel_building()
+			# 因为资源已扣除，需要返还
+			GameManager.add_resource_value(total_cost)
+			return
+		
+		# 设置用于序列化建造的路径和连接点信息
+		_setup_sequential_build(start_pipe.direction, end_pipe.direction)
+
+		print("DEBUG [BridgeBuilder]: 正在注册连接。 起点: %s, 终点: %s, 桥梁路径: %s" % [start_pipe.name, end_pipe.name, path_to_check])
+		connection_manager.add_connection(start_pipe, end_pipe, path_to_check.duplicate())
+		start_pipe.mark_pipe_as_used()
+		end_pipe.mark_pipe_as_used()
+		
+		_reset_build_mode(false)
+		build_timer.start()
+
+	elif end_node is Bridge:
+		# --- 模式二: 桥 -> 桥 ---
+		var end_bridge = end_node as Bridge
+
+		# 确保起始桥和目标桥都处于可扩展状态
+		if not (start_bridge and start_bridge.current_bridge_state == Bridge.State.EXPANSION_WAITING and end_bridge.current_bridge_state == Bridge.State.EXPANSION_WAITING):
+			_cancel_building()
+			GameManager.add_resource_value(total_cost) # 返还资源
+			print("建造失败: 扩展桥梁必须连接到另一个等待扩展的桥梁。")
+			return
+		
+		# 检查路径是否可用
+		if not grid_manager.is_grid_available(path_to_check):
+			_cancel_building()
+			GameManager.add_resource_value(total_cost) # 返还资源
+			return
+			
+		# 如果路径太短，无法确定方向，则取消
+		if current_path.size() < 2:
+			_cancel_building()
+			GameManager.add_resource_value(total_cost)
+			return
+			
+		# 动态计算起始和结束方向
+		var dynamic_start_dir = current_path[1] - current_path[0]
+		var dynamic_end_dir = current_path[current_path.size() - 2] - current_path.back()
+		
+		# 设置建造参数
+		_setup_sequential_build(dynamic_start_dir, dynamic_end_dir)
+
+		# 通知起始和终点桥梁完成扩展状态
+		if start_bridge.has_method("complete_expansion"):
+			start_bridge.complete_expansion()
+		if end_bridge.has_method("complete_expansion"):
+			end_bridge.complete_expansion()
+		
+		_reset_build_mode(false)
+		build_timer.start()
+		
+func _setup_sequential_build(p_start_direction: Vector2i, p_end_direction: Vector2i):
 	sequential_build_path = current_path
 	path_connection_set.clear()
 	for pos in sequential_build_path: path_connection_set[pos] = true
 	
 	if sequential_build_path.size() >= 2:
-		# Use the stored direction from the start_pipe
-		path_connection_set[sequential_build_path[0] + start_direction] = true
-		# Use the direction from the end_pipe directly
-		path_connection_set[sequential_build_path.back() + end_pipe.direction] = true
-	elif sequential_build_path.size() == 1 and start_pipe and end_pipe and start_pos == end_pos:
-		# This case should ideally not result in a build, but as a fallback:
-		path_connection_set[start_pos + start_direction] = true
-		path_connection_set[end_pos + end_pipe.direction] = true
-	elif sequential_build_path.size() >= 1: # For single-segment bridges between adjacent pipes
-		path_connection_set[start_pos + start_direction] = true
-		if end_pipe:
-			path_connection_set[end_pos + end_pipe.direction] = true
+		# The direction should be from the existing node TOWARDS the new path.
+		path_connection_set[sequential_build_path[0] + p_start_direction] = true
+		path_connection_set[sequential_build_path.back() + p_end_direction] = true
+	elif sequential_build_path.size() >= 1:
+		path_connection_set[start_pos + p_start_direction] = true
+		if p_end_direction:
+			path_connection_set[sequential_build_path.back() + p_end_direction] = true
 
 	front_build_index = 0
 	back_build_index = sequential_build_path.size() - 1
 	
-	print("DEBUG [BridgeBuilder]: 正在注册连接。 起点: %s, 终点: %s, 桥梁路径: %s" % [start_pipe.name, end_pipe.name, path_to_check])
-	connection_manager.add_connection(start_pipe, end_pipe, path_to_check.duplicate())
-	start_pipe.mark_pipe_as_used()
-	end_pipe.mark_pipe_as_used()
 	
-	_reset_build_mode(false)
-	build_timer.start()
 
 func _on_BuildTimer_timeout():
 	var build_finished = false
 	if front_build_index <= back_build_index:
-		_create_single_bridge_segment(sequential_build_path[front_build_index])
+		_create_single_bridge_segment(sequential_build_path[front_build_index], _is_building_secondary)
 		front_build_index += 1
 	
 	if front_build_index -1 != back_build_index:
 		if back_build_index >= front_build_index:
-			_create_single_bridge_segment(sequential_build_path[back_build_index])
+			_create_single_bridge_segment(sequential_build_path[back_build_index], _is_building_secondary)
 			back_build_index -= 1
 	
 	if front_build_index > back_build_index:
@@ -197,7 +272,7 @@ func _on_BuildTimer_timeout():
 		path_connection_set.clear()
 		print("--- 桥梁建造完毕 ---")
 
-func _create_single_bridge_segment(grid_pos: Vector2i):
+func _create_single_bridge_segment(grid_pos: Vector2i, is_secondary_bridge: bool):
 	var neighbors = {
 		"north": path_connection_set.has(grid_pos + Vector2i.UP),
 		"south": path_connection_set.has(grid_pos + Vector2i.DOWN),
@@ -205,9 +280,13 @@ func _create_single_bridge_segment(grid_pos: Vector2i):
 		"west": path_connection_set.has(grid_pos + Vector2i.LEFT)
 	}
 	
-	var bridge_segment = BridgeScene.instantiate()
+	var bridge_segment = BridgeScene.instantiate() as Bridge
 	bridges_container.add_child(bridge_segment)
 	bridge_segment.global_position = grid_manager.grid_to_world(grid_pos)
+	
+	bridge_segment.is_secondary = is_secondary_bridge
+	if is_secondary_bridge:
+		bridge_segment.modulate = secondary_bridge_color
 	
 	# The bridge selection is now handled by GameManager directly.
 	# bridge_segment.bridge_selected.connect(ui_manager._on_bridge_selected) // This line is now obsolete

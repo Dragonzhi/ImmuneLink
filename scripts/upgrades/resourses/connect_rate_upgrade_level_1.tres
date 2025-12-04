@@ -5,7 +5,7 @@
 
 [resource]
 script = ExtResource("1_b3rvy")
-upgrade_name = "动力泵x1.25"
+upgrade_name = "动力泵"
 description = "加速资源获取"
 cost = 15
 icon = ExtResource("1_lsauh")

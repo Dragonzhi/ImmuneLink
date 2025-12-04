@@ -4,3 +4,4 @@
 
 [node name="GameManager" type="Node"]
 script = ExtResource("1_8jiv4")
+initial_resources = 400.0

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://ywaeu7t2cr7g" path="res://assets/cells/enemies/EBV.png" id="2_4xn4g"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4xn4g"]
-radius = 5.0
+radius = 4.0
 
 [node name="VirusEnemy" instance=ExtResource("1_a5nqt")]
 max_hp = 15.0
@@ -12,7 +12,7 @@ move_speed = 30.0
 damage = 5.0
 attack_rate = 2.0
 
-[node name="Sprite2D" parent="." index="1"]
+[node name="Sprite2D" parent="." index="0"]
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_4xn4g")
 

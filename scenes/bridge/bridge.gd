@@ -4,6 +4,12 @@ class_name Bridge
 const CalmingShotScene = preload("res://scenes/projectiles/CalmingShot.tscn")
 const AttackRangeIndicatorScene = preload("res://scripts/ui/AttackRangeIndicator.gd")
 
+# --- 预加载升级脚本以进行可靠的类型检查 ---
+const AttackUpgradeScript = preload("res://scripts/upgrades/AttackUpgrade.gd")
+const DefenseUpgradeScript = preload("res://scripts/upgrades/DefenseUpgrade.gd")
+const ConnectionRateUpgradeScript = preload("res://scripts/upgrades/ConnectionRateUpgrade.gd")
+const ExpansionUpgradeScript = preload("res://scripts/upgrades/ExpansionUpgrade.gd")
+
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var repair_timer: Timer = $RepairTimer
 @onready var reload_timer: Timer = $ReloadTimer
@@ -18,42 +24,121 @@ const AttackRangeIndicatorScene = preload("res://scripts/ui/AttackRangeIndicator
 @export var health_bar: ProgressBar
 @export_group("Upgrades")
 @export var available_upgrades: Array[Upgrade] = []
+@export var is_secondary: bool = false # 是否为扩展出来的桥梁
+
+var bridge_builder_instance:BridgeBuilder = null
+
+# --- 状态机 ---
+enum State { NORMAL, DESTROYED, EXPANSION_WAITING }
+var current_bridge_state: State = State.NORMAL
+var _pending_expansion_upgrade: Upgrade = null # 暂存待处理的扩展升级资源
 
 var current_health: float
 var grid_manager: GridManager
 var grid_pos: Vector2i
-var is_destroyed: bool = false
+var is_destroyed: bool = false 
 # --- 升级相关状态和数据 ---
 var is_attack_upgraded: bool = false
 var attack_upgrade_damage: float = 0.0
 var attack_rate: float = 1.0
-var health_regen: float = 0.0 # 新增：每秒生命恢复值
+var health_regen: float = 0.0 
 
 var tile_animation_name: String
+var neighbors: Dictionary = {} # 存储邻居连接信息
 var enemies_in_range: Array = []
-var _range_indicator # No type hint to avoid parse error
+var _range_indicator 
 
 # --- Public API ---
+
+## 获取当前已连接的邻居数量
+func get_connection_count() -> int:
+	var count = 0
+	if neighbors.get("north", false): count += 1
+	if neighbors.get("south", false): count += 1
+	if neighbors.get("east", false): count += 1
+	if neighbors.get("west", false): count += 1
+	return count
+
+## 进入“等待扩展连接”状态
+func enter_expansion_waiting_state(upgrade_res: Upgrade):
+	if current_bridge_state != State.NORMAL: return
+	current_bridge_state = State.EXPANSION_WAITING
+	_pending_expansion_upgrade = upgrade_res
+	
+	if up_level_sprite.visible:
+		up_level_sprite.modulate = Color.PALE_VIOLET_RED
+	else:
+		animated_sprite.modulate = Color.PALE_VIOLET_RED
+	
+	if _range_indicator.visible:
+		deselect()
+	GameManager.deselect_all_turrets()
+	
+	print("Bridge at %s entered EXPANSION_WAITING state." % grid_pos)
+
+## 取消“等待扩展连接”状态，并返还资源
+func cancel_expansion():
+	if current_bridge_state != State.EXPANSION_WAITING: return
+	
+	current_bridge_state = State.NORMAL
+	
+	# 返还资源
+	if _pending_expansion_upgrade:
+		GameManager.add_resource_value(_pending_expansion_upgrade.cost)
+		_pending_expansion_upgrade = null
+	
+	# 恢复视觉
+	if up_level_sprite.visible:
+		up_level_sprite.modulate = Color.WHITE
+	else:
+		animated_sprite.modulate = Color.WHITE
+	
+	print("Bridge at %s cancelled EXPANSION_WAITING state." % grid_pos)
+
+## 在扩展连接成功后，完成并退出等待状态
+func complete_expansion():
+	if current_bridge_state != State.EXPANSION_WAITING: return
+	
+	current_bridge_state = State.NORMAL
+	_pending_expansion_upgrade = null
+	
+	# 恢复视觉
+	if up_level_sprite.visible:
+		up_level_sprite.modulate = Color.WHITE
+	else:
+		animated_sprite.modulate = Color.WHITE
+	
+	print("Bridge at %s completed EXPANSION." % grid_pos)
+
 
 ## 获取当前可用的升级列表
 func get_available_upgrades() -> Array[Upgrade]:
 	var upgrades_to_return: Array[Upgrade] = []
-	# 查询桥梁是否在一条激活的连接线路上
+	
+	# 只有在常规状态下才可升级
+	if current_bridge_state != State.NORMAL:
+		return upgrades_to_return
+		
 	var on_active_line = false
 	if ConnectionManager and ConnectionManager.has_method("is_bridge_on_active_line"):
 		on_active_line = ConnectionManager.is_bridge_on_active_line(self)
 
 	for upgrade_resource in available_upgrades:
-		if upgrade_resource is AttackUpgrade:
-			if not is_attack_upgraded: # 只有未进行攻击升级时才显示
+		var script = upgrade_resource.get_script()
+		if script == AttackUpgradeScript:
+			if not is_attack_upgraded: 
 				upgrades_to_return.append(upgrade_resource)
-		elif upgrade_resource is DefenseUpgrade:
-			# 防御升级目前没有特殊条件，始终可升级（或根据需要添加条件）
+		elif script == DefenseUpgradeScript:
+			# 防御升级目前没有特殊条件，始终可升级
 			upgrades_to_return.append(upgrade_resource)
-		elif upgrade_resource is ConnectionRateUpgrade:
-			if on_active_line: # 只有在激活的线路上才显示“泵”升级
+		elif script == ConnectionRateUpgradeScript:
+			# 扩展桥梁（二级桥梁）不能进行速率升级
+			if on_active_line and not is_secondary:
 				upgrades_to_return.append(upgrade_resource)
-		# 可以在这里添加其他升级类型的条件
+		elif script == ExpansionUpgradeScript:
+			# 扩展桥梁不能再扩展，且连接数必须小于4
+			if not is_secondary and get_connection_count() < 4:
+				upgrades_to_return.append(upgrade_resource)
 	
 	return upgrades_to_return
 
@@ -67,10 +152,8 @@ func apply_visual_upgrade(upgrade: Upgrade):
 	if upgrade.icon:
 		up_level_sprite.texture = upgrade.icon
 		up_level_sprite.visible = true
-		#animated_sprite.visible = false # 隐藏原动画
 	else:
-		# 如果升级没有图标，则使用旧的视觉表现
-		up_level_sprite.texture = null # 清除之前的图标
+		up_level_sprite.texture = null 
 		up_level_sprite.frame = 0
 		up_level_sprite.visible = true
 
@@ -87,7 +170,7 @@ func activate_attack_mode():
 
 func _ready() -> void:
 	current_health = max_health
-	grid_manager = get_node("/root/Main/GridManager")
+	grid_manager = GridManager
 	
 	health_bar.update_health(current_health, max_health, false)
 	
@@ -106,21 +189,24 @@ func _ready() -> void:
 	_range_indicator = AttackRangeIndicatorScene.new()
 	add_child(_range_indicator)
 	_range_indicator.hide()
+	
+	bridge_builder_instance = get_tree().get_root().find_child("BridgeBuilder", true, false)
 
 func _physics_process(delta: float) -> void:
 	# 处理生命恢复
-	if health_regen > 0 and not is_destroyed and current_health < max_health:
+	if health_regen > 0 and current_bridge_state != State.DESTROYED and current_health < max_health:
 		current_health += health_regen * delta
 		current_health = min(current_health, max_health)
 		health_bar.update_health(current_health)
 
 func setup_segment(grid_pos: Vector2i):
 	self.grid_pos = grid_pos
-	if not grid_manager: grid_manager = get_node("/root/Main/GridManager")
+	if not grid_manager: grid_manager = GridManager
 	if grid_manager: grid_manager.set_grid_occupied(grid_pos, self)
 
 func setup_bridge_tile(neighbors: Dictionary):
-	# ... (auto-tiling logic remains the same)
+	self.neighbors = neighbors # 保存邻居信息
+	
 	var has_north = neighbors.get("north", false)
 	var has_south = neighbors.get("south", false)
 	var has_east = neighbors.get("east", false)
@@ -160,21 +246,22 @@ func setup_bridge_tile(neighbors: Dictionary):
 
 
 func take_damage(amount: float):
-	if is_destroyed: return
+	if current_bridge_state == State.DESTROYED: return
 	current_health -= amount
-	health_bar.update_health(current_health) # 调用血条场景的更新方法
+	health_bar.update_health(current_health) 
 	if current_health <= 0:
 		current_health = 0
 		is_destroyed = true
-		health_bar.hide() # 桥梁摧毁时隐藏血条
-		GameCamera.shake(2, 0.3) # 触发相机震动
-		animated_sprite.visible = true # 确保摧毁时，原始动画精灵可见
+		current_bridge_state = State.DESTROYED
+		
+		health_bar.hide() 
+		GameCamera.shake(1, 0.3) 
+		animated_sprite.visible = true 
 		animated_sprite.modulate = Color(0.4, 0.4, 0.4)
 		animated_sprite.stop()
 		reload_timer.stop()
 		blocking_shape.disabled = true
 		
-		# 隐藏所有升级相关的视觉效果
 		up_level_sprite.visible = false
 		if is_attack_upgraded:
 			hit_area.monitorable = false
@@ -186,18 +273,18 @@ func take_damage(amount: float):
 
 func repair():
 	is_destroyed = false
+	current_bridge_state = State.NORMAL
+	
 	current_health = max_health
 	blocking_shape.disabled = false
 	grid_manager.set_bridge_status(grid_pos, false)
 	
-	# 恢复视觉
 	animated_sprite.visible = true
 	animated_sprite.modulate = Color.WHITE
 	animated_sprite.animation = tile_animation_name
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count(tile_animation_name) - 1
 	up_level_sprite.visible = false
 	
-	# 检查此桥梁在被摧毁前是否已升级，如果是，则重新应用升级
 	if is_attack_upgraded:
 		var attack_upgrade = load("res://scripts/upgrades/attack_upgrade_level_1.tres")
 		if attack_upgrade:
@@ -244,23 +331,38 @@ func _on_hit_area_area_exited(area: Area2D):
 			enemies_in_range.erase(enemy)
 
 func _on_hurt_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
-		if is_destroyed and repair_timer.is_stopped():
-			animated_sprite.modulate = Color(0.2, 0.5, 1.0)
-			animated_sprite.animation = tile_animation_name
-			animated_sprite.play()
-			repair_timer.start()
-		elif not is_destroyed:
-			GameManager.select_turret(self)
-
-		get_viewport().set_input_as_handled()
+	# 根据状态处理输入
+	match current_bridge_state:
+		State.NORMAL:
+			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
+				GameManager.select_turret(self)
+				get_viewport().set_input_as_handled()
+		State.DESTROYED:
+			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
+				if repair_timer.is_stopped(): # 只有在修复计时器停止时才能尝试修复
+					animated_sprite.modulate = Color(0.2, 0.5, 1.0)
+					animated_sprite.animation = tile_animation_name
+					animated_sprite.play()
+					repair_timer.start()
+					get_viewport().set_input_as_handled()
+		State.EXPANSION_WAITING:
+			if event is InputEventMouseButton and event.is_pressed():
+				if event.button_index == MOUSE_BUTTON_LEFT:
+					# 通知 BridgeBuilder 从这个桥梁开始画线
+					bridge_builder_instance.start_building_from_bridge(self)
+					get_viewport().set_input_as_handled()
+				elif event.button_index == MOUSE_BUTTON_RIGHT:
+					cancel_expansion()
+					get_viewport().set_input_as_handled()
 
 
 func _on_hurt_area_2d_mouse_entered() -> void:
-	if not is_destroyed and repair_timer.is_stopped():
+	# 只有在常规状态下才显示鼠标悬停效果
+	if current_bridge_state == State.NORMAL:
 		animated_sprite.modulate = Color(0.8, 0.8, 0.8)
 
 
 func _on_hurt_area_2d_mouse_exited() -> void:
-	if not is_destroyed and repair_timer.is_stopped():
+	# 只有在常规状态下才恢复鼠标悬停效果
+	if current_bridge_state == State.NORMAL:
 		animated_sprite.modulate = Color.WHITE

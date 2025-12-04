@@ -132,7 +132,7 @@ func _get_random_enemy() -> EnemySpawnInfo:
 	return null
 
 func _register_occupied_cells():
-	grid_manager = get_node("/root/Main/GridManager")
+	grid_manager = get_node("/root/GridManager")
 	if not grid_manager:
 		printerr("敌人生成点错误: 未找到GridManager！")
 		return
