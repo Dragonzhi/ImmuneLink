@@ -1,0 +1,49 @@
+[gd_scene load_steps=4 format=3 uid="uid://c6gprk8bq2vyt"]
+
+[ext_resource type="Script" path="res://scenes/ui/screens/LevelSelect.gd" id="1_abcde"]
+[ext_resource type="PackedScene" uid="uid://dx17x7w7m17e1" path="res://scenes/main/ParticleBackground.tscn" id="2_fghij"]
+[ext_resource type="Theme" uid="uid://co0vpelv70yyn" path="res://scenes/ui/Theme/MainUITheme.tres" id="3_klmno"]
+
+
+[node name="LevelSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_abcde")
+
+[node name="ParticleBackground" parent="." instance=ExtResource("2_fghij")]
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("3_klmno")
+theme_override_font_sizes/font_size = 28
+text = "选择关卡"
+horizontal_alignment = 1
+
+[node name="Level1Button" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("3_klmno")
+text = "第一关"
+
+[node name="BackButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("3_klmno")
+text = "返回"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Level1Button" to="." method="_on_level_1_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

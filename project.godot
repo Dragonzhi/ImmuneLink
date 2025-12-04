@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Bridge"
-run/main_scene="uid://0nk3tfn6rk4s"
+run/main_scene="uid://bkhq73a620q5k"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -23,6 +23,7 @@ GameCamera="*res://scripts/camera/ShakeableCamera.gd"
 VFXManager="*res://scenes/managers/VFXManager.tscn"
 GameManager="*res://scenes/managers/GameManager.tscn"
 ConnectionManager="*res://scenes/managers/ConnectionManager.tscn"
+SceneManager="*res://scripts/managers/SceneManager.gd"
 
 [display]
 
