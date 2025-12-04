@@ -111,6 +111,25 @@ func complete_expansion():
 	print("Bridge at %s completed EXPANSION." % grid_pos)
 
 
+## 强制刷新此桥梁的连接状态和视觉样式
+func update_connections():
+	if not grid_manager: grid_manager = GridManager
+	
+	var new_neighbors = {}
+	var north_pos = grid_pos + Vector2i.UP
+	var south_pos = grid_pos + Vector2i.DOWN
+	var east_pos = grid_pos + Vector2i.RIGHT
+	var west_pos = grid_pos + Vector2i.LEFT
+	
+	if grid_manager.get_grid_object(north_pos): new_neighbors["north"] = true
+	if grid_manager.get_grid_object(south_pos): new_neighbors["south"] = true
+	if grid_manager.get_grid_object(east_pos): new_neighbors["east"] = true
+	if grid_manager.get_grid_object(west_pos): new_neighbors["west"] = true
+	
+	# 使用新的邻居信息调用瓦片设置函数
+	setup_bridge_tile(new_neighbors)
+
+
 ## 获取当前可用的升级列表
 func get_available_upgrades() -> Array[Upgrade]:
 	var upgrades_to_return: Array[Upgrade] = []
@@ -240,9 +259,13 @@ func setup_bridge_tile(neighbors: Dictionary):
 			elif has_west: animated_sprite.rotation_degrees = 90
 			elif has_north: animated_sprite.rotation_degrees = 180
 			elif has_east: animated_sprite.rotation_degrees = 270
-		_: tile_animation_name = "单向"
-	
 	animated_sprite.animation = tile_animation_name
+	animated_sprite.play()
+	animated_sprite.frame = 0
+
+
+func set_sprite_modulate(color: Color):
+	animated_sprite.modulate = color
 
 
 func take_damage(amount: float):

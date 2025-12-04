@@ -93,7 +93,6 @@ func toggle_grid():
 # 将节点设置到指定的网格位置
 func set_grid_occupied(grid_pos: Vector2i, node: Node2D):
 	occupied_cells[grid_pos] = node
-	print("GRID_REGISTER: pos=", grid_pos, " node=", node.name, " ID=", node.get_instance_id(), " All keys now: ", occupied_cells.keys())
 	queue_redraw()
 
 # 检查给定的网格路径是否可用
