@@ -1,6 +1,5 @@
 extends Node2D
 class_name  BridgeBuilder
-#const BridgeScene = preload("res://scenes/bridge/bridge.tscn")
 const BridgeScene = preload("uid://de0pjmcrfoc5m")
 
 # --- Exports ---
@@ -21,11 +20,11 @@ var ui_manager: Node
 
 # --- Build State ---
 var build_mode: bool = false
-var _is_building_secondary: bool = false # 新增：是否在建造扩展线路
+var _is_building_secondary: bool = false
 var start_pipe: Pipe = null
-var start_bridge: Bridge = null # 新增：用于记录起始桥梁
+var start_bridge: Bridge = null
 var start_pos: Vector2i
-var start_direction: Vector2i
+var start_direction: Vector2i # This is needed for pipe-to-pipe mode
 var current_path: Array[Vector2i] = []
 
 # --- Sequential Build State ---
@@ -63,14 +62,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 		_handle_left_mouse_release(event)
 	
-	# Update label position even if path doesn't change
 	if cost_label.visible:
 		cost_label.global_position = event.position + Vector2(5, 5)
 
-
 func _handle_mouse_motion(event: InputEventMouseMotion):
 	var new_grid_pos = grid_manager.world_to_grid(event.position)
-	_update_cost_label() # Update cost and color on every mouse motion
+	_update_cost_label()
 	
 	if current_path.is_empty() or new_grid_pos == current_path.back():
 		return
@@ -79,16 +76,12 @@ func _handle_mouse_motion(event: InputEventMouseMotion):
 	var dx = abs(new_grid_pos.x - last_grid_pos.x)
 	var dy = abs(new_grid_pos.y - last_grid_pos.y)
 
-	# --- FIX: Only allow cardinal (non-diagonal) drawing ---
-	# A move is cardinal if it's one step on one axis and zero on the other.
 	if (dx + dy) == 1:
 		_add_point_to_path(new_grid_pos)
-	# If the mouse jumped several cells, interpolate cardinally.
 	elif (dx > 0 or dy > 0):
 		_interpolate_path_cardinal(last_grid_pos, new_grid_pos)
 	
 	_update_preview()
-
 
 func _handle_left_mouse_release(event: InputEventMouseButton):
 	var grid_pos = grid_manager.world_to_grid(event.position)
@@ -116,10 +109,8 @@ func _interpolate_path_cardinal(start: Vector2i, end: Vector2i):
 	while current_pos != end:
 		var diff = end - current_pos
 		var step = Vector2i.ZERO
-		if abs(diff.x) > abs(diff.y):
-			step.x = sign(diff.x)
-		else:
-			step.y = sign(diff.y)
+		if abs(diff.x) > abs(diff.y): step.x = sign(diff.x)
+		else: step.y = sign(diff.y)
 		current_pos += step
 		_add_point_to_path(current_pos)
 
@@ -142,14 +133,12 @@ func start_building(pipe: Pipe, pos: Vector2i, direction: Vector2i):
 
 func start_building_from_bridge(bridge: Bridge):
 	if build_mode: return
-	
 	build_mode = true
 	_is_building_secondary = true
 	start_bridge = bridge
 	start_pipe = null
 	start_pos = bridge.grid_pos
-	start_direction = Vector2i.ZERO 
-	
+	start_direction = Vector2i.ZERO # Not used in this mode, determined dynamically
 	current_path = [start_pos]
 	preview_line.visible = true
 	cost_label.show()
@@ -159,58 +148,61 @@ func start_building_from_bridge(bridge: Bridge):
 
 func _finish_building(end_node: Node, end_pos: Vector2i):
 	if not current_path.has(end_pos): _add_point_to_path(end_pos)
-	
+
 	if end_node is Pipe:
-		# --- 模式一: 管道 -> 管道 ---
+		# --- Pipe to Pipe Mode ---
 		var end_pipe = end_node as Pipe
-		var path_to_build = current_path # 管道模式使用完整路径
-		var path_to_check = current_path.slice(1, current_path.size() - 1)
+		var path_to_build = current_path
+		var path_to_check = current_path # For pipes, we check the whole path for availability
 		
-		# 检查和消耗资源 (基于完整路径)
 		var total_cost = path_to_build.size() * bridge_segment_cost
 		if not GameManager.spend_resource_value(total_cost):
 			print("建造失败: 资源不足!")
 			_cancel_building()
 			return
 		
-		# 检查路径可用性 (只检查中间部分)
-		if not grid_manager.is_grid_available(path_to_check) or start_pipe.pipe_type != end_pipe.pipe_type:
+		# Pipes occupy their cells, so the check must exclude start/end
+		if not grid_manager.is_grid_available(path_to_build.slice(1, path_to_build.size() - 1)) or start_pipe.pipe_type != end_pipe.pipe_type:
 			_cancel_building()
-			GameManager.add_resource_value(total_cost) # 返还资源
+			GameManager.add_resource_value(total_cost)
 			return
 		
-		_setup_sequential_build(path_to_build)
+		_setup_sequential_build(path_to_build, start_pipe.direction, end_pipe.direction)
 		
 		connection_manager.add_connection(start_pipe, end_pipe, path_to_build.duplicate())
 		start_pipe.mark_pipe_as_used()
 		end_pipe.mark_pipe_as_used()
 
 	elif end_node is Bridge:
-		# --- 模式二: 桥 -> 桥 ---
+		# --- Bridge to Bridge Mode ---
 		var end_bridge = end_node as Bridge
-		var path_to_build = current_path.slice(1, current_path.size() - 1) # 桥梁模式只建造中间部分
+		var path_to_build = current_path.slice(1, current_path.size() - 1)
 		
-		# 检查和消耗资源 (基于中间路径)
 		var total_cost = path_to_build.size() * bridge_segment_cost
 		if not GameManager.spend_resource_value(total_cost):
 			print("建造失败: 资源不足!")
 			_cancel_building()
 			return
 			
-		# 检查路径可用性
 		if not grid_manager.is_grid_available(path_to_build):
 			_cancel_building()
-			GameManager.add_resource_value(total_cost) # 返还资源
+			GameManager.add_resource_value(total_cost)
 			return
 		
-		# 额外的验证
 		if not (start_bridge and start_bridge.current_bridge_state == Bridge.State.EXPANSION_WAITING and end_bridge.current_bridge_state == Bridge.State.EXPANSION_WAITING):
 			_cancel_building()
 			GameManager.add_resource_value(total_cost)
-			print("建造失败: 扩展桥梁必须连接到另一个等待扩展的桥梁。")
 			return
 		
-		_setup_sequential_build(path_to_build)
+		if current_path.size() < 2:
+			_cancel_building()
+			GameManager.add_resource_value(total_cost)
+			return
+			
+		var dynamic_start_dir = current_path[1] - current_path[0]
+		var dynamic_end_dir = current_path.back() - current_path[current_path.size() - 2]
+		
+		_setup_sequential_build(path_to_build, dynamic_start_dir, dynamic_end_dir)
 		
 		start_bridge.complete_expansion()
 		end_bridge.complete_expansion()
@@ -221,24 +213,24 @@ func _finish_building(end_node: Node, end_pos: Vector2i):
 	_reset_build_mode(false)
 	build_timer.start()
 
-func _setup_sequential_build(path_to_build: Array):
-	sequential_build_path = path_to_build
-	
-	# The "connection set" includes the new path and the existing start/end nodes
-	# for correct neighbor calculation of the new segments.
+func _setup_sequential_build(path: Array, p_start_direction: Vector2i, p_end_direction: Vector2i):
+	sequential_build_path = path
 	path_connection_set.clear()
-	for pos in sequential_build_path:
+	for pos in path:
 		path_connection_set[pos] = true
-	path_connection_set[current_path[0]] = true
-	path_connection_set[current_path.back()] = true
 
+	# Add the "virtual" neighbors behind the start and end points to ensure
+	# the first and last segments get the correct neighbor info.
+	if not path.is_empty():
+		path_connection_set[path[0] - p_start_direction] = true
+		path_connection_set[path.back() + p_end_direction] = true
+	
 	front_build_index = 0
 	back_build_index = sequential_build_path.size() - 1
-	
+
 func _on_BuildTimer_timeout():
 	var build_finished = false
 	
-	# Check if there's anything to build
 	if sequential_build_path.is_empty():
 		build_finished = true
 	elif front_build_index <= back_build_index:
@@ -256,7 +248,6 @@ func _on_BuildTimer_timeout():
 	if build_finished:
 		build_timer.stop()
 		
-		# Update the start/end bridges now that the new segments are in the grid
 		if _pending_update_start_bridge and is_instance_valid(_pending_update_start_bridge):
 			_pending_update_start_bridge.update_connections()
 			_pending_update_start_bridge = null
@@ -266,7 +257,6 @@ func _on_BuildTimer_timeout():
 			
 		sequential_build_path.clear()
 		path_connection_set.clear()
-		# Keep current_path for a moment if needed for other logic, then clear in _reset_build_mode
 		print("--- 桥梁建造完毕 ---")
 
 func _create_single_bridge_segment(grid_pos: Vector2i, is_secondary_bridge: bool):
@@ -295,7 +285,7 @@ func _cancel_building():
 func _reset_build_mode(clear_path: bool):
 	build_mode = false
 	start_pipe = null
-	start_bridge = null # Ensure start_bridge is also cleared
+	start_bridge = null
 	if clear_path: current_path.clear()
 	preview_line.clear_points()
 	preview_line.visible = false
@@ -313,7 +303,7 @@ func _update_preview():
 		preview_line.add_point(grid_manager.grid_to_world(grid_pos))
 
 func _update_cost_label():
-	var cost_path = current_path.slice(1) # Cost is based on new segments
+	var cost_path = current_path.slice(1)
 	var current_cost = cost_path.size() * bridge_segment_cost
 	var player_resources = GameManager.get_resource_value()
 	

@@ -67,9 +67,9 @@ func enter_expansion_waiting_state(upgrade_res: Upgrade):
 	_pending_expansion_upgrade = upgrade_res
 	
 	if up_level_sprite.visible:
-		up_level_sprite.modulate = Color.PALE_VIOLET_RED
+		up_level_sprite.modulate = Color.AQUA
 	else:
-		animated_sprite.modulate = Color.PALE_VIOLET_RED
+		animated_sprite.modulate = Color.AQUA
 	
 	if _range_indicator.visible:
 		deselect()
