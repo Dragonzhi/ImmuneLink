@@ -4,6 +4,7 @@ signal repair_value_changed(new_value: float)
 signal resource_value_changed(new_value: float)
 
 @export var initial_resources: float = 200.0
+@export var max_base_health: float = 100.0
 
 var _repair_value: float = 0.0:
 	set(value):
@@ -15,17 +16,34 @@ var _resource_value: float = 0.0:
 		_resource_value = value
 		emit_signal("resource_value_changed", _resource_value)
 
+var _current_base_health: float = 0.0
+
 func _ready() -> void:
 	self._resource_value = initial_resources
 	self._repair_value = 0.0
+	self._current_base_health = max_base_health
 
 # --- Public Methods ---
+
+func take_base_damage(amount: float):
+	_current_base_health -= amount
+	if _current_base_health <= 0:
+		_current_base_health = 0
+		print("游戏失败！基地生命值耗尽！")
+		var end_screen_instance = await SceneManager.change_scene("res://scenes/ui/screens/EndScreen.tscn")
+		if end_screen_instance and end_screen_instance.has_method("set_end_screen_data"):
+			var stats = { "score": 0, "time": "00:00" } # Placeholder for loss stats
+			end_screen_instance.set_end_screen_data(false, stats)
 
 func add_repair_value(amount: float):
 	self._repair_value = min(_repair_value + amount, 100.0)
 	if _repair_value >= 100.0:
 		print("胜利条件已达成！")
-		# get_tree().change_scene_to_file("res://win_screen.tscn")
+		var end_screen_instance = await SceneManager.change_scene("res://scenes/ui/screens/EndScreen.tscn")
+		if end_screen_instance and end_screen_instance.has_method("set_end_screen_data"):
+			# Placeholder for actual stats
+			var stats = { "score": 1000, "time": "05:30" } 
+			end_screen_instance.set_end_screen_data(true, stats)
 
 func add_resource_value(amount: float):
 	self._resource_value += amount

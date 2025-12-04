@@ -40,3 +40,5 @@ func change_scene(scene_path: String):
 	# 淡入
 	tween = get_tree().create_tween()
 	tween.tween_property(fade_rect, "color", Color(0, 0, 0, 0), 0.5).set_trans(Tween.TRANS_SINE)
+	
+	return current_scene
