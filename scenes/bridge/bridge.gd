@@ -25,6 +25,7 @@ const ExpansionUpgradeScript = preload("res://scripts/upgrades/ExpansionUpgrade.
 @export_group("Upgrades")
 @export var available_upgrades: Array[Upgrade] = []
 @export var is_secondary: bool = false # 是否为扩展出来的桥梁
+@export var secondary_color: Color = Color.WHITE # 次级桥梁的颜色，默认为白色
 
 var bridge_builder_instance:BridgeBuilder = null
 
@@ -388,4 +389,7 @@ func _on_hurt_area_2d_mouse_entered() -> void:
 func _on_hurt_area_2d_mouse_exited() -> void:
 	# 只有在常规状态下才恢复鼠标悬停效果
 	if current_bridge_state == State.NORMAL:
-		animated_sprite.modulate = Color.WHITE
+		if is_secondary:
+			animated_sprite.modulate = secondary_color
+		else:
+			animated_sprite.modulate = Color.WHITE

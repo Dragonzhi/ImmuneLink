@@ -19,6 +19,7 @@ const FADE_DURATION = 0.25
 const OCCUPIED_COLOR = Color(1, 0, 0, 0.3)
 
 func _ready():
+	z_index = 100 # Set a high Z-index to render on top
 	create_grid_visual()
 	# Initially hide lines without fading
 	for line in grid_lines:

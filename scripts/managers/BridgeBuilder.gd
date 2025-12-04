@@ -160,52 +160,61 @@ func start_building_from_bridge(bridge: Bridge):
 func _finish_building(end_node: Node, end_pos: Vector2i):
 	if not current_path.has(end_pos): _add_point_to_path(end_pos)
 	
-	# The path to build is only the segments BETWEEN the start and end nodes.
-	var path_to_build = current_path.slice(1, current_path.size() - 1)
-	
-	# Check resource cost based on the number of NEW segments
-	var total_cost = path_to_build.size() * bridge_segment_cost
-	if not GameManager.spend_resource_value(total_cost):
-		print("建造失败: 资源不足!")
-		_cancel_building()
-		return
-	
-	# Check if the path is available for building
-	if not grid_manager.is_grid_available(path_to_build):
-		_cancel_building()
-		GameManager.add_resource_value(total_cost) # Refund cost
-		return
-	
-	# --- Setup for both modes ---
-	_setup_sequential_build(path_to_build)
-	
-	# --- Mode-specific logic ---
 	if end_node is Pipe:
+		# --- 模式一: 管道 -> 管道 ---
 		var end_pipe = end_node as Pipe
-		if start_pipe.pipe_type != end_pipe.pipe_type: # Additional check for pipe-to-pipe
+		var path_to_build = current_path # 管道模式使用完整路径
+		var path_to_check = current_path.slice(1, current_path.size() - 1)
+		
+		# 检查和消耗资源 (基于完整路径)
+		var total_cost = path_to_build.size() * bridge_segment_cost
+		if not GameManager.spend_resource_value(total_cost):
+			print("建造失败: 资源不足!")
 			_cancel_building()
-			GameManager.add_resource_value(total_cost)
 			return
-
+		
+		# 检查路径可用性 (只检查中间部分)
+		if not grid_manager.is_grid_available(path_to_check) or start_pipe.pipe_type != end_pipe.pipe_type:
+			_cancel_building()
+			GameManager.add_resource_value(total_cost) # 返还资源
+			return
+		
+		_setup_sequential_build(path_to_build)
+		
 		connection_manager.add_connection(start_pipe, end_pipe, path_to_build.duplicate())
 		start_pipe.mark_pipe_as_used()
 		end_pipe.mark_pipe_as_used()
 
 	elif end_node is Bridge:
+		# --- 模式二: 桥 -> 桥 ---
 		var end_bridge = end_node as Bridge
+		var path_to_build = current_path.slice(1, current_path.size() - 1) # 桥梁模式只建造中间部分
 		
-		# Additional validation for bridge-to-bridge
+		# 检查和消耗资源 (基于中间路径)
+		var total_cost = path_to_build.size() * bridge_segment_cost
+		if not GameManager.spend_resource_value(total_cost):
+			print("建造失败: 资源不足!")
+			_cancel_building()
+			return
+			
+		# 检查路径可用性
+		if not grid_manager.is_grid_available(path_to_build):
+			_cancel_building()
+			GameManager.add_resource_value(total_cost) # 返还资源
+			return
+		
+		# 额外的验证
 		if not (start_bridge and start_bridge.current_bridge_state == Bridge.State.EXPANSION_WAITING and end_bridge.current_bridge_state == Bridge.State.EXPANSION_WAITING):
 			_cancel_building()
 			GameManager.add_resource_value(total_cost)
 			print("建造失败: 扩展桥梁必须连接到另一个等待扩展的桥梁。")
 			return
 		
-		# Notify bridges that the expansion is complete
+		_setup_sequential_build(path_to_build)
+		
 		start_bridge.complete_expansion()
 		end_bridge.complete_expansion()
 		
-		# Set them up to be visually updated after the build timer finishes
 		_pending_update_start_bridge = start_bridge
 		_pending_update_end_bridge = end_bridge
 	
@@ -275,6 +284,7 @@ func _create_single_bridge_segment(grid_pos: Vector2i, is_secondary_bridge: bool
 	bridge_segment.is_secondary = is_secondary_bridge
 	if is_secondary_bridge:
 		bridge_segment.set_sprite_modulate(secondary_bridge_color)
+		bridge_segment.secondary_color = secondary_bridge_color
 	
 	bridge_segment.setup_segment(grid_pos)
 	bridge_segment.setup_bridge_tile(neighbors)
