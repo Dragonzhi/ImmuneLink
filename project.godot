@@ -41,6 +41,11 @@ folder_colors={
 "res://scripts/": "teal"
 }
 
+[gui]
+
+theme/custom="uid://dshck318jhgki"
+theme/custom_font="uid://bmesxntb7pvbk"
+
 [layer_names]
 
 2d_physics/layer_1="UI"

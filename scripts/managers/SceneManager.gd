@@ -1,44 +1,69 @@
 extends Node
 
-var current_scene: Node = null
-var fade_rect: ColorRect = null
+var transition_rect: ColorRect
+var shader_material: ShaderMaterial
+var is_transitioning: bool = false
+var active_tween: Tween
+var _end_screen_data: Dictionary = {} # 用于在场景间传递数据
+
+const DISSOLVE_SHADER = preload("res://assets/shaders/dissolve.gdshader")
 
 func _ready():
-	var root = get_tree().root
-	current_scene = root.get_child(root.get_child_count() - 1)
+	# Connect to the scene_changed signal to robustly reset the transitioning flag.
+	get_tree().scene_changed.connect(_on_scene_changed)
+	
+	if not is_instance_valid(transition_rect):
+		transition_rect = ColorRect.new()
+		transition_rect.name = "SceneTransitionRect"
+		transition_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		shader_material = ShaderMaterial.new()
+		shader_material.shader = DISSOLVE_SHADER
+		transition_rect.material = shader_material
+		
+		get_tree().root.add_child(transition_rect)
+		transition_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		transition_rect.z_index = 1000
+	
+	if active_tween and active_tween.is_valid():
+		active_tween.kill()
+		
+	shader_material.set_shader_parameter("progress", 1.0)
+	
+	active_tween = get_tree().create_tween().bind_node(self)
+	active_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	active_tween.tween_property(shader_material, "shader_parameter/progress", 0.0, 0.7).set_trans(Tween.TRANS_SINE)
 
-	# 创建一个用于淡入淡出的ColorRect
-	fade_rect = ColorRect.new()
-	fade_rect.color = Color(0, 0, 0, 0) # 开始时完全透明
-	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	# 将其直接添加到根视口，确保它在最顶层
-	get_tree().root.add_child(fade_rect)
-	# 确保它覆盖整个屏幕
-	fade_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	# 确保它在最顶层
-	fade_rect.z_index = 1000
+func _on_scene_changed():
+	is_transitioning = false
+
+# --- Public API ---
+
+func change_to_end_screen(is_win: bool, stats: Dictionary):
+	_end_screen_data = { "is_win": is_win, "stats": stats }
+	change_scene("res://scenes/ui/screens/EndScreen.tscn")
+
+func get_end_screen_data() -> Dictionary:
+	return _end_screen_data
 
 func change_scene(scene_path: String):
-	# 创建一个Tween来处理动画
-	var tween = get_tree().create_tween()
+	if is_transitioning:
+		return
+	is_transitioning = true
+	_perform_scene_change(scene_path)
+
+func _perform_scene_change(scene_path: String):
+	if active_tween and active_tween.is_valid():
+		active_tween.kill()
 	
-	# 淡出
-	tween.tween_property(fade_rect, "color", Color(0, 0, 0, 1), 0.5).set_trans(Tween.TRANS_SINE)
+	shader_material.set_shader_parameter("progress", 0.0)
+		
+	active_tween = get_tree().create_tween().bind_node(self)
+	active_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	active_tween.tween_property(shader_material, "shader_parameter/progress", 1.0, 0.7).set_trans(Tween.TRANS_SINE)
 	
-	# 等待淡出完成，然后切换场景
-	await tween.finished
-	
-	# 切换场景
-	if current_scene:
-		current_scene.queue_free()
-	
-	var next_scene_packed = load(scene_path)
-	if next_scene_packed:
-		current_scene = next_scene_packed.instantiate()
-		get_tree().root.add_child(current_scene)
-	
-	# 淡入
-	tween = get_tree().create_tween()
-	tween.tween_property(fade_rect, "color", Color(0, 0, 0, 0), 0.5).set_trans(Tween.TRANS_SINE)
-	
-	return current_scene
+	active_tween.finished.connect(Callable(self, "_on_fade_out_finished").bind(scene_path))
+
+# 当淡出动画完成时，此函数被调用
+func _on_fade_out_finished(scene_path: String):
+	get_tree().change_scene_to_file(scene_path)
