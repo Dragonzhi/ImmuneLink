@@ -222,7 +222,7 @@ func _setup_sequential_build(path: Array, p_start_direction: Vector2i, p_end_dir
 	# Add the "virtual" neighbors behind the start and end points to ensure
 	# the first and last segments get the correct neighbor info.
 	if not path.is_empty():
-		path_connection_set[path[0] - p_start_direction] = true
+		path_connection_set[path[0] + p_start_direction] = true
 		path_connection_set[path.back() + p_end_direction] = true
 	
 	front_build_index = 0
