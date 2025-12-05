@@ -1,3 +1,9 @@
-[gd_resource type="Theme" format=3 uid="uid://dshck318jhgki"]
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://dshck318jhgki"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h6k2r"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ex36d"]
 
 [resource]
+Button/styles/focus = SubResource("StyleBoxEmpty_h6k2r")
+PanelContainer/styles/panel = SubResource("StyleBoxEmpty_ex36d")

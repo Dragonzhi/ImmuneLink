@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://bfhq4ft0x4eup"]
+[gd_scene load_steps=2 format=3 uid="uid://cfg4wffn17653"]
 
 [ext_resource type="Script" uid="uid://w11jpkgwg1oe" path="res://scripts/managers/SceneManager.gd" id="1_updk6"]
 
@@ -9,7 +9,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 script = ExtResource("1_updk6")
 
 [node name="ColorRect" type="ColorRect" parent="."]

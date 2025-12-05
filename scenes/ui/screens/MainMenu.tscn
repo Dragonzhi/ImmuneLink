@@ -1,11 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://bkhq73a620q5k"]
+[gd_scene load_steps=4 format=3 uid="uid://bkhq73a620q5k"]
 
-[ext_resource type="Script" path="res://scenes/ui/screens/MainMenu.gd" id="1_abcde"]
-[ext_resource type="PackedScene" uid="uid://dx17x7w7m17e1" path="res://scenes/main/ParticleBackground.tscn" id="2_fghij"]
-[ext_resource type="Theme" uid="uid://co0vpelv70yyn" path="res://scenes/ui/Theme/MainUITheme.tres" id="3_klmno"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xyz"]
-bg_color = Color(0, 0, 0, 0.5)
+[ext_resource type="Script" uid="uid://c2ksd1n01kysb" path="res://scenes/ui/screens/MainMenu.gd" id="1_abcde"]
+[ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="2_fghij"]
+[ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="3_klmno"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -39,11 +36,10 @@ horizontal_alignment = 1
 
 [node name="MenuPanel" type="PanelContainer" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_xyz")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer/MenuPanel"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 4
 
 [node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer/MenuPanel/VBoxContainer"]
 layout_mode = 2
