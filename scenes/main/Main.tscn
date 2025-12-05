@@ -1,5 +1,6 @@
-[gd_scene load_steps=17 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=18 format=3 uid="uid://0nk3tfn6rk4s"]
 
+[ext_resource type="Script" uid="uid://bc5b7fp0eb10i" path="res://scripts/levels/LevelConfig.gd" id="1_2tpxt"]
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="Script" path="res://scripts/managers/WaveManager.gd" id="1_rikml"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_vc03v"]
@@ -36,10 +37,13 @@ point_count = 5
 
 [node name="Main" type="Node2D"]
 
+[node name="LevelConfig" type="Node" parent="."]
+script = ExtResource("1_2tpxt")
+
 [node name="WaveManager" type="Node" parent="." node_paths=PackedStringArray("spawners")]
 script = ExtResource("1_rikml")
 waves = Array[ExtResource("2_vc03v")]([ExtResource("3_grv7h")])
-spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01"), NodePath("")]
+spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01"), null]
 
 [node name="WaveTimer" type="Timer" parent="WaveManager"]
 

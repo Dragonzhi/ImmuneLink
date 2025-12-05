@@ -3,8 +3,6 @@ extends Node
 signal repair_value_changed(new_value: float)
 signal resource_value_changed(new_value: float)
 
-@export var initial_resources: float = 200.0
-
 var _repair_value: float = 0.0:
 	set(value):
 		_repair_value = value
@@ -16,8 +14,12 @@ var _resource_value: float = 0.0:
 		emit_signal("resource_value_changed", _resource_value)
 
 func _ready() -> void:
-	self._resource_value = initial_resources
-	self._repair_value = 0.0
+	# 连接场景切换信号，以便在新关卡加载时进行初始化
+	get_tree().scene_changed.connect(_on_scene_changed)
+	# 这段代码应当写在自动加载里。
+	# 初始启动时，也尝试进行一次初始化
+	_on_scene_changed()
+
 
 # --- Public Methods ---
 
@@ -45,6 +47,28 @@ func get_repair_value() -> float:
 func get_resource_value() -> float:
 	return _resource_value
 
+# --- Signal Handlers ---
+
+# 🚀 改进 3: 将函数签名改为不带参数
+func _on_scene_changed():
+	# 在这里获取新的场景节点
+	var new_scene = get_tree().current_scene
+	
+	print("【Scene Changed Signal】场景已切换，新场景: " + str(new_scene.get_path()))
+
+	# 现在 new_scene 不会是 null，因为它是在信号触发后获取的
+	if not is_instance_valid(new_scene): return
+	
+	# 尝试在心场景中寻找 LevelConfig 节点
+	var level_config = new_scene.find_child("LevelConfig", true, false)
+	if level_config:
+		# 如果找到了，说明这是一个关卡场景，用它的配置来初始化资源
+		self._resource_value = level_config.starting_resources
+		self._repair_value = 0.0 # 同时重置其他关卡状态
+	# else:
+		# 如果没找到（比如在主菜单），保持资源不变
+
+
 # --- Public API for Upgrades ---
 
 ## 处理来自UI的升级请求
@@ -52,16 +76,10 @@ func request_upgrade(upgrade: Upgrade, target_bridge: Bridge):
 	if not upgrade or not is_instance_valid(target_bridge):
 		return
 		
-	print("GameManager 正在处理对桥梁 %s 的升级请求: %s" % [target_bridge.grid_pos, upgrade.upgrade_name])
-	
 	if spend_resource_value(upgrade.cost):
-		print("资源足够，正在应用升级...")
 		target_bridge.attempt_upgrade(upgrade)
 		# 升级后通常需要关闭菜单并取消选择
 		deselect_all_turrets()
-	else:
-		print("资源不足，升级失败！")
-		# 在这里可以触发一个UI提示，比如播放一个“资源不足”的音效
 
 # --- Selection Management ---
 var _selected_turret: Node = null
@@ -93,8 +111,6 @@ func select_turret(turret: Node):
 			if not upgrades.is_empty():
 				if ui_manager and ui_manager.has_method("open_upgrade_menu"):
 					ui_manager.open_upgrade_menu(upgrades, _selected_turret)
-			else:
-				print("此桥段当前没有可用的升级。")
 
 func deselect_all_turrets():
 	var ui_manager = get_node_or_null("/root/Main/UIManager") # 即用即取

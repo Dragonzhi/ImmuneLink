@@ -22,7 +22,10 @@ point_count = 5
 
 [node name="Main" instance=ExtResource("1_i2pqh")]
 
-[node name="WaveManager" parent="." index="0" node_paths=PackedStringArray("spawners")]
+[node name="LevelConfig" parent="." index="0"]
+starting_resources = 400
+
+[node name="WaveManager" parent="." index="1" node_paths=PackedStringArray("spawners")]
 spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01")]
 
 [node name="bluePipe1" parent="BackGround/Pipes/Blue" index="0"]
