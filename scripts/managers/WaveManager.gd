@@ -7,6 +7,7 @@ signal all_waves_completed
 
 @export var waves: Array[Wave]
 @export var spawners: Array[Node]
+@export var loop_waves: bool = false # 新增：是否循环波数
 
 @onready var _wave_timer: Timer = $WaveTimer
 
@@ -69,10 +70,14 @@ func _start_next_wave():
 
 	_current_wave_index += 1
 	if _current_wave_index >= waves.size():
-		print("All waves completed!")
-		emit_signal("all_waves_completed")
-		_is_running = false
-		return
+		if loop_waves:
+			print("All waves completed. Looping back to Wave 1.")
+			_current_wave_index = 0 # 重置为第一波
+		else:
+			print("All waves completed!")
+			emit_signal("all_waves_completed")
+			_is_running = false
+			return
 
 	var current_wave: Wave = waves[_current_wave_index]
 	_active_spawners_count = 0
@@ -114,7 +119,6 @@ func _start_next_wave():
 	if _active_spawners_count == 0:
 		print("Wave %s has no active spawners. Skipping." % (_current_wave_index + 1))
 		_finish_current_wave()
-
 func _on_spawner_finished(spawner):
 	if not _is_running: return
 	

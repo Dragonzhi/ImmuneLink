@@ -31,6 +31,7 @@ starting_resources = 400
 [node name="WaveManager" parent="." index="1" node_paths=PackedStringArray("spawners")]
 waves = Array[ExtResource("2_uialj")]([ExtResource("3_u6ccs"), ExtResource("4_163aq")])
 spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01")]
+loop_waves = true
 
 [node name="bluePipe1" parent="BackGround/Pipes/Blue" index="0"]
 position = Vector2(88, 216)

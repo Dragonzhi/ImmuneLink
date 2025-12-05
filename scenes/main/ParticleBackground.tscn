@@ -20,5 +20,5 @@ script = ExtResource("1_ph5ds")
 z_index = -2
 texture_filter = 2
 position = Vector2(194.00002, 111.99999)
-scale = Vector2(6.109376, 5.3203125)
+scale = Vector2(7, 7)
 texture = SubResource("GradientTexture2D_4fd0n")

@@ -24,6 +24,7 @@ VFXManager="*res://scenes/managers/VFXManager.tscn"
 GameManager="*res://scenes/managers/GameManager.tscn"
 ConnectionManager="*res://scenes/managers/ConnectionManager.tscn"
 SceneManager="*res://scenes/managers/SceneManager.tscn"
+VhsMonitorEffect="*res://scenes/world/VHSMonitorEffect.tscn"
 
 [display]
 

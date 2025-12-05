@@ -62,7 +62,6 @@ z_index = -100
 
 [node name="ParticleBackground" parent="BackGround" instance=ExtResource("3_u1xfj")]
 self_modulate = Color(1, 1, 1, 0.29411766)
-radius_range = Vector2(0.5, 2)
 
 [node name="Pipes" type="Node2D" parent="BackGround"]
 
@@ -124,6 +123,7 @@ z_index = 100
 bridges_container = NodePath("../Midground/Bridges")
 
 [node name="FPSCounter" parent="." instance=ExtResource("8_ko0rf")]
+visible = false
 
 [node name="UIManager" type="Node" parent="."]
 script = ExtResource("5_abcde")
