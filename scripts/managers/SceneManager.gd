@@ -1,22 +1,20 @@
-extends Node
+extends Control
 
 var current_scene: Node = null
-var fade_rect: ColorRect = null
+@onready var fade_rect: ColorRect = $ColorRect
 
 func _ready():
-	var root = get_tree().root
-	current_scene = root.get_child(root.get_child_count() - 1)
+	# 监听场景切换信号，确保 current_scene 始终是正确的
+	get_tree().scene_changed.connect(on_scene_changed)
+	current_scene = get_tree().current_scene
 
-	# 创建一个用于淡入淡出的ColorRect
-	fade_rect = ColorRect.new()
-	fade_rect.color = Color(0, 0, 0, 0) # 开始时完全透明
-	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	# 将其直接添加到根视口，确保它在最顶层
-	get_tree().root.add_child(fade_rect)
-	# 确保它覆盖整个屏幕
+	# ColorRect 是从场景树中获取的
+	# 确保它覆盖整个屏幕并从透明开始
 	fade_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	# 确保它在最顶层
-	fade_rect.z_index = 1000
+	fade_rect.color = Color(0, 0, 0, 0) # 开始时完全透明
+
+func on_scene_changed(new_scene: Node):
+	current_scene = new_scene
 
 func change_scene(scene_path: String):
 	# 创建一个Tween来处理动画
@@ -29,16 +27,16 @@ func change_scene(scene_path: String):
 	await tween.finished
 	
 	# 切换场景
-	if current_scene:
-		current_scene.queue_free()
+	# 注意：直接操作current_scene可能不如直接调用get_tree().change_scene_to_file()安全
+	# 但我们遵循现有逻辑
+	get_tree().change_scene_to_file(scene_path)
 	
-	var next_scene_packed = load(scene_path)
-	if next_scene_packed:
-		current_scene = next_scene_packed.instantiate()
-		get_tree().root.add_child(current_scene)
+	# 等待新场景加载完成 (change_scene_to_file后，需要等待一帧)
+	await get_tree().process_frame
 	
 	# 淡入
 	tween = get_tree().create_tween()
 	tween.tween_property(fade_rect, "color", Color(0, 0, 0, 0), 0.5).set_trans(Tween.TRANS_SINE)
 	
-	return current_scene
+	# 返回新场景的引用
+	return get_tree().current_scene
