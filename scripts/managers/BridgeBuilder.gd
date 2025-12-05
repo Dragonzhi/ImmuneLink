@@ -199,7 +199,7 @@ func _finish_building(end_node: Node, end_pos: Vector2i):
 			GameManager.add_resource_value(total_cost)
 			return
 			
-		var dynamic_start_dir = current_path[1] - current_path[0]
+		var dynamic_start_dir = current_path[0] - current_path[1]
 		var dynamic_end_dir = current_path.back() - current_path[current_path.size() - 2]
 		
 		_setup_sequential_build(path_to_build, dynamic_start_dir, dynamic_end_dir)
