@@ -386,7 +386,7 @@ func _on_hurt_area_2d_mouse_entered() -> void:
 		if is_secondary:
 			animated_sprite.modulate = secondary_color.lightened(0.2)
 		else:
-			animated_sprite.modulate = Color.WHITE.lightened(0.2)
+			animated_sprite.modulate = Color.WHITE.darkened(0.1)
 
 
 func _on_hurt_area_2d_mouse_exited() -> void:
