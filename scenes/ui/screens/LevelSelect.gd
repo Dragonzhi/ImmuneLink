@@ -46,4 +46,4 @@ func _on_level_button_pressed(level_number: int) -> void:
 		# 目前所有按钮都先跳转到同一个主游戏场景
 		match level_number:
 			1:
-				SceneManager.change_scene_to_file("res://scenes/levels/Level01.tscn")
+				SceneManager.change_scene_to_file("res://scenes/levels/level01/Level01.tscn")

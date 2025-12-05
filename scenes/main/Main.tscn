@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="Script" path="res://scripts/managers/WaveManager.gd" id="1_rikml"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_vc03v"]
-[ext_resource type="Resource" uid="uid://bktbxy4finrku" path="res://scripts/managers/waves/wave_01.tres" id="3_grv7h"]
+[ext_resource type="Resource" uid="uid://bktbxy4finrku" path="res://scenes/levels/level01/waves/wave_01.tres" id="3_grv7h"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="3_u1xfj"]
 [ext_resource type="PackedScene" uid="uid://dbitchmue8nm6" path="res://scenes/others/enemy_spawn_point.tscn" id="4_1rhdn"]
 [ext_resource type="PackedScene" uid="uid://cjvy6h27p17px" path="res://scenes/others/BridgeBuilder.tscn" id="4_abcde"]
@@ -94,7 +94,6 @@ direction = Vector2i(-1, 0)
 
 [node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" node_paths=PackedStringArray("_paths") instance=ExtResource("4_1rhdn")]
 position = Vector2(200, 48)
-path_switch_interval = 12.0
 delete_enemy_at_path_end = false
 _paths = [NodePath("Path02"), NodePath("Path01"), NodePath("Path03")]
 

@@ -6,14 +6,12 @@ signal spawner_finished(spawner) # Emitted when this spawner has met its wave qu
 const EnemySpawnInfo = preload("res://scripts/others/EnemySpawnInfo.gd")
 
 @export var enemy_list: Array[EnemySpawnInfo]
-@export var path_switch_interval: float = 30.0
 @export var delete_enemy_at_path_end: bool = true
 
 var grid_manager: GridManager
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
 @onready var spawn_timer: Timer = $SpawnTimer
 @onready var path_visualizer: Line2D = $PathVisualizer
-@onready var path_switch_timer: Timer = $PathSwitchTimer
 
 var tween: Tween
 @export var _paths: Array[Path2D]
@@ -31,17 +29,14 @@ func _ready() -> void:
 	
 	current_path_index = clamp(current_path_index, 0, _paths.size() - 1)
 	
-	if _paths.size() > 1 and path_switch_timer:
-		path_switch_timer.wait_time = path_switch_interval
-		path_switch_timer.timeout.connect(_on_path_switch_timer_timeout)
-		path_switch_timer.start()
-
 	_update_path_visualizer()
 	path_visualizer.visible = false
 	path_visualizer.modulate.a = 0.0
 	call_deferred("_register_occupied_cells")
 
 # --- Public Methods for WaveManager Control ---
+
+## 由 WaveManager 调用，开始生成这一波的敌人
 func start_spawning(new_enemy_list: Array[EnemySpawnInfo], interval: float, count: int):
 	if new_enemy_list.is_empty() or interval <= 0 or count <= 0:
 		return
@@ -57,10 +52,31 @@ func start_spawning(new_enemy_list: Array[EnemySpawnInfo], interval: float, coun
 	spawn_timer.start()
 	print("Spawner %s started spawning. Quota: %s" % [self.name, _enemies_to_spawn_this_wave])
 
+## 停止生成
 func stop_spawning():
 	if not spawn_timer.is_stopped():
 		spawn_timer.stop()
 		print("Spawner %s stopped spawning." % self.name)
+
+## (新) 由 WaveManager 调用，根据索引设置当前使用的路径
+func set_active_path_by_index(index: int):
+	if _paths.is_empty() or index < 0 or index >= _paths.size():
+		printerr("为 %s 设置路径失败: 索引 %d 无效。" % [self.name, index])
+		return
+	
+	if current_path_index == index: return # 路径未改变，无需操作
+
+	current_path_index = index
+	
+	# 播放路径切换特效并更新可视化
+	if PathFXManager:
+		PathFXManager.play_path_animation(_paths[current_path_index])
+	_update_path_visualizer()
+	print("Spawner %s 的路径已切换到: %s (Index: %d)" % [self.name, _paths[current_path_index].name, index])
+
+## (新) 获取该出生点总共有几条路径
+func get_path_count() -> int:
+	return _paths.size()
 
 # --- Internal Functions ---
 func spawn_enemy():
@@ -157,16 +173,6 @@ func _register_occupied_cells():
 			var grid_pos = Vector2i(x, y)
 			if grid_manager.is_within_bounds(grid_pos):
 				grid_manager.set_grid_occupied(grid_pos, self)
-
-func _on_path_switch_timer_timeout():
-	if _paths.size() < 2: return
-	current_path_index = (current_path_index + 1) % _paths.size()
-	
-	if PathFXManager:
-		PathFXManager.play_path_animation(_paths[current_path_index])
-	
-	_update_path_visualizer()
-	print("路径已切换到: ", _paths[current_path_index].name)
 
 func _update_path_visualizer():
 	if path_visualizer and not _paths.is_empty() and _paths[current_path_index].curve:

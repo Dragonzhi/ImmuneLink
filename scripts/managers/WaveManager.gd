@@ -82,6 +82,15 @@ func _start_next_wave():
 
 	# For each spawner, find its config and start it if it has a quota.
 	for spawner in spawners:
+		# --- 新增：根据波数设置路径 ---
+		if spawner.has_method("get_path_count") and spawner.has_method("set_active_path_by_index"):
+			var path_count = spawner.get_path_count()
+			if path_count > 0:
+				# 使用波数索引来决定路径，如果波数超过路径数则循环使用
+				var new_path_index = _current_wave_index % path_count
+				spawner.set_active_path_by_index(new_path_index)
+		# ---------------------------------
+		
 		var override_config = _get_override_for_spawner(current_wave, spawner)
 		
 		var enemy_infos: Array[EnemySpawnInfo]
