@@ -1,8 +1,7 @@
-[gd_scene load_steps=18 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=17 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="Script" path="res://scripts/managers/WaveManager.gd" id="1_rikml"]
-[ext_resource type="Script" uid="uid://bro8olv1xvfkn" path="res://scripts/managers/GameManager.gd" id="1_tck0d"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_vc03v"]
 [ext_resource type="Resource" uid="uid://bktbxy4finrku" path="res://scripts/managers/waves/wave_01.tres" id="3_grv7h"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="3_u1xfj"]
@@ -43,14 +42,6 @@ waves = Array[ExtResource("2_vc03v")]([ExtResource("3_grv7h")])
 spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01"), NodePath("../BackGround/EnemySpawns/EnemySpawnPoint02")]
 
 [node name="WaveTimer" type="Timer" parent="WaveManager"]
-
-[node name="GameManager" type="Node" parent="."]
-script = ExtResource("1_tck0d")
-
-[node name="UIManager" type="Node" parent="."]
-script = ExtResource("5_abcde")
-overlay_path = NodePath("../UILayer/Overlay")
-ui_layer_path = NodePath("../UILayer")
 
 [node name="UICancel" type="Node2D" parent="."]
 script = ExtResource("7_tck0d")
@@ -142,6 +133,11 @@ z_index = 100
 bridges_container = NodePath("../Midground/Bridges")
 
 [node name="FPSCounter" parent="." instance=ExtResource("8_ko0rf")]
+
+[node name="UIManager" type="Node" parent="."]
+script = ExtResource("5_abcde")
+overlay_path = NodePath("../UILayer/Overlay")
+ui_layer_path = NodePath("../UILayer")
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 layer = 10

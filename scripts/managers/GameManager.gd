@@ -64,10 +64,10 @@ func request_upgrade(upgrade: Upgrade, target_bridge: Bridge):
 		# 在这里可以触发一个UI提示，比如播放一个“资源不足”的音效
 
 # --- Selection Management ---
-@onready var ui_manager: Node = get_node("/root/Main/UIManager")
 var _selected_turret: Node = null
 
 func select_turret(turret: Node):
+	var ui_manager = get_node_or_null("/root/Main/UIManager") # 即用即取
 	# 如果我们再次点击同一个炮塔，则取消选择
 	if _selected_turret == turret:
 		deselect_all_turrets()
@@ -97,6 +97,7 @@ func select_turret(turret: Node):
 				print("此桥段当前没有可用的升级。")
 
 func deselect_all_turrets():
+	var ui_manager = get_node_or_null("/root/Main/UIManager") # 即用即取
 	if is_instance_valid(_selected_turret):
 		if _selected_turret.has_method("deselect"):
 			_selected_turret.deselect()

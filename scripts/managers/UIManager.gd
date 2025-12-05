@@ -6,7 +6,6 @@ const BridgeUpgradeMenu = preload("res://scenes/ui/BridgeUpgradeMenu.gd") # Add 
 @export var overlay_path: NodePath
 @export var ui_layer_path: NodePath
 @export var fade_duration: float = 0.2
-@export var attack_upgrade_cost: int = 20 # Cost for attack upgrade
 
 var overlay: ColorRect
 var ui_layer: CanvasLayer
@@ -88,3 +87,18 @@ func _on_upgrade_chosen(upgrade: Upgrade):
 
 	# 无论升级成功与否，都关闭菜单
 	close_upgrade_menu()
+
+# --- 公共重置函数 ---
+func reset_ui():
+	# 强制停止所有UI动画
+	if tween and tween.is_running():
+		tween.kill()
+	
+	# 强制释放菜单
+	if current_menu and is_instance_valid(current_menu):
+		current_menu.queue_free()
+		current_menu = null
+	
+	# 强制隐藏遮罩
+	if overlay:
+		overlay.visible = false
