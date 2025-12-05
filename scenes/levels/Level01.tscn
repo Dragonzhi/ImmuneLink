@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=3 uid="uid://c0aqyjnsgocdf"]
+
+[ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_i2pqh"]
+
+[sub_resource type="Curve2D" id="Curve2D_i2pqh"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -32, 0, 0, 0, 0, 0, -85, 3, 0, 0, 0, 0, -89, 118, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0)
+}
+point_count = 6
+
+[sub_resource type="Curve2D" id="Curve2D_gsbbr"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 2, 0, 0, 0, 0, 65, 129, 0, 0, 0, 0, 12, 132, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[sub_resource type="Curve2D" id="Curve2D_qtqmo"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -36, -17, 0, 0, 0, 0, -177, 101, 0, 0, 0, 0, -133, 102, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[node name="Main" instance=ExtResource("1_i2pqh")]
+
+[node name="WaveManager" parent="." index="0" node_paths=PackedStringArray("spawners")]
+spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01")]
+
+[node name="bluePipe1" parent="BackGround/Pipes/Blue" index="0"]
+position = Vector2(88, 216)
+
+[node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
+position = Vector2(120, 8)
+rotation = 3.1415927
+direction = Vector2i(0, -1)
+
+[node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
+curve = SubResource("Curve2D_i2pqh")
+
+[node name="Path02" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="5"]
+curve = SubResource("Curve2D_gsbbr")
+
+[node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="6"]
+curve = SubResource("Curve2D_qtqmo")
+
+[editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]
