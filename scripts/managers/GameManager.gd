@@ -130,7 +130,24 @@ func _handle_defeat(reason: String):
 
 
 # --- Public API for Upgrades (No changes needed below) ---
-# ... (rest of the file is unchanged) ...
+
+func request_upgrade(upgrade: Upgrade, bridge: Bridge):
+	"""
+	处理来自UI的升级请求。
+	检查资源，如果足够则应用升级。
+	"""
+	if not is_instance_valid(upgrade) or not is_instance_valid(bridge):
+		printerr("GameManager: 无效的升级或桥梁实例。")
+		return
+
+	if spend_resource_value(upgrade.cost):
+		print("GameManager: 资源充足，应用升级 %s 到 %s" % [upgrade.upgrade_name, bridge.name])
+		bridge.attempt_upgrade(upgrade)
+	else:
+		print("GameManager: 资源不足，无法应用升级 %s" % upgrade.upgrade_name)
+		# 未来可以在此添加UI提示，例如播放一个“失败”音效或显示一条消息
+
+
 var _selected_turret: Node = null
 
 func select_turret(turret: Node):
