@@ -281,9 +281,9 @@ scale = Vector2(0.5, 0.5)
 
 [node name="HealthBar" parent="." instance=ExtResource("6_healthbar")]
 offset_left = -7.0
-offset_top = -7.0
+offset_top = 4.0
 offset_right = 49.0
-offset_bottom = 1.0
+offset_bottom = 12.0
 theme_override_styles/fill = SubResource("StyleBoxFlat_greend")
 
 [node name="HurtArea2D" type="Area2D" parent="."]

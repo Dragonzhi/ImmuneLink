@@ -304,7 +304,10 @@ func repair():
 	grid_manager.set_bridge_status(grid_pos, false)
 	
 	animated_sprite.visible = true
-	animated_sprite.modulate = Color.WHITE
+	if is_secondary:
+		animated_sprite.modulate = secondary_color
+	else:
+		animated_sprite.modulate = Color.WHITE
 	animated_sprite.animation = tile_animation_name
 	animated_sprite.frame = animated_sprite.sprite_frames.get_frame_count(tile_animation_name) - 1
 	up_level_sprite.visible = false
@@ -386,7 +389,11 @@ func _on_hurt_area_2d_mouse_entered() -> void:
 		if is_secondary:
 			animated_sprite.modulate = secondary_color.lightened(0.2)
 		else:
+<<<<<<< HEAD
 			animated_sprite.modulate = Color.WHITE.darkened(0.1)
+=======
+			animated_sprite.modulate = Color.WHITE.lightened(0.2)
+>>>>>>> main
 
 
 func _on_hurt_area_2d_mouse_exited() -> void:

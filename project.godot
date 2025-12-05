@@ -19,7 +19,7 @@ config/icon="res://icon.svg"
 
 GridManager="*res://scripts/managers/GridManager.gd"
 PathFXManager="*res://scripts/managers/PathFXManager.gd"
-GameCamera="*res://scripts/camera/ShakeableCamera.gd"
+GameCamera="*res://scenes/camera/ShakeableCamera.tscn"
 VFXManager="*res://scenes/managers/VFXManager.tscn"
 GameManager="*res://scenes/managers/GameManager.tscn"
 ConnectionManager="*res://scenes/managers/ConnectionManager.tscn"
