@@ -187,6 +187,8 @@ autostart = false
 
 [node name="Midground" type="Node2D" parent="."]
 
+[node name="Items" type="Node2D" parent="Midground"]
+
 [node name="Bridges" type="Node2D" parent="Midground"]
 z_index = 1
 

@@ -17,6 +17,7 @@ var active_tween: Tween
 const GRID_COLOR = Color(1, 1, 1, 0.2)
 const FADE_DURATION = 0.25
 const OCCUPIED_COLOR = Color(1, 0, 0, 0.3)
+const ITEM_COLOR = Color(0.2, 0.5, 1.0, 0.4) # NK细胞等物品的颜色
 
 func _ready():
 	z_index = 100 # Set a high Z-index to render on top
@@ -29,9 +30,15 @@ func _draw():
 	# Draw a rectangle over each occupied cell, only if the grid is visible
 	if is_grid_visible:
 		for grid_pos in occupied_cells.keys():
+			var node = occupied_cells[grid_pos]
 			var rect_pos = grid_to_world(grid_pos) - Vector2(grid_size / 2, grid_size / 2)
 			var rect_size = Vector2(grid_size, grid_size)
-			draw_rect(Rect2(rect_pos, rect_size), OCCUPIED_COLOR)
+			
+			# 根据占据该格子的节点类型选择不同的颜色
+			if node is NKCell:
+				draw_rect(Rect2(rect_pos, rect_size), ITEM_COLOR)
+			else:
+				draw_rect(Rect2(rect_pos, rect_size), OCCUPIED_COLOR)
 
 func create_grid_visual():
 	# 创建垂直线

@@ -153,19 +153,25 @@ func _finish_building(end_node: Node, end_pos: Vector2i):
 		# --- Pipe to Pipe Mode ---
 		var end_pipe = end_node as Pipe
 		var path_to_build = current_path
-		var path_to_check = current_path # For pipes, we check the whole path for availability
 		
+		# For pipes, we check the whole path, but must exclude start/end cells
+		# which are occupied by the pipes themselves.
+		var validation_path = path_to_build.slice(1, path_to_build.size() - 1)
+		var validation_result = _validate_path_and_collect_items(validation_path)
+
+		if not validation_result.buildable or start_pipe.pipe_type != end_pipe.pipe_type:
+			_cancel_building()
+			return
+
 		var total_cost = path_to_build.size() * bridge_segment_cost
 		if not GameManager.spend_resource_value(total_cost):
 			print("建造失败: 资源不足!")
 			_cancel_building()
 			return
 		
-		# Pipes occupy their cells, so the check must exclude start/end
-		if not grid_manager.is_grid_available(path_to_build.slice(1, path_to_build.size() - 1)) or start_pipe.pipe_type != end_pipe.pipe_type:
-			_cancel_building()
-			GameManager.add_resource_value(total_cost)
-			return
+		# --- 拾取物品 ---
+		for item in validation_result.items_to_collect:
+			item.collect()
 		
 		_setup_sequential_build(path_to_build, start_pipe.direction, end_pipe.direction)
 		
@@ -178,26 +184,31 @@ func _finish_building(end_node: Node, end_pos: Vector2i):
 		var end_bridge = end_node as Bridge
 		var path_to_build = current_path.slice(1, current_path.size() - 1)
 		
+		var validation_result = _validate_path_and_collect_items(path_to_build)
+		
+		if not validation_result.buildable:
+			_cancel_building()
+			return
+
 		var total_cost = path_to_build.size() * bridge_segment_cost
 		if not GameManager.spend_resource_value(total_cost):
 			print("建造失败: 资源不足!")
 			_cancel_building()
 			return
 			
-		if not grid_manager.is_grid_available(path_to_build):
-			_cancel_building()
-			GameManager.add_resource_value(total_cost)
-			return
-		
 		if not (start_bridge and start_bridge.current_bridge_state == Bridge.State.EXPANSION_WAITING and end_bridge.current_bridge_state == Bridge.State.EXPANSION_WAITING):
 			_cancel_building()
-			GameManager.add_resource_value(total_cost)
+			GameManager.add_resource_value(total_cost) # Refund
 			return
 		
 		if current_path.size() < 2:
 			_cancel_building()
-			GameManager.add_resource_value(total_cost)
+			GameManager.add_resource_value(total_cost) # Refund
 			return
+		
+		# --- 拾取物品 ---
+		for item in validation_result.items_to_collect:
+			item.collect()
 			
 		var dynamic_start_dir = current_path[0] - current_path[1]
 		var dynamic_end_dir = current_path.back() - current_path[current_path.size() - 2]
@@ -212,6 +223,23 @@ func _finish_building(end_node: Node, end_pos: Vector2i):
 	
 	_reset_build_mode(false)
 	build_timer.start()
+
+func _validate_path_and_collect_items(path: Array) -> Dictionary:
+	"""
+	验证路径是否可建造，并收集路径上的所有物品。
+	返回: {"buildable": bool, "items_to_collect": Array[Node]}
+	"""
+	var items = []
+	for grid_pos in path:
+		var node = grid_manager.get_grid_object(grid_pos)
+		if node != null:
+			if node is NKCell: # 允许穿过NK细胞
+				items.append(node)
+			else: # 其他任何障碍物都使路径无效
+				return {"buildable": false, "items_to_collect": []}
+	
+	return {"buildable": true, "items_to_collect": items}
+
 
 func _setup_sequential_build(path: Array, p_start_direction: Vector2i, p_end_direction: Vector2i):
 	sequential_build_path = path
