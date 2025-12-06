@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://dei1div6dxurl"]
+
+[ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_qwkhf"]
+
+[node name="Main" instance=ExtResource("1_qwkhf")]
+
+[node name="WaveManager" parent="." index="1" node_paths=PackedStringArray("spawners")]
+spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01"), null]
+
+[editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

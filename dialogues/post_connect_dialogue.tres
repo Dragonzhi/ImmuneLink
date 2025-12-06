@@ -7,10 +7,4 @@ script = ExtResource("1_dialogue_res")
 dialogue_lines = Array[Dictionary]([{
 "name": "Monitoring System",
 "text": "连接建立成功。现在，你已掌握基础操作。"
-}, {
-"name": "Monitoring System",
-"text": "警告：侦测到敌对单位活动。准备迎战。"
-}, {
-"name": "Monitoring System",
-"text": "指令：点击已建立的桥梁，进行升级。提升防御能力或攻击效率是关键。"
 }])

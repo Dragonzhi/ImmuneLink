@@ -1,12 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://c0aqyjnsgocdf"]
+[gd_scene load_steps=8 format=3 uid="uid://c0aqyjnsgocdf"]
 
 [ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_yqdcf"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_uialj"]
 [ext_resource type="Resource" uid="uid://bktbxy4finrku" path="res://scenes/levels/level01/waves/wave_01.tres" id="3_u6ccs"]
 [ext_resource type="Resource" uid="uid://cqhwo0uq2kjc5" path="res://scenes/levels/level01/waves/wave_02.tres" id="4_163aq"]
-[ext_resource type="PackedScene" path="res://scenes/tutorial/TutorialManager.tscn" id="5_163aq"]
-[ext_resource type="Resource" uid="uid://bmmfcvr3fkuve" path="res://dialogues/tutorial_01.tres" id="6_163aq"]
-[ext_resource type="Resource" uid="uid://dhvibcb22nda0" path="res://dialogues/post_connect_dialogue.tres" id="7_la0e5"]
 
 [sub_resource type="Curve2D" id="Curve2D_i2pqh"]
 _data = {
@@ -44,6 +41,9 @@ position = Vector2(120, 8)
 rotation = 3.1415927
 direction = Vector2i(0, -1)
 
+[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" index="0" node_paths=PackedStringArray("_paths")]
+_paths = [NodePath("Path01"), NodePath("Path02"), NodePath("Path03")]
+
 [node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
 curve = SubResource("Curve2D_i2pqh")
 
@@ -61,9 +61,5 @@ process_mode = 3
 
 [node name="AnimationPlayer" parent="." index="10"]
 process_mode = 3
-
-[node name="TutorialManager" parent="." index="11" instance=ExtResource("5_163aq")]
-initial_dialogue = ExtResource("6_163aq")
-post_connect_dialogue = ExtResource("7_la0e5")
 
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]
