@@ -1,19 +1,38 @@
-[gd_scene load_steps=3 format=3 uid="uid://c8kj5mu5xjolv"]
+[gd_scene load_steps=5 format=3 uid="uid://cjkuu6twi2xhm"]
 
-[ext_resource type="PackedScene" uid="uid://cm325e0w41j3h" path="res://scenes/entities/BaseEnemy.tscn" id="1_eptyn"]
-[ext_resource type="Texture2D" uid="uid://b4mofg4y2bl13" path="res://assets/cells/normall/CD4T_cell.png" id="2_vrv6o"]
+[ext_resource type="PackedScene" uid="uid://cm325e0w41j3h" path="res://scenes/entities/BaseEnemy.tscn" id="1_7y27p"]
+[ext_resource type="Script" path="res://scripts/enemies/CD4TEnemy.gd" id="2_h2ac0"]
+[ext_resource type="Texture2D" uid="uid://b4mofg4y2bl13" path="res://assets/cells/normall/CD4T_cell.png" id="3_llv36"]
 
-[node name="CD4TEnemy" instance=ExtResource("1_eptyn")]
-max_hp = 50.0
-move_speed = 15.0
-attack_rate = 2.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_h2ac0"]
+radius = 24.0
+
+[node name="CD4TEnemy" instance=ExtResource("1_7y27p")]
+script = ExtResource("2_h2ac0")
+buff_strength_multiplier = 1.5
+buff_range = 24.0
+max_hp = 60.0
+move_speed = 30.0
+damage = 5.0
+separation_strength = 50.0
 
 [node name="Sprite2D" parent="." index="0"]
 scale = Vector2(0.15, 0.15)
-texture = ExtResource("2_vrv6o")
+texture = ExtResource("3_llv36")
 
 [node name="HealthBar" parent="." index="3"]
 offset_left = -7.0
 offset_top = -8.0
-offset_right = 49.0
+offset_right = 53.0
 offset_bottom = 0.0
+
+[node name="BuffAura" type="Area2D" parent="." index="6"]
+collision_layer = 0
+collision_mask = 2
+
+[node name="BuffCollisionShape2D" type="CollisionShape2D" parent="BuffAura" index="0"]
+shape = SubResource("CircleShape2D_h2ac0")
+debug_color = Color(0.8187276, 0.35470805, 0.51504505, 0.41960785)
+
+[connection signal="body_entered" from="BuffAura" to="." method="_on_buff_aura_body_entered"]
+[connection signal="body_exited" from="BuffAura" to="." method="_on_buff_aura_body_exited"]

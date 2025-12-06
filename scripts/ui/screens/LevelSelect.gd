@@ -47,3 +47,5 @@ func _on_level_button_pressed(level_number: int) -> void:
 		match level_number:
 			1:
 				SceneManager.change_scene_to_file("res://scenes/levels/level01/Level01.tscn")
+			2:
+				SceneManager.change_scene_to_file("res://scenes/levels/level02/Level02.tscn")

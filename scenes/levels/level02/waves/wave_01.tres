@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="Wave" load_steps=8 format=3 uid="uid://dett8c7ggrkf1"]
+
+[ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_4rxoc"]
+[ext_resource type="PackedScene" uid="uid://cjkuu6twi2xhm" path="res://scenes/enemies/CD4TEnemy.tscn" id="2_uf7rh"]
+[ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_wmn87"]
+[ext_resource type="PackedScene" uid="uid://dv8f6a6cpfla" path="res://scenes/enemies/MacrophageEnemy.tscn" id="3_8vc6k"]
+[ext_resource type="Script" path="res://scripts/managers/SpawnerWaveConfig.gd" id="3_uf7rh"]
+
+[sub_resource type="Resource" id="Resource_imkwl"]
+script = ExtResource("1_4rxoc")
+enemy_scene = ExtResource("2_uf7rh")
+metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
+
+[sub_resource type="Resource" id="Resource_emvfr"]
+script = ExtResource("1_4rxoc")
+enemy_scene = ExtResource("3_8vc6k")
+metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
+
+[resource]
+script = ExtResource("2_wmn87")
+default_spawn_infos = Array[ExtResource("1_4rxoc")]([SubResource("Resource_imkwl"), SubResource("Resource_emvfr")])

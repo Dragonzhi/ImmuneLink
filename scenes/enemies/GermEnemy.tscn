@@ -7,9 +7,9 @@
 radius = 5.0
 
 [node name="GermEnemy" instance=ExtResource("1_a768d")]
-max_hp = 20.0
-move_speed = 25.0
-damage = 5.0
+max_hp = 30.0
+move_speed = 40.0
+damage = 10.0
 
 [node name="Sprite2D" parent="." index="1"]
 texture = ExtResource("2_jd13f")
