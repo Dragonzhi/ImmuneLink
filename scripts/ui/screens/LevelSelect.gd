@@ -23,7 +23,7 @@ func _ready() -> void:
 	for i in range(total_levels):
 		var level_number = i + 1
 		var button = Button.new()
-		button.text = "关卡 %d" % level_number
+		button.text = "任务 %d" % level_number
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		button.add_theme_font_size_override("font_size", 8)

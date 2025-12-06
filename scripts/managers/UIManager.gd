@@ -27,38 +27,42 @@ func _ready() -> void:
 		overlay.color = Color(initial_color.r, initial_color.g, initial_color.b, 0.0)
 		overlay.visible = false
 
+@onready var animation_player: AnimationPlayer = $"../AnimationPlayer"
+@onready var over_label: Label = $"../UILayer/OverPanelContainer/CenterContainer/PanelContainer/overLabel"
+
 # --- 新增：游戏结束横幅 ---
 func show_game_over_banner(message: String):
-	# 创建一个半透明的灰色背景条
-	var banner_bg = PanelContainer.new()
-	banner_bg.pause_mode = Node.PAUSE_MODE_PROCESS # 确保暂停时可见
-	banner_bg.self_modulate = Color(0.2, 0.2, 0.2, 0.8) # 半透明深灰色
-	
-	# 设置大小和位置
-	banner_bg.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	banner_bg.size = Vector2(400, 80) # 横幅的尺寸
-	banner_bg.position = -banner_bg.size / 2 # 居中
-
-	# 创建文本标签
-	var banner_label = Label.new()
-	banner_label.pause_mode = Node.PAUSE_MODE_PROCESS
-	banner_label.theme = theme # 使用导出的主题
-	banner_label.theme_override_font_sizes/font_size = 24
-	banner_label.text = message
-	banner_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	banner_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	banner_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	
-	banner_bg.add_child(banner_label)
-	
-	# 将横幅添加到UI层
-	# 为了确保它在屏幕中央，我们将其添加到一个CenterContainer中
-	var center_container = CenterContainer.new()
-	center_container.pause_mode = Node.PAUSE_MODE_PROCESS
-	center_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	center_container.add_child(banner_bg)
-	
-	ui_layer.add_child(center_container)
+	animation_player.play("Win")
+	over_label.text = message
+	## 创建一个半透明的灰色背景条
+	#var banner_bg = PanelContainer.new()
+	#banner_bg.process_mode = Node.PROCESS_MODE_ALWAYS # 确保暂停时可见
+	#banner_bg.self_modulate = Color(0.2, 0.2, 0.2, 0.8) # 半透明深灰色
+	## 设置大小和位置
+	#banner_bg.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	#banner_bg.size = Vector2(400, 80) # 横幅的尺寸
+	#banner_bg.position = -banner_bg.size / 2 # 居中
+#
+	## 创建文本标签
+	#var banner_label = Label.new()
+	#banner_label.process_mode = Node.PROCESS_MODE_ALWAYS
+	#banner_label.theme = theme # 使用导出的主题
+	#banner_label.add_theme_font_size_override("font_size", 24) # 正确的Godot 4语法
+	#banner_label.text = message
+	#banner_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	#banner_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	#banner_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	#
+	#banner_bg.add_child(banner_label)
+	#
+	## 将横幅添加到UI层
+	## 为了确保它在屏幕中央，我们将其添加到一个CenterContainer中
+	#var center_container = CenterContainer.new()
+	#center_container.process_mode = Node.PROCESS_MODE_ALWAYS
+	#center_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	#center_container.add_child(banner_bg)
+#
+	#ui_layer.add_child(center_container)
 
 func open_upgrade_menu(upgrades: Array[Upgrade], bridge: Bridge):
 	if tween and tween.is_running():

@@ -68,6 +68,10 @@ func get_resource_value() -> float:
 func get_time_remaining() -> float:
 	return _time_remaining
 
+func is_game_over() -> bool:
+	return _is_game_over
+
+
 # --- Signal Handlers ---
 
 func _on_scene_changed():
@@ -128,7 +132,7 @@ func _start_game_over_sequence(is_victory: bool, message: String):
 	var timer = Timer.new()
 	timer.wait_time = 3.0 # 3秒延迟
 	timer.one_shot = true
-	timer.pause_mode = Node.PAUSE_MODE_PROCESS # 关键：使其在暂停时也能处理
+	timer.process_mode = Node.PROCESS_MODE_ALWAYS # 关键：使其在暂停时也能处理
 	add_child(timer)
 	timer.start()
 	timer.timeout.connect(func(): _on_game_over_timer_timeout(is_victory, timer))
@@ -141,8 +145,9 @@ func _on_game_over_timer_timeout(is_victory: bool, timer: Timer):
 	# 准备要传递的数据
 	var final_score = _resource_value + _repair_value # 简单计算一个分数
 	var time_spent = level_duration - _time_remaining
-	var minutes = int(time_spent) / 60
-	var seconds = int(time_spent) % 60
+	@warning_ignore("integer_division")
+	var minutes:int = int(time_spent) / 60
+	var seconds:int = int(time_spent) % 60
 	
 	SceneManager.scene_data = {
 		"score": final_score,

@@ -24,6 +24,4 @@ func _ready() -> void:
 
 
 func _on_menu_button_pressed() -> void:
-	# 让SceneManager切换回主菜单
-	# 假设主菜单场景路径为 "res://scenes/world/MainMenu.tscn"
-	SceneManager.change_scene_to_file("res://scenes/world/MainMenu.tscn")
+	SceneManager.change_scene_to_file("res://scenes/ui/screens/LevelSelect.tscn")

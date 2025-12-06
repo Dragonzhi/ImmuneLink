@@ -50,4 +50,11 @@ curve = SubResource("Curve2D_gsbbr")
 [node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="6"]
 curve = SubResource("Curve2D_qtqmo")
 
+[node name="OverPanelContainer" parent="UILayer" index="2"]
+process_mode = 3
+mouse_filter = 2
+
+[node name="AnimationPlayer" parent="." index="10"]
+process_mode = 3
+
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

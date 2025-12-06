@@ -11,6 +11,7 @@ func _ready() -> void:
 		printerr("ConnectionManager: GridManager not found!")
 
 func _process(delta: float):
+	if GameManager.is_game_over(): return
 	if not _grid_manager: return
 	
 	var total_red_pipe_rate: float = 0.0

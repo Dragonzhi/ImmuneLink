@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dke48xet3j3v3"]
+[gd_scene load_steps=4 format=3 uid="uid://dke48xet3j3v3"]
 
-[ext_resource type="Script" uid="uid://c6jmmw4n3x0gq" path="res://scripts/ui/screens/EndScreen.gd" id="1_d7q8s"]
+[ext_resource type="Script" path="res://scripts/ui/screens/EndScreen.gd" id="1_d7q8s"]
 [ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="2_abcde"]
+[ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="2_k00rp"]
 
 [node name="EndScreen" type="Control"]
 layout_mode = 3
@@ -12,7 +13,10 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_d7q8s")
 
+[node name="ParticleBackground" parent="." instance=ExtResource("2_k00rp")]
+
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -73,5 +77,7 @@ text = "12:34"
 [node name="MenuButton" type="Button" parent="CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
 theme = ExtResource("2_abcde")
-text = "返回主菜单"
+theme_override_font_sizes/font_size = 12
+text = "返回任务列表"

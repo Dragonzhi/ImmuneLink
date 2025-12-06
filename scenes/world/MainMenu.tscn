@@ -46,12 +46,12 @@ theme_override_constants/separation = 4
 [node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer/MenuPanel/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("3_klmno")
-text = "开始游戏"
+text = "开始任务"
 
 [node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer/MenuPanel/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("3_klmno")
-text = "退出游戏"
+text = "退出任务"
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/MenuPanel/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/MenuPanel/VBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]

@@ -61,7 +61,7 @@ func stop_wave_system():
 	for spawner in spawners:
 		if spawner.has_method("stop_spawning"):
 			spawner.stop_spawning()
-	if _wave_timer.is_started():
+	if not _wave_timer.is_stopped():
 		_wave_timer.stop()
 	print("Wave system stopped.")
 

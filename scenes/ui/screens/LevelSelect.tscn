@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://c5s4gqj4d6yhj"]
 
-[ext_resource type="Script" uid="uid://brxgptvoi02pn" path="res://scenes/ui/screens/LevelSelect.gd" id="1_abcde"]
+[ext_resource type="Script" uid="uid://brxgptvoi02pn" path="res://scripts/ui/screens/LevelSelect.gd" id="1_abcde"]
 [ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="2_abcde"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="3_abcde"]
 
@@ -45,7 +45,7 @@ layout_mode = 2
 size_flags_vertical = 1
 theme = ExtResource("2_abcde")
 theme_override_font_sizes/font_size = 24
-text = "选择关卡"
+text = "选择任务"
 horizontal_alignment = 1
 vertical_alignment = 1
 

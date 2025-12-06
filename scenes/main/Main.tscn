@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=25 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="Script" uid="uid://bc5b7fp0eb10i" path="res://scripts/levels/LevelConfig.gd" id="1_2tpxt"]
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://ddhalg244kw3t" path="res://scenes/ui/FPSCounter.tscn" id="8_ko0rf"]
 [ext_resource type="PackedScene" uid="uid://dpsk4yq8w7h6g" path="res://scenes/ui/GameUI.tscn" id="9_gameui"]
 [ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="10_theme"]
+[ext_resource type="Shader" uid="uid://cul7dygdsicnj" path="res://assets/shader/pixelate.gdshader" id="15_tck0d"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u8lgh"]
 size = Vector2(404, 236)
@@ -35,6 +36,75 @@ _data = {
 "points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -32, 0, 0, 0, 0, -144, -32, 0, 0, 0, 0, -144, 0, 0, 0, 0, 0, 0, 0)
 }
 point_count = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jsdfw"]
+bg_color = Color(0.19607843, 0.19607843, 0.19607843, 0.49019608)
+draw_center = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u8lgh"]
+shader = ExtResource("15_tck0d")
+shader_parameter/pixel_size = 1.0
+
+[sub_resource type="Animation" id="Animation_jsdfw"]
+resource_name = "Win"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("UILayer/OverPanelContainer:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 2.4, 2.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("UILayer/OverPanelContainer/ShaderRect:material:shader_parameter/pixel_size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5, 2.4, 2.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [100.0, 1.0, 1.0, 100.0]
+}
+
+[sub_resource type="Animation" id="Animation_hjnkw"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("UILayer/OverPanelContainer:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("UILayer/OverPanelContainer/ShaderRect:material:shader_parameter/pixel_size")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_tck0d"]
+_data = {
+&"RESET": SubResource("Animation_hjnkw"),
+&"Win": SubResource("Animation_jsdfw")
+}
 
 [node name="Main" type="Node2D"]
 
@@ -147,6 +217,53 @@ color = Color(0, 0, 0, 0.5)
 script = ExtResource("6_overlay")
 
 [node name="GameUI" parent="UILayer" instance=ExtResource("9_gameui")]
+
+[node name="OverPanelContainer" type="PanelContainer" parent="UILayer"]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = -1
+anchor_left = 0.521
+anchor_top = 0.5
+anchor_right = 0.521
+anchor_bottom = 0.5
+offset_left = -205.06401
+offset_top = -20.0
+offset_right = 204.93599
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="ColorRect" type="ColorRect" parent="UILayer/OverPanelContainer"]
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.016551748, 0.016551716, 0.016551724, 0.49019608)
+
+[node name="CenterContainer" type="CenterContainer" parent="UILayer/OverPanelContainer"]
+layout_mode = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="UILayer/OverPanelContainer/CenterContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_jsdfw")
+
+[node name="overLabel" type="Label" parent="UILayer/OverPanelContainer/CenterContainer/PanelContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "修复完成，模拟成功！"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ShaderRect" type="ColorRect" parent="UILayer/OverPanelContainer"]
+material = SubResource("ShaderMaterial_u8lgh")
+layout_mode = 2
+mouse_filter = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_tck0d")
+}
 
 [connection signal="input_event" from="UICancel/Area2D" to="UICancel" method="_on_area_2d_input_event"]
 
