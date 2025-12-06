@@ -131,7 +131,11 @@ func _advance_dialogue():
 
 func _end_dialogue():
 	_is_active = false
+	
+	# 在置空 _current_dialogue 之前，将其存储在临时变量中
+	var finished_dialogue = _current_dialogue
 	_current_dialogue = null
+	
 	if is_instance_valid(_dialogue_box):
 		_dialogue_box.hide_box()
 	if is_instance_valid(_spotlight):
@@ -141,7 +145,7 @@ func _end_dialogue():
 	get_tree().paused = false
 	print("DEBUG: Dialogue FINISHED. get_tree().paused is now: ", get_tree().paused)
 	
-	emit_signal("dialogue_finished", _current_dialogue)
+	emit_signal("dialogue_finished", finished_dialogue)
 
 	# 检查队列中是否还有待处理的对话
 	if not _dialogue_queue.is_empty():

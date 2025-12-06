@@ -62,8 +62,13 @@ func _on_dialogue_finished(resource: DialogueResource):
 
 func _on_connection_made(pipe_type: int):
 	if _waiting_for_blue_connection and pipe_type == Pipe.PipeType.SUPPLY: # SUPPLY_PIPE for blue (resource) pipes
-		print("TutorialManager: Blue connection made! Starting post-connect dialogue.")
+		print("TutorialManager: Blue connection made! Waiting for build animation...")
 		_waiting_for_blue_connection = false
+		
+		# 等待建造动画完成 (假设1.5秒足够)
+		await get_tree().create_timer(2.5).timeout
+		
+		print("TutorialManager: Build animation finished. Starting post-connect dialogue.")
 		if post_connect_dialogue:
 			DialogueManager.start_dialogue(post_connect_dialogue)
 			_waiting_for_enemy_dialogue_end = true
