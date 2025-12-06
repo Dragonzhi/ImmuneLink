@@ -3,6 +3,7 @@ extends Node
 signal repair_value_changed(new_value: float)
 signal resource_value_changed(new_value: float)
 signal time_remaining_changed(new_time: float)
+signal nk_samples_changed(new_count: int) # 新增：NK样本数量变化信号
 
 @export var level_duration: float = 300.0 # 关卡总时长（秒）
 
@@ -17,6 +18,11 @@ var _resource_value: float = 0.0:
 	set(value):
 		_resource_value = value
 		emit_signal("resource_value_changed", _resource_value)
+
+var _nk_cell_samples: int = 0:
+	set(value):
+		_nk_cell_samples = value
+		emit_signal("nk_samples_changed", _nk_cell_samples)
 
 var _current_base_health: float = 100.0 # 假设基地生命值
 var _time_remaining: float = 0.0:
@@ -54,6 +60,16 @@ func spend_resource_value(amount: float) -> bool:
 	else:
 		return false
 
+func add_nk_cell_sample(amount: int):
+	self._nk_cell_samples += amount
+
+func spend_nk_cell_sample(amount: int) -> bool:
+	if _nk_cell_samples >= amount:
+		self._nk_cell_samples -= amount
+		return true
+	else:
+		return false
+
 func take_base_damage(amount: float):
 	if _is_game_over: return
 	_current_base_health -= amount
@@ -67,6 +83,9 @@ func get_repair_value() -> float:
 
 func get_resource_value() -> float:
 	return _resource_value
+
+func get_nk_cell_samples() -> int:
+	return _nk_cell_samples
 
 func get_time_remaining() -> float:
 	return _time_remaining
@@ -85,6 +104,7 @@ func _on_scene_changed():
 		print("DEBUG: GameManager is initializing a new level.")
 		# --- 初始化新关卡状态 ---
 		self._resource_value = level_config.starting_resources
+		self._nk_cell_samples = 0 # 重置NK细胞样本
 		self._repair_value = 0.0
 		self._current_base_health = 100.0 # 可改为从LevelConfig读取
 		self._time_remaining = level_duration # 使用导出的变量

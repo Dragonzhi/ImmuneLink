@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NKProtocolUpgrade" load_steps=3 format=3 uid="uid://bmx4cctvcc2pi"]
+
+[ext_resource type="Texture2D" uid="uid://dtycqgk51itsx" path="res://assets/bridge/upLevel/icon/NKcell.png" id="1_pq3ty"]
+[ext_resource type="Script" uid="uid://dgvqu532lf0v5" path="res://scripts/upgrades/NKProtocolUpgrade.gd" id="2_br0me"]
+
+[resource]
+script = ExtResource("2_br0me")
+upgrade_name = "激活NK协议"
+description = "消耗一个NK细胞样本，将此桥梁永久改造为具有特殊免疫调节功能的“调节桥梁”。"
+cost = 0
+icon = ExtResource("1_pq3ty")

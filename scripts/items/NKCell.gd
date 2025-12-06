@@ -8,8 +8,8 @@ func collect():
 	print("NK Cell collected at %s" % global_position)
 	# 在这里可以添加被拾取时的视觉/声音效果，例如一个Tween动画
 	
-	# 发出信号，通知关心此事件的系统（例如GameManager）
-	emit_signal("collected", self)
+	# 直接调用GameManager来增加样本数量
+	GameManager.add_nk_cell_sample(1)
 	
 	# 从场景中移除自己
 	queue_free()

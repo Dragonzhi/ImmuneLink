@@ -9,6 +9,7 @@ const AttackUpgradeScript = preload("res://scripts/upgrades/AttackUpgrade.gd")
 const DefenseUpgradeScript = preload("res://scripts/upgrades/DefenseUpgrade.gd")
 const ConnectionRateUpgradeScript = preload("res://scripts/upgrades/ConnectionRateUpgrade.gd")
 const ExpansionUpgradeScript = preload("res://scripts/upgrades/ExpansionUpgrade.gd")
+const NKProtocolUpgradeResource = preload("res://scripts/upgrades/resourses/NKProtocolUpgrade.tres")
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var repair_timer: Timer = $RepairTimer
@@ -46,6 +47,7 @@ var _base_stats: Dictionary = {}   # 用于存储桥梁的初始属性
 
 # --- 升级相关状态和数据 ---
 var is_attack_upgraded: bool = false
+var is_nk_upgraded: bool = false # 新增：追踪桥梁是否已是NK升级桥梁
 var attack_upgrade_damage: float = 0.0
 var attack_rate: float = 1.0
 var health_regen: float = 0.0 
@@ -145,6 +147,10 @@ func get_available_upgrades() -> Array[Upgrade]:
 	if current_bridge_state != State.NORMAL:
 		return upgrades_to_return
 		
+	# --- 新增：检查并添加NK协议升级 ---
+	if GameManager.get_nk_cell_samples() > 0 and not is_nk_upgraded:
+		upgrades_to_return.append(NKProtocolUpgradeResource)
+	
 	var on_active_line = false
 	if ConnectionManager and ConnectionManager.has_method("is_bridge_on_active_line"):
 		on_active_line = ConnectionManager.is_bridge_on_active_line(self)
@@ -208,6 +214,7 @@ func _reset_to_base_stats():
 	animated_sprite.modulate = _base_stats["modulate"]
 	up_level_sprite.modulate = Color.WHITE # 重置升级图标的颜色
 	is_attack_upgraded = _base_stats["is_attack_upgraded"]
+	is_nk_upgraded = _base_stats["is_nk_upgraded"] # 重置NK升级状态
 
 	# 重置状态变量
 	current_upgrade = null
@@ -245,6 +252,18 @@ func _apply_upgrade_effects(upgrade: Upgrade):
 			ConnectionManager.apply_boost_to_connection_of_bridge(self, upgrade.rate_multiplier)
 		apply_visual_upgrade(upgrade)
 
+	elif script == NKProtocolUpgradeResource.get_script(): # 处理NK协议升级
+		if GameManager.spend_nk_cell_sample(1):
+			is_nk_upgraded = true
+			# 激活NK协议后的视觉效果
+			_update_nk_visuals() # 新函数：更新NK协议的视觉效果
+			apply_visual_upgrade(upgrade)
+			print("NK Protocol activated on bridge %s." % grid_pos)
+		else:
+			printerr("GameManager: 资源不足（NK样本），无法应用NK协议升级。")
+			# 可以在此处回滚升级界面或给用户提示
+
+
 	elif script == ExpansionUpgradeScript:
 		# 扩展升级的逻辑比较特殊，它会改变桥梁的状态
 		# 这里的调用会触发一个等待用户绘制新桥梁的流程
@@ -269,6 +288,14 @@ func _update_stack_visuals():
 	
 	animated_sprite.modulate = base_color # 恢复基础桥梁颜色
 	up_level_sprite.modulate = base_color.lerp(TARGET_COLOR, factor)
+
+func _update_nk_visuals():
+	"""更新NK协议激活后的视觉效果。"""
+	# 使用一个独特的颜色来表示NK协议激活的桥梁
+	animated_sprite.modulate = Color.LIME_GREEN.lerp(Color.WHITE, 0.5) # 淡绿色
+	# 可以选择隐藏up_level_sprite或改变其图标，表示这是“最终”升级之一
+	# up_level_sprite.visible = false
+
 
 # 由 Upgrade 资源调用，用来更新视觉表现
 func apply_visual_upgrade(upgrade: Upgrade):
@@ -299,6 +326,7 @@ func _ready() -> void:
 	_base_stats["attack_rate"] = 1.0 # 攻击速率初始为1
 	_base_stats["modulate"] = animated_sprite.modulate # 初始颜色
 	_base_stats["is_attack_upgraded"] = false
+	_base_stats["is_nk_upgraded"] = false # 初始NK升级状态
 	
 	current_health = max_health
 	grid_manager = GridManager
