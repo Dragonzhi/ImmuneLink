@@ -25,8 +25,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not _is_active or get_viewport().is_input_handled():
 		return
 
-	# 监听玩家的“继续”输入
-	if event.is_action_pressed("ui_accept"): # "ui_accept" 通常是 Enter 或 Space
+	# 监听玩家的“继续”输入 (键盘或鼠标点击)
+	if event.is_action_pressed("ui_accept") or (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed()):
 		get_viewport().set_input_as_handled()
 		_advance_dialogue()
 
