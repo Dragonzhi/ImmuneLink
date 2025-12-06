@@ -2,6 +2,8 @@ extends Node
 
 var transition_rect: ColorRect
 var is_transitioning: bool = false
+# 临时的场景间数据传递字典
+var scene_data: Dictionary = {}
 
 func _ready():
 	# -- 程序化创建UI --

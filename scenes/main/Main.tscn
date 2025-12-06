@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://cwq4oeccwuocx" path="res://scenes/main/ui_cancel.gd" id="7_tck0d"]
 [ext_resource type="PackedScene" uid="uid://ddhalg244kw3t" path="res://scenes/ui/FPSCounter.tscn" id="8_ko0rf"]
 [ext_resource type="PackedScene" uid="uid://dpsk4yq8w7h6g" path="res://scenes/ui/GameUI.tscn" id="9_gameui"]
+[ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="10_theme"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u8lgh"]
 size = Vector2(404, 236)
@@ -129,6 +130,7 @@ visible = false
 script = ExtResource("5_abcde")
 overlay_path = NodePath("../UILayer/Overlay")
 ui_layer_path = NodePath("../UILayer")
+theme = ExtResource("10_theme")
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 layer = 10

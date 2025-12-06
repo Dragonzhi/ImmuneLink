@@ -100,33 +100,62 @@ func _on_game_timer_timeout():
 # --- Private Victory/Defeat Logic ---
 
 func _handle_victory():
-	wave_manager = get_node("/root/Main/WaveManager")
-
-	if _is_game_over: return
-	_is_game_over = true
-	game_timer.stop()
-	# 停止所有游戏活动
-	if wave_manager: wave_manager.stop_wave_system()
-	print("=========================")
-	print("======= 胜利! =======")
-	print("=========================")
-	# 之后可以切换到胜利场景
-	# SceneManager.change_scene_to_file(...)
+	_start_game_over_sequence(true, "修复完成，模拟成功！")
 
 func _handle_defeat(reason: String):
-	wave_manager = get_node("/root/Main/WaveManager")
+	_start_game_over_sequence(false, "失败：%s" % reason)
 
+func _start_game_over_sequence(is_victory: bool, message: String):
 	if _is_game_over: return
 	_is_game_over = true
+	
 	game_timer.stop()
-	# 停止所有游戏活动
-	if wave_manager: wave_manager.stop_wave_system()
-	print("!!!!!!!!!!!!!!!!!!!!!!!!!")
-	print("!!!!!!! 失败! !!!!!!!")
-	print("原因: %s" % reason)
-	print("!!!!!!!!!!!!!!!!!!!!!!!!!")
-	# 之后可以切换到失败场景
-	# SceneManager.change_scene_to_file(...)
+	
+	# 尝试获取WaveManager并停止它
+	var wave_manager_node = get_node_or_null("/root/Main/WaveManager")
+	if wave_manager_node and wave_manager_node.has_method("stop_wave_system"):
+		wave_manager_node.stop_wave_system()
+
+	# 显示横幅
+	var ui_manager = get_node_or_null("/root/Main/UIManager")
+	if ui_manager and ui_manager.has_method("show_game_over_banner"):
+		ui_manager.show_game_over_banner(message)
+	
+	# 暂停游戏
+	get_tree().paused = true
+	
+	# 创建一个不受暂停影响的Timer
+	var timer = Timer.new()
+	timer.wait_time = 3.0 # 3秒延迟
+	timer.one_shot = true
+	timer.pause_mode = Node.PAUSE_MODE_PROCESS # 关键：使其在暂停时也能处理
+	add_child(timer)
+	timer.start()
+	timer.timeout.connect(func(): _on_game_over_timer_timeout(is_victory, timer))
+
+
+func _on_game_over_timer_timeout(is_victory: bool, timer: Timer):
+	# 在切换场景前必须取消暂停
+	get_tree().paused = false
+	
+	# 准备要传递的数据
+	var final_score = _resource_value + _repair_value # 简单计算一个分数
+	var time_spent = level_duration - _time_remaining
+	var minutes = int(time_spent) / 60
+	var seconds = int(time_spent) % 60
+	
+	SceneManager.scene_data = {
+		"score": final_score,
+		"time": "%02d:%02d" % [minutes, seconds]
+	}
+	
+	# 切换到结束场景
+	SceneManager.change_scene_to_file("res://scenes/ui/screens/EndScreen.tscn")
+	
+	# 清理Timer
+	if is_instance_valid(timer):
+		timer.queue_free()
+
 
 
 # --- Public API for Upgrades (No changes needed below) ---
