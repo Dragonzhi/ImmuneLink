@@ -93,6 +93,11 @@ func open_upgrade_menu(upgrades: Array[Upgrade], bridge: Bridge):
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
+		
+		# --- 新增：在退出前，强制关闭所有对话 ---
+		if DialogueManager and DialogueManager.has_method("force_stop_all_dialogues"):
+			DialogueManager.force_stop_all_dialogues()
+		
 		get_tree().paused = false # 确保游戏未暂停
 		if current_menu and current_menu.is_visible(): # 如果升级菜单打开了，先关闭
 			close_upgrade_menu()

@@ -52,6 +52,25 @@ func start_dialogue(resource: DialogueResource):
 		_process_dialogue_queue()
 
 
+## 公共API：强制停止所有对话并清理UI
+func force_stop_all_dialogues():
+	if not _is_active: return
+
+	_is_active = false
+	_current_dialogue = null
+	_dialogue_queue.clear()
+	
+	if is_instance_valid(_dialogue_box):
+		_dialogue_box.hide_box()
+	if is_instance_valid(_spotlight):
+		_spotlight.hide_spotlight()
+		
+	if get_tree().paused:
+		get_tree().paused = false
+	
+	print("DEBUG: All dialogues forcefully stopped.")
+
+
 func is_active() -> bool:
 	return _is_active
 	
