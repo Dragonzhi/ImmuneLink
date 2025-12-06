@@ -7,7 +7,9 @@ signal all_waves_completed
 
 @export var waves: Array[Wave]
 @export var spawners: Array[Node]
-@export var loop_waves: bool = false # 新增：是否循环波数
+@export var loop_waves: bool = false
+@export var auto_start_on_ready: bool = true
+@export var initial_delay: float = 5.0
 
 @onready var _wave_timer: Timer = $WaveTimer
 
@@ -21,28 +23,16 @@ func _ready() -> void:
 		return
 	_wave_timer.timeout.connect(_start_next_wave)
 	
-	await get_tree().create_timer(0.1).timeout
+	_initialize_system()
 	
+	if auto_start_on_ready:
+		start_spawning()
+
+func _initialize_system():
 	# Connect to other nodes that need to react to waves
 	_connect_to_listeners()
-	
-	start_wave_system()
 
-func _connect_to_listeners():
-	# Find the particle background and connect to it.
-	# This is more robust than having the listener try to find the manager.
-	var particle_bg = get_tree().get_root().find_child("ParticleBackground", true, false)
-	if particle_bg and particle_bg.has_method("_on_wave_started"):
-		wave_started.connect(particle_bg._on_wave_started)
-	else:
-		print("WaveManager did not find ParticleBackground, or it's missing the '_on_wave_started' method.")
-
-func start_wave_system():
-	if waves.is_empty():
-		printerr("WaveManager has no waves configured.")
-		return
-	if spawners.is_empty():
-		printerr("WaveManager has no spawners configured.")
+	if waves.is_empty() or spawners.is_empty():
 		return
 
 	for spawner in spawners:
@@ -51,11 +41,32 @@ func start_wave_system():
 			continue
 		if not spawner.spawner_finished.is_connected(_on_spawner_finished):
 			spawner.spawner_finished.connect(_on_spawner_finished)
-
+			
 	_current_wave_index = -1
-	_is_running = true
-	_start_next_wave()
 
+func _connect_to_listeners():
+	# Find the particle background and connect to it.
+	var particle_bg = get_tree().get_root().find_child("ParticleBackground", true, false)
+	if particle_bg and particle_bg.has_method("_on_wave_started"):
+		wave_started.connect(particle_bg._on_wave_started)
+	else:
+		print("WaveManager did not find ParticleBackground, or it's missing the '_on_wave_started' method.")
+
+# --- Public Control API ---
+
+## 开始自动波次生成
+func start_spawning(delay: float = -1.0):
+	if waves.is_empty() or spawners.is_empty():
+		printerr("WaveManager has no waves or spawners configured. Cannot start.")
+		return
+		
+	var start_delay = initial_delay if delay < 0 else delay
+	print("Wave system will start in %s seconds." % start_delay)
+	
+	_is_running = true
+	_wave_timer.start(start_delay)
+
+## 停止所有波次和生成
 func stop_wave_system():
 	_is_running = false
 	for spawner in spawners:
@@ -64,6 +75,18 @@ func stop_wave_system():
 	if not _wave_timer.is_stopped():
 		_wave_timer.stop()
 	print("Wave system stopped.")
+
+## 手动触发下一波
+func trigger_next_wave():
+	if not _is_running:
+		_is_running = true
+	
+	if not _wave_timer.is_stopped():
+		_wave_timer.stop()
+	
+	_start_next_wave()
+
+# --- Internal Wave Logic ---
 
 func _start_next_wave():
 	if not _is_running: return
