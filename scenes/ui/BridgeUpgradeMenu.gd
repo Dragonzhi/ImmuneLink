@@ -13,6 +13,7 @@ var selected_bridge: Bridge = null # 对当前选中的桥梁的引用
 # 动态创建并布置按钮，基于传入的升级列表
 func populate_menu(upgrades: Array[Upgrade], target_bridge: Bridge):
 	self.selected_bridge = target_bridge
+	var current_resources = GameManager.get_resource_value() # 获取当前资源
 	
 	# 清理旧按钮
 	for child in get_children():
@@ -36,6 +37,11 @@ func populate_menu(upgrades: Array[Upgrade], target_bridge: Bridge):
 			button.icon = upgrade_res.icon
 			button.text = "%s\n(%s G)" % [upgrade_res.upgrade_name, upgrade_res.cost]
 			button.add_theme_font_size_override("font_size", button_font_size) # 应用字体大小
+		
+		# --- 新增：检查资源是否足够 ---
+		if current_resources < upgrade_res.cost:
+			button.disabled = true
+		# --------------------------
 		
 		# 强制应用尺寸，无论按钮是如何创建的
 		button.custom_minimum_size = button_default_size
