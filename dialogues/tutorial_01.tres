@@ -5,16 +5,25 @@
 [resource]
 script = ExtResource("1_dialogue_res")
 dialogue_lines = Array[Dictionary]([{
-"name": "系统提示",
+"name": "Monitoring System",
 "text": "正在初始化“免疫联结”模拟程序。当前监视区域：目标病患体内。分析开始。"
 }, {
 "focus_target_path": NodePath("UILayer/GameUI"),
-"name": "系统提示",
+"name": "Monitoring System",
 "text": "核心任务：修复生命系统。目标：通过建立[红色生命链路]将修复指数提升至100%。"
 }, {
-"name": "系统提示",
+"focus_target_path": NodePath("BackGround/Pipes"),
+"name": "Monitoring System",
 "text": "操作指令：在两个同色血管节点之间拖动，以建立[桥梁]。桥梁是维持机能的唯一手段。"
 }, {
-"name": "系统提示",
-"text": "桥梁分类：[蓝色供给链路]用于产生建造资源。[红色生命链路]用于提升修复指数。"
+"focus_target_path": NodePath("BackGround/Pipes/Blue/bluePipe2"),
+"name": "Monitoring System",
+"text": "桥梁分类：[蓝色供给链路]用于产生建造资源。"
+}, {
+"focus_target_path": NodePath("BackGround/Pipes/Red/redPipe2"),
+"name": "Monitoring System",
+"text": "[红色生命链路]用于提升修复指数。"
+}, {
+"name": "Monitoring System",
+"text": "尝试将资源管道连接起来"
 }])

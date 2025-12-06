@@ -15,16 +15,42 @@ func focus_on_node(node: CanvasItem):
 		hide_spotlight()
 		return
 		
-	# 获取节点的矩形区域
-	var rect = node.get_rect() # 对于Sprite2D等, 这通常是其纹理的大小
+	var rect: Rect2
+
 	if node is Control:
+		# 对于UI元素，get_global_rect() 是可靠的。
 		rect = node.get_global_rect()
+	elif node is Node2D:
+		var sprite_found: Sprite2D = null
+		for child in node.get_children():
+			if child is Sprite2D:
+				sprite_found = child
+				break
+		
+		if sprite_found and sprite_found.texture:
+			# Godot 4: Manually transform the corners to get the global bounding box
+			var local_rect = sprite_found.get_rect()
+			var global_transform = sprite_found.get_global_transform()
+			
+			var corners = [
+				global_transform * local_rect.position,
+				global_transform * (local_rect.position + Vector2(local_rect.size.x, 0)),
+				global_transform * (local_rect.position + local_rect.size),
+				global_transform * (local_rect.position + Vector2(0, local_rect.size.y))
+			]
+			
+			rect = Rect2(corners[0], Vector2())
+			for i in range(1, 4):
+				rect = rect.expand(corners[i])
+		else:
+			# Fallback to default size if no Sprite2D is found or has no texture
+			var node_size = Vector2(32, 32) # 使用一个默认大小
+			rect = Rect2(node.global_position - node_size / 2.0, node_size)
 	else:
-		# 对于Node2D, 我们需要手动计算其在屏幕上的矩形
-		# 这里做一个简化，使用节点的global_position和固定大小
-		# 一个更完整的实现需要考虑节点的实际边界和缩放
-		var node_size = Vector2(64, 64) # 假设一个默认大小
-		rect = Rect2(node.global_position - node_size / 2.0, node_size)
+		# 如果是无法处理的类型，则隐藏聚光灯
+		printerr("Spotlight: Cannot determine rect for node of type %s" % node.get_class())
+		hide_spotlight()
+		return
 
 	focus_on_rect(rect)
 
