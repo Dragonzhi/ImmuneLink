@@ -36,8 +36,8 @@ signal path_finished(enemy: BaseEnemy)
 @onready var attack_timer: Timer = $AttackTimer
 # PathCheckTimer is now removed, logic is handled in _physics_process
 
-var _is_speed_buffed: bool = false
 var _original_move_speed: float
+var _active_buffs: Dictionary = {} # Stores active buffs, key: buff_type, value: {timer, original_value, current_multiplier}
 
 func _ready() -> void:
 	# 应用个体数值浮动
@@ -51,7 +51,7 @@ func _ready() -> void:
 	move_speed = max(1.0, move_speed)
 	damage = max(0.0, damage) 
 	
-	# 记录下原始移动速度，用于Buff/Debuff系统
+	# 关键：在这里记录下经过随机浮动后的原始速度，用于Buff/Debuff系统
 	_original_move_speed = move_speed
 	
 	current_hp = max_hp
@@ -273,22 +273,38 @@ func _play_spawn_animation():
 
 ## --- Buff/Debuff 方法 ---
 
-func apply_speed_buff(strength_multiplier: float):
-	if not _is_speed_buffed:
-		# 只有在未被Buff时才存储原始速度，避免重复保存
-		_original_move_speed = move_speed
-		_is_speed_buffed = true
-	
-	# 应用Buff，后续Buff会基于当前速度再次叠加
-	move_speed *= strength_multiplier
-	# print("Enemy %s speed buffed to %s" % [name, move_speed])
+func apply_buff(type: String, multiplier: float, duration: float):
+	if type == "speed":
+		if _active_buffs.has(type):
+			# 如果Buff已存在，只刷新其计时器
+			var buff_timer: Timer = _active_buffs[type]
+			buff_timer.start(duration)
+		else:
+			# 首次施加此类型Buff
+			move_speed *= multiplier
+			
+			var buff_timer = Timer.new()
+			buff_timer.wait_time = duration
+			buff_timer.one_shot = true
+			# 使用 bind 将buff类型传递给超时处理函数
+			buff_timer.timeout.connect(remove_buff.bind(type))
+			add_child(buff_timer)
+			buff_timer.start()
+			
+			_active_buffs[type] = buff_timer # 只需存储Timer节点本身
 
-func remove_speed_buff():
-	if _is_speed_buffed:
-		# 恢复到原始速度
-		move_speed = _original_move_speed
-		_is_speed_buffed = false
-		# print("Enemy %s speed buff removed, restored to %s" % [name, move_speed])
+func remove_buff(type: String):
+	if _active_buffs.has(type):
+		var buff_timer: Timer = _active_buffs[type]
+		
+		if type == "speed":
+			# 将速度恢复到被Buff前的原始值
+			move_speed = _original_move_speed
+		
+		# 清理
+		if is_instance_valid(buff_timer):
+			buff_timer.queue_free()
+		_active_buffs.erase(type)
 
 # 物理碰撞现在处理桥梁交互，这里可以留空或用于其他逻辑
 func _on_area_2d_area_entered(area: Area2D) -> void:

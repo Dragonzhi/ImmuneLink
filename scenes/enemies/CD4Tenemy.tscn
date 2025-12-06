@@ -11,6 +11,8 @@ radius = 24.0
 script = ExtResource("2_h2ac0")
 buff_strength_multiplier = 1.5
 buff_range = 24.0
+buff_interval = 3.0
+buff_duration = 2.0
 max_hp = 60.0
 move_speed = 30.0
 damage = 5.0
@@ -33,6 +35,3 @@ collision_mask = 2
 [node name="BuffCollisionShape2D" type="CollisionShape2D" parent="BuffAura" index="0"]
 shape = SubResource("CircleShape2D_h2ac0")
 debug_color = Color(0.8187276, 0.35470805, 0.51504505, 0.41960785)
-
-[connection signal="body_entered" from="BuffAura" to="." method="_on_buff_aura_body_entered"]
-[connection signal="body_exited" from="BuffAura" to="." method="_on_buff_aura_body_exited"]

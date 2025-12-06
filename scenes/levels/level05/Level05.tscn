@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://7c4txu18uyug"]
+
+[ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_eqt63"]
+[ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_ew1tl"]
+[ext_resource type="Resource" uid="uid://du5ahct1eev23" path="res://scenes/levels/level05/waves/wave_01.tres" id="3_nub1u"]
+
+[sub_resource type="Curve2D" id="Curve2D_ayo3k"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -32, 0, 0, 0, 0, 0, -287, -10, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[sub_resource type="Curve2D" id="Curve2D_70c2a"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -139, -14, 0, 0, 0, 0, -163, 125, 0, 0, 0, 0, 20, 117, 0, 0, 0, 0, 37, 45, 0, 0, 0, 0, 0, 0)
+}
+point_count = 6
+
+[node name="Main" instance=ExtResource("1_eqt63")]
+
+[node name="WaveManager" parent="." index="1" node_paths=PackedStringArray("spawners")]
+waves = Array[ExtResource("2_ew1tl")]([ExtResource("3_nub1u")])
+spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01")]
+
+[node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
+position = Vector2(4, 152)
+
+[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" index="0"]
+position = Vector2(316, 45)
+
+[node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
+curve = SubResource("Curve2D_ayo3k")
+
+[node name="Path02" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="5"]
+curve = SubResource("Curve2D_70c2a")
+
+[node name="TutorialManager" parent="." index="11"]
+initial_dialogue = null
+post_connect_dialogue = null
+upgrade_dialogue = null
+
+[editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]
