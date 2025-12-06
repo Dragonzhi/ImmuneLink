@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://dpsk4yq8w7h6g" path="res://scenes/ui/GameUI.tscn" id="9_gameui"]
 [ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="10_theme"]
 [ext_resource type="Shader" uid="uid://cul7dygdsicnj" path="res://assets/shader/pixelate.gdshader" id="15_tck0d"]
+[ext_resource type="Script" uid="uid://1_trigger_script" path="res://scripts/triggers/TutorialTrigger.gd" id="16_trigger"]
+[ext_resource type="Resource" path="res://dialogues/tutorial_01.tres" id="17_dialogue"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u8lgh"]
 size = Vector2(404, 236)
@@ -264,6 +266,11 @@ mouse_filter = 2
 libraries = {
 &"": SubResource("AnimationLibrary_tck0d")
 }
+
+[node name="TutorialTrigger" type="Node" parent="."]
+script = ExtResource("16_trigger")
+dialogue_resource = ExtResource("17_dialogue")
+
 
 [connection signal="input_event" from="UICancel/Area2D" to="UICancel" method="_on_area_2d_input_event"]
 

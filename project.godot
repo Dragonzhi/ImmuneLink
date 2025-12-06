@@ -25,6 +25,7 @@ GameManager="*res://scenes/managers/GameManager.tscn"
 ConnectionManager="*res://scenes/managers/ConnectionManager.tscn"
 SceneManager="*res://scenes/managers/SceneManager.tscn"
 VhsMonitorEffect="*res://scenes/world/VHSMonitorEffect.tscn"
+DialogueManager="*res://scripts/dialogue/DialogueManager.gd"
 
 [display]
 

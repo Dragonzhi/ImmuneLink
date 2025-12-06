@@ -1,9 +1,17 @@
-[gd_resource type="Theme" load_steps=3 format=3 uid="uid://dshck318jhgki"]
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://dshck318jhgki"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h6k2r"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h6k2r"]
+bg_color = Color(0.05882353, 0.05882353, 0.05882353, 0.5294118)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ex36d"]
 
 [resource]
 Button/styles/focus = SubResource("StyleBoxEmpty_h6k2r")
+Panel/styles/panel = SubResource("StyleBoxFlat_h6k2r")
 PanelContainer/styles/panel = SubResource("StyleBoxEmpty_ex36d")

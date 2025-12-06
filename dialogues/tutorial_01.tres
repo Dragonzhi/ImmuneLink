@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="DialogueResource" load_steps=2 format=3 uid="uid://bmmfcvr3fkuve"]
+
+[ext_resource type="Script" path="res://scripts/dialogue/DialogueResource.gd" id="1_dialogue_res"]
+
+[resource]
+script = ExtResource("1_dialogue_res")
+dialogue_lines = Array[Dictionary]([{
+"name": "系统提示",
+"text": "欢迎来到“免疫联结”教学关卡。"
+}, {
+"name": "系统提示",
+"text": "你的目标是修复中央系统，同时抵御不断来袭的病毒。"
+}, {
+"name": "系统提示",
+"text": "通过在节点之间拖动来建造桥梁。蓝色的桥梁可以产生资源，红色的桥梁可以修复中央系统。"
+}, {
+"name": "系统提示",
+"text": "祝你好运！"
+}])

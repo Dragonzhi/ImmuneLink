@@ -29,9 +29,28 @@ var _is_game_over: bool = false
 @onready var game_timer: Timer = $GameTimer
 
 func _ready() -> void:
+	# 连接自身信号
 	get_tree().scene_changed.connect(_on_scene_changed)
 	game_timer.timeout.connect(_on_game_timer_timeout)
+	
+	# 连接DialogueManager的信号
+	# 确保DialogueManager已经作为Autoload存在
+	if Engine.has_singleton("DialogueManager"):
+		DialogueManager.dialogue_started.connect(_on_dialogue_started)
+		DialogueManager.dialogue_finished.connect(_on_dialogue_finished)
+	
+	# 初始化
 	_on_scene_changed()
+
+func _on_dialogue_started():
+	# 对话开始时暂停游戏，但不影响游戏结束的逻辑
+	if not _is_game_over:
+		get_tree().paused = true
+
+func _on_dialogue_finished():
+	# 对话结束时恢复游戏，但不影响游戏结束的逻辑
+	if not _is_game_over:
+		get_tree().paused = false
 
 # --- Public Methods ---
 

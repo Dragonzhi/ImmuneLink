@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_l5wyt"]
 [ext_resource type="PackedScene" uid="uid://dpemoeolhg5ja" path="res://scenes/enemies/VirusEnemy.tscn" id="2_7pata"]
-[ext_resource type="PackedScene" uid="uid://bf7mkrd3nmgig" path="res://scenes/enemies/GermEnemy.tscn" id="3_t80bd"]
+[ext_resource type="PackedScene" uid="uid://c8kj5mu5xjolv" path="res://scenes/enemies/CD4Tenemy.tscn" id="3_l5wyt"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="4_gbvd2"]
 [ext_resource type="Script" path="res://scripts/managers/SpawnerWaveConfig.gd" id="5_gopsh"]
 
@@ -13,7 +13,8 @@ metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
 
 [sub_resource type="Resource" id="Resource_h7bdk"]
 script = ExtResource("1_l5wyt")
-enemy_scene = ExtResource("3_t80bd")
+enemy_scene = ExtResource("3_l5wyt")
+weight = 2
 metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
 
 [resource]
