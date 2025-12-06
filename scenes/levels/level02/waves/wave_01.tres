@@ -19,4 +19,5 @@ metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
 [resource]
 script = ExtResource("2_wmn87")
 default_spawn_infos = Array[ExtResource("1_4rxoc")]([SubResource("Resource_imkwl"), SubResource("Resource_emvfr")])
-default_spawn_interval = 8.0
+default_enemy_count = 3
+default_spawn_interval = 5.0

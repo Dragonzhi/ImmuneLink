@@ -141,12 +141,14 @@ func _start_game_over_sequence(is_victory: bool, message: String):
 	timer.timeout.connect(func(): _on_game_over_timer_timeout(is_victory, timer))
 
 
+@warning_ignore("unused_parameter")
 func _on_game_over_timer_timeout(is_victory: bool, timer: Timer):
 	# 在切换场景前必须取消暂停
 	get_tree().paused = false
 	
 	# 准备要传递的数据
-	var final_score = _resource_value + _repair_value # 简单计算一个分数
+	@warning_ignore("narrowing_conversion")
+	var final_score:int = _resource_value + _repair_value # 简单计算一个分数
 	var time_spent = level_duration - _time_remaining
 	@warning_ignore("integer_division")
 	var minutes:int = int(time_spent) / 60

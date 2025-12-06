@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://cm325e0w41j3h"]
+[gd_scene load_steps=8 format=3 uid="uid://cm325e0w41j3h"]
 
 [ext_resource type="Script" uid="uid://d3h8sn6d8h0gc" path="res://scripts/entities/BaseEnemy.gd" id="1_w51s3"]
 [ext_resource type="PackedScene" uid="uid://b5w5j3y5w5j3y" path="res://scenes/ui/HealthBar.tscn" id="2_abcde"]
@@ -8,6 +8,17 @@ radius = 4.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_l6aj4"]
 radius = 3.0
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_heal"]
+blend_mode = 1
+
+[sub_resource type="Curve" id="Curve_heal_scale"]
+_data = [Vector2(0, 0.5), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_heal"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0, 0.6494519, 0.6889623, 1, 0.61571294, 0.93308246, 0.96100765, 1, 0.7, 1, 0.9, 0)
 
 [node name="BaseEnemy" type="CharacterBody2D" node_paths=PackedStringArray("health_bar")]
 collision_layer = 2
@@ -42,5 +53,23 @@ collision_mask = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SeparationDetector"]
 shape = SubResource("CircleShape2D_l6aj4")
 debug_color = Color(0.8519316, 0.36708492, 0.15484712, 0.41960785)
+
+[node name="BuffParticles" type="CPUParticles2D" parent="."]
+material = SubResource("CanvasItemMaterial_heal")
+emitting = false
+amount = 15
+lifetime = 0.6
+preprocess = 0.5
+randomness = 0.5
+emission_shape = 1
+emission_sphere_radius = 10.0
+direction = Vector2(0, -1)
+spread = 12.0
+gravity = Vector2(0, -1)
+initial_velocity_min = 10.0
+initial_velocity_max = 30.0
+scale_amount_max = 2.0
+scale_amount_curve = SubResource("Curve_heal_scale")
+color_ramp = SubResource("Gradient_heal")
 
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

@@ -272,6 +272,7 @@ func _play_spawn_animation():
 
 
 ## --- Buff/Debuff 方法 ---
+@onready var buff_particles: CPUParticles2D = $BuffParticles
 
 func apply_buff(type: String, multiplier: float, duration: float):
 	if type == "speed":
@@ -282,7 +283,7 @@ func apply_buff(type: String, multiplier: float, duration: float):
 		else:
 			# 首次施加此类型Buff
 			move_speed *= multiplier
-			
+			buff_particles.emitting = true
 			var buff_timer = Timer.new()
 			buff_timer.wait_time = duration
 			buff_timer.one_shot = true
@@ -300,7 +301,7 @@ func remove_buff(type: String):
 		if type == "speed":
 			# 将速度恢复到被Buff前的原始值
 			move_speed = _original_move_speed
-		
+		buff_particles.emitting = false
 		# 清理
 		if is_instance_valid(buff_timer):
 			buff_timer.queue_free()
