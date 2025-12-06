@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Wave" load_steps=4 format=3 uid="uid://cy1sktrnamsbs"]
+
+[ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_nuea8"]
+[ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_kr22n"]
+[ext_resource type="Script" path="res://scripts/managers/SpawnerWaveConfig.gd" id="3_574rf"]
+
+[resource]
+script = ExtResource("2_kr22n")
+default_enemy_count = 200
+default_spawn_interval = 0.5
+post_wave_delay = 15.0

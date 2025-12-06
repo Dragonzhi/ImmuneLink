@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="Wave" load_steps=8 format=3 uid="uid://f02vl80cakas"]
+
+[ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_264hj"]
+[ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_vjxo2"]
+[ext_resource type="PackedScene" uid="uid://dpemoeolhg5ja" path="res://scenes/enemies/VirusEnemy.tscn" id="2_xmpem"]
+[ext_resource type="PackedScene" uid="uid://cjkuu6twi2xhm" path="res://scenes/enemies/CD4Tenemy.tscn" id="3_sr45f"]
+[ext_resource type="Script" path="res://scripts/managers/SpawnerWaveConfig.gd" id="3_xmpem"]
+
+[sub_resource type="Resource" id="Resource_8itfy"]
+script = ExtResource("1_264hj")
+enemy_scene = ExtResource("2_xmpem")
+weight = 5
+metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
+
+[sub_resource type="Resource" id="Resource_w1ubm"]
+script = ExtResource("1_264hj")
+enemy_scene = ExtResource("3_sr45f")
+metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
+
+[resource]
+script = ExtResource("2_vjxo2")
+default_spawn_infos = Array[ExtResource("1_264hj")]([SubResource("Resource_8itfy"), SubResource("Resource_w1ubm")])
+default_enemy_count = 30

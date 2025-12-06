@@ -1,0 +1,75 @@
+[gd_scene load_steps=13 format=3 uid="uid://ck2ojl0edch6c"]
+
+[ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_53rhq"]
+[ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_iseop"]
+[ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="2_xp5jw"]
+[ext_resource type="Resource" uid="uid://cixv1gmpjd2xk" path="res://scenes/levels/level04/waves/wave_00.tres" id="3_m4daj"]
+[ext_resource type="Resource" uid="uid://dkqvl6qfp5bxb" path="res://scenes/levels/level04/waves/wave_01.tres" id="4_5akfg"]
+[ext_resource type="Resource" uid="uid://biwnywifptj6x" path="res://scenes/levels/level04/waves/wave_02.tres" id="5_v6xt8"]
+[ext_resource type="Resource" uid="uid://dwjkyh3txjrd3" path="res://scenes/levels/level04/waves/wave_03.tres" id="6_a0puf"]
+[ext_resource type="Resource" uid="uid://f02vl80cakas" path="res://scenes/levels/level04/waves/wave_04.tres" id="7_lxp62"]
+[ext_resource type="Resource" uid="uid://cy1sktrnamsbs" path="res://scenes/levels/level04/waves/wave_05.tres" id="8_v6xt8"]
+
+[sub_resource type="Curve2D" id="Curve2D_a0puf"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -133, -48, 0, 0, 0, 0, -187, 28, 0, 0, 0, 0, -192, 128, 0, 0, 0, 0, -118, 60, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 124, 106, 0, 0, 0, 0, 18, 59, 0, 0, 0, 0, 160, -30, 0, 0, 0, 0, 0, 0)
+}
+point_count = 10
+
+[sub_resource type="Curve2D" id="Curve2D_v6xt8"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -48.138115, -30, 0, 0, 0, 0, -134.15193, -23, 0, 0, 0, 0, -151, 91, 0, 0, 0, 0, -86.26795, 50, 0, 0, 0, 0, 64, 130, 0, 0, 0, 0, -144.79282, -16, 0, 0, 0, 0, -119.96408, 132, 0, 0, 0, 0, -78.287285, -4, 0, 0, 0, 0, 60.044205, 29, 0, 0, 0, 0, 170, 76, 0, 0, 0, 0, 88.41989, 17, 0, 0, 0, 0, 160, -36, 0, 0, 0, 0, 0, 0)
+}
+point_count = 14
+
+[sub_resource type="Curve2D" id="Curve2D_jtyld"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -64.68847, 0, 0, 0, 0, 0, -44.676933, 144, 0, 0, 0, 0, 6.515381, 20, 0, 0, 0, 0, -68.87693, -38, 0, 0, 0, 0, -152.64616, 62, 0, 0, 0, 0, -93.54232, 125, 0, 0, 0, 0, -0.46539307, 104, 0, 0, 0, 0, -64.68847, 0)
+}
+point_count = 8
+
+[node name="Main" instance=ExtResource("1_53rhq")]
+
+[node name="LevelConfig" parent="." index="0"]
+starting_resources = 200
+
+[node name="WaveManager" parent="." index="1"]
+waves = Array[ExtResource("2_iseop")]([ExtResource("3_m4daj"), ExtResource("4_5akfg"), ExtResource("5_v6xt8"), ExtResource("6_a0puf"), ExtResource("7_lxp62"), ExtResource("8_v6xt8")])
+
+[node name="redPipe1" parent="BackGround/Pipes/Red" index="0"]
+position = Vector2(200, 218)
+
+[node name="redPipe2" parent="BackGround/Pipes/Red" index="1"]
+position = Vector2(40, 8)
+rotation = 3.1415927
+
+[node name="bluePipe3" parent="BackGround/Pipes/Blue" index="2" instance=ExtResource("2_xp5jw")]
+position = Vector2(296, 203)
+pipe_type = 1
+direction = Vector2i(0, 1)
+
+[node name="bluePipe4" parent="BackGround/Pipes/Blue" index="3" instance=ExtResource("2_xp5jw")]
+position = Vector2(264, 8)
+rotation = 3.1415927
+pipe_type = 1
+direction = Vector2i(0, -1)
+
+[node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
+curve = SubResource("Curve2D_a0puf")
+
+[node name="Path02" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="5"]
+position = Vector2(-21.713394, 0)
+scale = Vector2(1.1277258, 1)
+curve = SubResource("Curve2D_v6xt8")
+
+[node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="6"]
+position = Vector2(139, 0)
+scale = Vector2(2.1487603, 1)
+curve = SubResource("Curve2D_jtyld")
+
+[node name="TutorialManager" parent="." index="11"]
+initial_dialogue = null
+post_connect_dialogue = null
+upgrade_dialogue = null
+
+[editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

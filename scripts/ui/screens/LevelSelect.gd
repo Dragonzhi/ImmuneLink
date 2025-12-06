@@ -49,3 +49,7 @@ func _on_level_button_pressed(level_number: int) -> void:
 				SceneManager.change_scene_to_file("res://scenes/levels/level01/Level01.tscn")
 			2:
 				SceneManager.change_scene_to_file("res://scenes/levels/level02/Level02.tscn")
+			3:
+				SceneManager.change_scene_to_file("res://scenes/levels/level03/Level03.tscn")
+			4:
+				SceneManager.change_scene_to_file("res://scenes/levels/level04/Level04.tscn")

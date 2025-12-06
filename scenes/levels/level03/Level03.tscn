@@ -1,0 +1,81 @@
+[gd_scene load_steps=14 format=3 uid="uid://onosovyuws3w"]
+
+[ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_jlpby"]
+[ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_ckcjh"]
+[ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="2_sodd5"]
+[ext_resource type="Resource" uid="uid://766q61faxbp3" path="res://scenes/levels/level03/waves/wave_00.tres" id="3_lq1al"]
+[ext_resource type="Resource" uid="uid://cm1rqfm1qive8" path="res://scenes/levels/level03/waves/wave_01.tres" id="4_pcbvt"]
+[ext_resource type="Resource" uid="uid://dhrd76ymei2go" path="res://scenes/levels/level03/waves/wave_02.tres" id="5_lq1al"]
+[ext_resource type="Resource" uid="uid://4s5fb4kj841m" path="res://scenes/levels/level03/waves/wave_03.tres" id="6_pcbvt"]
+[ext_resource type="Resource" uid="uid://cegeo1c56738m" path="res://scenes/levels/level03/waves/wave_04.tres" id="7_uogj4"]
+[ext_resource type="Resource" uid="uid://dt11kywumj4gf" path="res://scenes/levels/level03/waves/wave_05.tres" id="8_esco1"]
+
+[sub_resource type="Curve2D" id="Curve2D_uogj4"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -108, -3, 0, 0, 0, 0, -174, 25, 0, 0, 0, 0, -192, 128, 0, 0, 0, 0, -127, 92, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 173, 57, 0, 0, 0, 0, 103, -51, 0, 0, 0, 0, 0, 0)
+}
+point_count = 9
+
+[sub_resource type="Curve2D" id="Curve2D_esco1"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 53.349564, 17, 0, 0, 0, 0, 63.61676, -23, 0, 0, 0, 0, 118.03592, 8, 0, 0, 0, 0, 73.58084, 27, 0, 0, 0, 0, 111.36722, 67, 0, 0, 0, 0, 68.02069, 77, 0, 0, 0, 0, 113.36783, 121, 0, 0, 0, 0, 38.678436, 149, 0, 0, 0, 0, 38.32335, 109, 0, 0, 0, 0, 62.08383, 57, 0, 0, 0, 0, -80.69122, 57, 0, 0, 0, 0, 0, 0)
+}
+point_count = 13
+
+[sub_resource type="Curve2D" id="Curve2D_iyccs"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -76.67691, 0, 0, 0, 0, -121, -11.523071, 0, 0, 0, 0, -103.41278, 170.06224, 0, 0, 0, 0, -34, 93, 0, 0, 0, 0, 106.226746, -54.580887, 0, 0, 0, 0, 64.72093, -142.96506, 0, 0, 0, 0, 0, 0)
+}
+point_count = 8
+
+[sub_resource type="Curve2D" id="Curve2D_dlgts"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 97.267, 26, 0, 0, 0, 0, 119.76828, 122, 0, 0, 0, 0, 100.56015, 123, 0, 0, 0, 0, 35, 70, 0, 0, 0, 0, 32, 151, 0, 0, 0, 0, 112.98895, -19, 0, 0, 0, 0, 0, 0)
+}
+point_count = 8
+
+[node name="Main" instance=ExtResource("1_jlpby")]
+
+[node name="WaveManager" parent="." index="1"]
+waves = Array[ExtResource("2_ckcjh")]([ExtResource("3_lq1al"), ExtResource("4_pcbvt"), ExtResource("5_lq1al"), ExtResource("6_pcbvt"), ExtResource("7_uogj4"), ExtResource("8_esco1")])
+
+[node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
+position = Vector2(88, 5)
+rotation = 3.1415927
+direction = Vector2i(0, -1)
+
+[node name="bluePipe3" parent="BackGround/Pipes/Blue" index="2" instance=ExtResource("2_sodd5")]
+position = Vector2(-8, 168)
+rotation = 1.5707964
+pipe_type = 1
+
+[node name="bluePipe4" parent="BackGround/Pipes/Blue" index="3" instance=ExtResource("2_sodd5")]
+position = Vector2(-8, 88)
+rotation = 1.5707964
+pipe_type = 1
+direction = Vector2i(-1, 0)
+
+[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" index="0" node_paths=PackedStringArray("_paths")]
+_paths = [NodePath("Path02"), NodePath("Path01"), NodePath("Path03"), NodePath("Path04")]
+
+[node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
+curve = SubResource("Curve2D_uogj4")
+
+[node name="Path02" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="5"]
+scale = Vector2(1.4995435, 1)
+curve = SubResource("Curve2D_esco1")
+
+[node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="6"]
+position = Vector2(0, 40.641983)
+scale = Vector2(1.4214876, 0.5430836)
+curve = SubResource("Curve2D_iyccs")
+
+[node name="Path04" type="Path2D" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="9"]
+curve = SubResource("Curve2D_dlgts")
+
+[node name="TutorialManager" parent="." index="11"]
+initial_dialogue = null
+post_connect_dialogue = null
+upgrade_dialogue = null
+
+[editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

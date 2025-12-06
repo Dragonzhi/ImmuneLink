@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Wave" load_steps=6 format=3 uid="uid://dkqvl6qfp5bxb"]
+
+[ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_xao81"]
+[ext_resource type="PackedScene" uid="uid://dpemoeolhg5ja" path="res://scenes/enemies/VirusEnemy.tscn" id="2_4r8pa"]
+[ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_fbnwy"]
+[ext_resource type="Script" path="res://scripts/managers/SpawnerWaveConfig.gd" id="3_4r8pa"]
+
+[sub_resource type="Resource" id="Resource_cdoim"]
+script = ExtResource("1_xao81")
+enemy_scene = ExtResource("2_4r8pa")
+metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
+
+[resource]
+script = ExtResource("2_fbnwy")
+default_spawn_infos = Array[ExtResource("1_xao81")]([SubResource("Resource_cdoim")])
+default_enemy_count = 25
+post_wave_delay = 10.0

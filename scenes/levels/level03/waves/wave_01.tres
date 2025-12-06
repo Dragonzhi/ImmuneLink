@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="Wave" load_steps=8 format=3 uid="uid://cm1rqfm1qive8"]
+
+[ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_q8o1a"]
+[ext_resource type="PackedScene" uid="uid://bf7mkrd3nmgig" path="res://scenes/enemies/GermEnemy.tscn" id="2_eowcf"]
+[ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_us06c"]
+[ext_resource type="PackedScene" uid="uid://dpemoeolhg5ja" path="res://scenes/enemies/VirusEnemy.tscn" id="3_clewk"]
+[ext_resource type="Script" path="res://scripts/managers/SpawnerWaveConfig.gd" id="3_eowcf"]
+
+[sub_resource type="Resource" id="Resource_q8o1a"]
+script = ExtResource("1_q8o1a")
+enemy_scene = ExtResource("2_eowcf")
+weight = 5
+metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
+
+[sub_resource type="Resource" id="Resource_us06c"]
+script = ExtResource("1_q8o1a")
+enemy_scene = ExtResource("3_clewk")
+metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
+
+[resource]
+script = ExtResource("2_us06c")
+default_spawn_infos = Array[ExtResource("1_q8o1a")]([SubResource("Resource_q8o1a"), SubResource("Resource_us06c")])
+default_spawn_interval = 2.0
+post_wave_delay = 20.0
