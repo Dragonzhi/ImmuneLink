@@ -6,9 +6,8 @@
 
 [node name="Main" instance=ExtResource("1_qwkhf")]
 
-[node name="WaveManager" parent="." index="1" node_paths=PackedStringArray("spawners")]
+[node name="WaveManager" parent="." index="1"]
 waves = Array[ExtResource("2_tnha3")]([ExtResource("3_hu4y5")])
-spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01")]
 
 [node name="TutorialManager" parent="." index="11"]
 initial_dialogue = null

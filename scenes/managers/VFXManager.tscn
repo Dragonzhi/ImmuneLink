@@ -1,12 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://dpsa71omayl1j"]
+[gd_scene load_steps=5 format=3 uid="uid://dpsa71omayl1j"]
 
 [ext_resource type="Script" uid="uid://cng5nadyd1u85" path="res://scripts/managers/VFXManager.gd" id="1_abcde"]
 [ext_resource type="PackedScene" uid="uid://b1x2y304a5b6c" path="res://scenes/effects/HitEffect.tscn" id="2_q28md"]
 [ext_resource type="PackedScene" uid="uid://b4qswggpaov0n" path="res://scenes/effects/EnemyDeathEffect.tscn" id="3_47lx5"]
+[ext_resource type="PackedScene" uid="uid://dj7mb0mbkxwnv" path="res://scenes/effects/energy_burst.tscn" id="4_24yoc"]
 
 [node name="VFXManager" type="Node"]
 script = ExtResource("1_abcde")
 effect_scenes = {
+"CD4T_buff": ExtResource("4_24yoc"),
 "enemy_death": ExtResource("3_47lx5"),
 "hit": ExtResource("2_q28md")
 }

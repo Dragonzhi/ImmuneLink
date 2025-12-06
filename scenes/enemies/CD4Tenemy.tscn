@@ -5,12 +5,12 @@
 [ext_resource type="Texture2D" uid="uid://b4mofg4y2bl13" path="res://assets/cells/normall/CD4T_cell.png" id="3_llv36"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_h2ac0"]
-radius = 24.0
+radius = 40.0
 
 [node name="CD4TEnemy" instance=ExtResource("1_7y27p")]
 script = ExtResource("2_h2ac0")
 buff_strength_multiplier = 1.5
-buff_range = 24.0
+buff_range = 40.0
 buff_interval = 3.0
 buff_duration = 2.0
 max_hp = 60.0

@@ -50,7 +50,10 @@ func _play_buff_animation() -> void:
 	
 	# 缩放动画：先压扁再拉长，然后恢复
 	# Y轴先缩小，X轴先放大
-	tween.tween_property(_sprite_node, "scale", Vector2(0.12, 0.18), 0.2)
-	tween.tween_property(_sprite_node, "scale", Vector2(0.19, 0.11), 0.2)
+	tween.tween_property(_sprite_node, "scale", Vector2(0.13, 0.18), 0.2)
+	tween.tween_callback(Callable(self, "_play_buff_vfx"))
+	tween.tween_property(_sprite_node, "scale", Vector2(0.17, 0.13), 0.2)
 	tween.tween_property(_sprite_node, "scale", Vector2(0.15, 0.15), 0.4)
 	
+func _play_buff_vfx() -> void:
+	VFXManager.play_effect("CD4T_buff", global_position)
