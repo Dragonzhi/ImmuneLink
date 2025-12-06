@@ -275,14 +275,23 @@ func _play_spawn_animation():
 @onready var buff_particles: CPUParticles2D = $BuffParticles
 
 func apply_buff(type: String, multiplier: float, duration: float):
-	if type == "speed":
+	if type == "speed" or type == "nk_slow": # 同时处理加速和减速
 		if _active_buffs.has(type):
 			# 如果Buff已存在，只刷新其计时器
 			var buff_timer: Timer = _active_buffs[type]
 			buff_timer.start(duration)
 		else:
 			# 首次施加此类型Buff
+			var old_speed = move_speed
 			move_speed *= multiplier
+			print("DEBUG: Enemy '%s' apply_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
+			
+			# 根据类型设置不同颜色
+			if type == "nk_slow":
+				buff_particles.color = Color.CYAN # 减速时用青色
+			else:
+				buff_particles.color = Color.WHITE # 默认或加速时用白色
+				
 			buff_particles.emitting = true
 			var buff_timer = Timer.new()
 			buff_timer.wait_time = duration
@@ -298,10 +307,13 @@ func remove_buff(type: String):
 	if _active_buffs.has(type):
 		var buff_timer: Timer = _active_buffs[type]
 		
-		if type == "speed":
+		if type == "speed" or type == "nk_slow": # 同时处理加速和减速
 			# 将速度恢复到被Buff前的原始值
+			var old_speed = move_speed
 			move_speed = _original_move_speed
-		buff_particles.emitting = false
+			print("DEBUG: Enemy '%s' remove_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
+			buff_particles.emitting = false
+		
 		# 清理
 		if is_instance_valid(buff_timer):
 			buff_timer.queue_free()

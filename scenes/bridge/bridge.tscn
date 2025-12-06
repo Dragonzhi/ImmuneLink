@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://de0pjmcrfoc5m"]
+[gd_scene load_steps=45 format=3 uid="uid://de0pjmcrfoc5m"]
 
 [ext_resource type="Script" uid="uid://nq74hij6o8fv" path="res://scenes/bridge/bridge.gd" id="1_c301t"]
 [ext_resource type="Texture2D" uid="uid://d35j2wd643idj" path="res://assets/bridge/bridge-sheet.png" id="2_ll4hc"]
@@ -257,6 +257,9 @@ bg_color = Color(0, 0.956863, 0.0941176, 1)
 [sub_resource type="CircleShape2D" id="CircleShape2D_bqf5l"]
 radius = 100.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_yduyu"]
+radius = 64.0
+
 [node name="Bridge" type="StaticBody2D" node_paths=PackedStringArray("health_bar") groups=["bridges"]]
 collision_layer = 4
 collision_mask = 3
@@ -306,6 +309,16 @@ one_shot = true
 
 [node name="ReloadTimer" type="Timer" parent="."]
 
+[node name="NKBuffArea2D" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NKBuffArea2D"]
+shape = SubResource("CircleShape2D_yduyu")
+debug_color = Color(0.8888896, 0.2952351, 0.37775803, 0.41960785)
+
 [connection signal="input_event" from="HurtArea2D" to="." method="_on_hurt_area_2d_input_event"]
 [connection signal="mouse_entered" from="HurtArea2D" to="." method="_on_hurt_area_2d_mouse_entered"]
 [connection signal="mouse_exited" from="HurtArea2D" to="." method="_on_hurt_area_2d_mouse_exited"]
+[connection signal="body_entered" from="NKBuffArea2D" to="." method="_on_nk_buff_area_2d_body_entered"]
+[connection signal="body_exited" from="NKBuffArea2D" to="." method="_on_nk_buff_area_2d_body_exited"]

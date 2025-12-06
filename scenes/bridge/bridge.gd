@@ -17,9 +17,13 @@ const NKProtocolUpgradeResource = preload("res://scripts/upgrades/resourses/NKPr
 @onready var up_level_sprite: Sprite2D = $UpLevelSprite2D
 @onready var hit_area: Area2D = $HitArea2D
 @onready var blocking_shape: CollisionShape2D = $BlockingShape
+@onready var nk_buff_area: Area2D = $NKBuffArea2D # 获取NK光环区域
 
 @export var max_health: float = 100.0
 @export var repair_time: float = 3.0
+
+@export_group("NK Aura Effect")
+@export var nk_aura_slow_multiplier: float = 0.7 # 减速效果，例如0.7代表速度变为70%
 
 @export_group("UI")
 @export var health_bar: ProgressBar
@@ -225,6 +229,8 @@ func _reset_to_base_stats():
 	hit_area.monitorable = false
 	hit_area.monitoring = false
 	reload_timer.stop()
+	nk_buff_area.monitoring = false # 重置时禁用光环
+	nk_buff_area.monitorable = false
 	
 	print("Bridge stats have been reset to base.")
 
@@ -255,6 +261,8 @@ func _apply_upgrade_effects(upgrade: Upgrade):
 	elif script == NKProtocolUpgradeResource.get_script(): # 处理NK协议升级
 		if GameManager.spend_nk_cell_sample(1):
 			is_nk_upgraded = true
+			nk_buff_area.monitoring = true # 激活光环
+			nk_buff_area.monitorable = true
 			# 激活NK协议后的视觉效果
 			_update_nk_visuals() # 新函数：更新NK协议的视觉效果
 			apply_visual_upgrade(upgrade)
@@ -340,10 +348,12 @@ func _ready() -> void:
 	
 	hit_area.area_entered.connect(_on_hit_area_area_entered)
 	hit_area.area_exited.connect(_on_hit_area_area_exited)
-	
+
 	up_level_sprite.visible = false
 	hit_area.monitorable = false
 	hit_area.monitoring = false
+	nk_buff_area.monitoring = false # 默认禁用光环
+	nk_buff_area.monitorable = false
 
 	_range_indicator = AttackRangeIndicatorScene.new()
 	add_child(_range_indicator)
@@ -535,3 +545,20 @@ func _on_hurt_area_2d_mouse_exited() -> void:
 			animated_sprite.modulate = secondary_color
 		else:
 			animated_sprite.modulate = Color.WHITE
+
+# --- NK光环效果处理 ---
+
+func _on_nk_buff_area_2d_body_entered(body: Node2D) -> void:
+	if body is BaseEnemy:
+		var enemy = body as BaseEnemy
+		print("DEBUG: Enemy '%s' ENTERED NK Aura of bridge '%s'." % [enemy.name, self.name])
+		# 给敌人施加一个永久的减速debuff（直到它离开区域）
+		# 注意：这里的duration设为-1或一个极大值，因为我们会在它离开时手动移除
+		enemy.apply_buff("nk_slow", nk_aura_slow_multiplier, 9999)
+
+func _on_nk_aura_body_exited(body: Node2D):
+	if body is BaseEnemy:
+		var enemy = body as BaseEnemy
+		print("DEBUG: Enemy '%s' EXITED NK Aura of bridge '%s'." % [enemy.name, self.name])
+		# 移除减速debuff
+		enemy.remove_buff("nk_slow")
