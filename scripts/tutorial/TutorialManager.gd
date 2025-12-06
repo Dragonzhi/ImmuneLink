@@ -27,14 +27,26 @@ func _ready() -> void:
 	# 禁用WaveManager的自动开始功能，由教程控制
 	_wave_manager.auto_start_on_ready = false
 
+	# 等待场景过渡结束后再开始
+	_wait_and_start()
+
+func _wait_and_start():
+	# 确保SceneManager是全局可访问的Autoload
+	#assert(Engine.has_singleton("SceneManager"), "SceneManager Autoload not found!")
+	
+	# 等待，直到场景过渡动画结束
+	while SceneManager.is_transitioning:
+		await get_tree().process_frame
+	
+	# 额外等待一帧，确保输入系统完全准备就绪
+	await get_tree().process_frame
+		
+	# 过渡已结束，现在可以安全地开始教学
 	_start_initial_dialogue()
 
 func _start_initial_dialogue():
 	if initial_dialogue:
 		DialogueManager.start_dialogue(initial_dialogue)
-	else:
-		printerr("TutorialManager: initial_dialogue is not assigned!")
-		_waiting_for_blue_connection = true # 如果没有初始对话，直接进入等待连接状态
 
 func _on_dialogue_finished(resource: DialogueResource):
 	if resource == initial_dialogue:

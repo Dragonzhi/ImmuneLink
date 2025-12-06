@@ -19,6 +19,8 @@ var _current_line_index: int = -1
 var _is_active: bool = false
 
 func _ready() -> void:
+	# 设置处理模式为始终处理，以便在游戏暂停时也能接收输入和处理逻辑
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	# _ready函数中不再进行实例化，等待第一次调用时再执行
 	pass
 
@@ -30,6 +32,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	# 监听玩家的“继续”输入 (键盘或鼠标点击)
 	if event.is_action_pressed("ui_accept") or (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed()):
+		print("DEBUG: Input received to advance dialogue. get_tree().paused is: ", get_tree().paused)
 		get_viewport().set_input_as_handled()
 		_advance_dialogue()
 
@@ -85,6 +88,11 @@ func _begin_dialogue(resource: DialogueResource):
 	_is_active = true
 	_current_dialogue = resource
 	_current_line_index = -1
+	
+	# 直接暂停游戏
+	get_tree().paused = true
+	print("DEBUG: Dialogue STARTED. get_tree().paused is now: ", get_tree().paused)
+	
 	emit_signal("dialogue_started")
 	_advance_dialogue()
 
@@ -128,6 +136,11 @@ func _end_dialogue():
 		_dialogue_box.hide_box()
 	if is_instance_valid(_spotlight):
 		_spotlight.hide_spotlight() # 确保在对话结束时隐藏聚光灯
+	
+	# 直接恢复游戏
+	get_tree().paused = false
+	print("DEBUG: Dialogue FINISHED. get_tree().paused is now: ", get_tree().paused)
+	
 	emit_signal("dialogue_finished", _current_dialogue)
 
 	# 检查队列中是否还有待处理的对话
