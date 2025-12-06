@@ -37,7 +37,13 @@ var _pending_expansion_upgrade: Upgrade = null # 暂存待处理的扩展升级�
 var current_health: float
 var grid_manager: GridManager
 var grid_pos: Vector2i
-var is_destroyed: bool = false 
+var is_destroyed: bool = false
+
+# --- 升级系统状态 ---
+var current_upgrade: Upgrade = null # 当前生效的升级
+var upgrade_level: int = 0         # 当前升级的叠加等级
+var _base_stats: Dictionary = {}   # 用于存储桥梁的初始属性
+
 # --- 升级相关状态和数据 ---
 var is_attack_upgraded: bool = false
 var attack_upgrade_damage: float = 0.0
@@ -163,9 +169,107 @@ func get_available_upgrades() -> Array[Upgrade]:
 	return upgrades_to_return
 
 ## 公共接口：尝试将一个升级应用到此桥梁
-func attempt_upgrade(upgrade: Upgrade):
-	if upgrade:
-		upgrade.apply(self)
+func attempt_upgrade(new_upgrade: Upgrade):
+	if not new_upgrade: return
+
+	var new_upgrade_script = new_upgrade.get_script()
+
+	# --- 首次升级 ---
+	if not current_upgrade:
+		current_upgrade = new_upgrade
+		upgrade_level = 1
+		_apply_upgrade_effects(new_upgrade)
+		return
+
+	# --- 后续升级 ---
+	var current_upgrade_script = current_upgrade.get_script()
+
+	if new_upgrade_script == current_upgrade_script:
+		# 类型相同，进行叠加
+		upgrade_level += 1
+		_apply_upgrade_effects(new_upgrade) # 应用增量
+		_update_stack_visuals() # 更新视觉
+		print("Upgrade stacked. Level: %d" % upgrade_level)
+	else:
+		# 类型不同，先重置再应用新升级
+		_reset_to_base_stats()
+		current_upgrade = new_upgrade
+		upgrade_level = 1
+		_apply_upgrade_effects(new_upgrade)
+		print("Upgrade reset and changed.")
+
+# --- 升级系统辅助函数 ---
+
+func _reset_to_base_stats():
+	"""将桥梁的属性和视觉重置到初始状态。"""
+	max_health = _base_stats["max_health"]
+	health_regen = _base_stats["health_regen"]
+	attack_upgrade_damage = _base_stats["attack_upgrade_damage"]
+	attack_rate = _base_stats["attack_rate"]
+	animated_sprite.modulate = _base_stats["modulate"]
+	up_level_sprite.modulate = Color.WHITE # 重置升级图标的颜色
+	is_attack_upgraded = _base_stats["is_attack_upgraded"]
+
+	# 重置状态变量
+	current_upgrade = null
+	upgrade_level = 0
+	
+	# 如果有攻击模式，需要禁用
+	up_level_sprite.visible = false
+	hit_area.monitorable = false
+	hit_area.monitoring = false
+	reload_timer.stop()
+	
+	print("Bridge stats have been reset to base.")
+
+func _apply_upgrade_effects(upgrade: Upgrade):
+	"""根据Upgrade资源的类型，集中处理属性修改。"""
+	var script = upgrade.get_script()
+
+	# 根据脚本类型来判断升级效果
+	if script == AttackUpgradeScript:
+		is_attack_upgraded = true
+		attack_upgrade_damage += upgrade.damage # 使用正确的属性名
+		attack_rate += upgrade.attack_rate # 将速率改为加法
+		activate_attack_mode() # 激活攻击模式
+		apply_visual_upgrade(upgrade)
+
+	elif script == DefenseUpgradeScript:
+		max_health += upgrade.health_increase
+		health_regen += upgrade.health_regen_per_second
+		# 防御升级也可能有视觉变化
+		apply_visual_upgrade(upgrade)
+
+	elif script == ConnectionRateUpgradeScript:
+		# 通知 ConnectionManager 来应用这个加速效果
+		if ConnectionManager:
+			ConnectionManager.apply_boost_to_connection_of_bridge(self, upgrade.rate_multiplier)
+		apply_visual_upgrade(upgrade)
+
+	elif script == ExpansionUpgradeScript:
+		# 扩展升级的逻辑比较特殊，它会改变桥梁的状态
+		# 这里的调用会触发一个等待用户绘制新桥梁的流程
+		enter_expansion_waiting_state(upgrade)
+		# 注意：扩展升级本身不应该叠加，get_available_upgrades中已有逻辑阻止
+	
+	# 更新生命值（例如，增加最大生命值后，当前生命值也应相应增加）
+	current_health = min(max_health, current_health + (upgrade.health_increase if "health_increase" in upgrade else 0))
+	health_bar.update_health(current_health, max_health)
+
+
+func _update_stack_visuals():
+	"""根据叠加等级微调桥梁颜色。"""
+	if not "modulate" in _base_stats: return
+
+	var base_color: Color = _base_stats["modulate"]
+	# 目标颜色，选择一个更饱和、更明显的颜色
+	const TARGET_COLOR = Color.DODGER_BLUE
+	
+	# 叠加因子，让每级的变化更明显
+	var factor = clamp(float(upgrade_level - 1) * 0.35, 0.0, 1.0)
+	
+	animated_sprite.modulate = base_color # 恢复基础桥梁颜色
+	up_level_sprite.modulate = base_color.lerp(TARGET_COLOR, factor)
 
 # 由 Upgrade 资源调用，用来更新视觉表现
 func apply_visual_upgrade(upgrade: Upgrade):
@@ -189,6 +293,14 @@ func activate_attack_mode():
 # --- Godot Lifecycle & Internal Methods ---
 
 func _ready() -> void:
+	# --- 保存初始属性，用于升级重置 ---
+	_base_stats["max_health"] = max_health
+	_base_stats["health_regen"] = health_regen
+	_base_stats["attack_upgrade_damage"] = 0.0 # 攻击力初始为0
+	_base_stats["attack_rate"] = 1.0 # 攻击速率初始为1
+	_base_stats["modulate"] = animated_sprite.modulate # 初始颜色
+	_base_stats["is_attack_upgraded"] = false
+	
 	current_health = max_health
 	grid_manager = GridManager
 	

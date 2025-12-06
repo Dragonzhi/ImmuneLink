@@ -263,6 +263,7 @@ collision_mask = 3
 script = ExtResource("1_c301t")
 health_bar = NodePath("HealthBar")
 available_upgrades = Array[ExtResource("2_xo3fo")]([ExtResource("4_attack"), ExtResource("5_defense"), ExtResource("7_connect"), ExtResource("8_expand")])
+secondary_color = Color(0.42352942, 0.6117647, 1, 1)
 
 [node name="BlockingShape" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_jnwta")
