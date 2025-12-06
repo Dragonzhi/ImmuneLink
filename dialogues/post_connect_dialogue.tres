@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DialogueResource" load_steps=2 format=3 uid="uid://dhvibcb22nda0"]
+
+[ext_resource type="Script" path="res://scripts/dialogue/DialogueResource.gd" id="1_dialogue_res"]
+
+[resource]
+script = ExtResource("1_dialogue_res")
+dialogue_lines = Array[Dictionary]([{
+"name": "监控系统",
+"text": "连接建立成功。现在，你已掌握基础操作。"
+}, {
+"name": "监控系统",
+"text": "警告：侦测到敌对单位活动。准备迎战。"
+}, {
+"name": "监控系统",
+"text": "指令：点击已建立的桥梁，进行升级。提升防御能力或攻击效率是关键。"
+}])

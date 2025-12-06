@@ -5,10 +5,11 @@ extends Node
 ## 负责处理对话逻辑流程、UI交互和游戏状态的暂停/恢复。
 
 signal dialogue_started()
-signal dialogue_finished()
+signal dialogue_finished(resource: DialogueResource)
 
 const DialogueBoxScene = preload("res://scenes/ui/dialogue/DialogueBox.tscn")
 const SpotlightScene = preload("res://scenes/ui/dialogue/Spotlight.tscn")
+
 
 var _dialogue_box: DialogueBox = null
 var _spotlight: Spotlight = null
@@ -127,7 +128,7 @@ func _end_dialogue():
 		_dialogue_box.hide_box()
 	if is_instance_valid(_spotlight):
 		_spotlight.hide_spotlight() # 确保在对话结束时隐藏聚光灯
-	emit_signal("dialogue_finished")
+	emit_signal("dialogue_finished", _current_dialogue)
 
 	# 检查队列中是否还有待处理的对话
 	if not _dialogue_queue.is_empty():

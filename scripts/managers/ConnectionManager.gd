@@ -1,5 +1,7 @@
 extends Node
 
+signal connection_made(pipe_type: int) # 新增信号：当有新连接建立时发出
+
 @export var red_pipe_repair_rate: float = 1.0  # Red pipes generate repair value
 
 var _connections: Dictionary = {}
@@ -110,6 +112,7 @@ func add_connection(pipe1: Pipe, pipe2: Pipe, path: Array[Vector2i]):
 	pipe2.on_connected()
 	
 	print("连接已注册: ", pipe1.name, " <-> ", pipe2.name)
+	emit_signal("connection_made", pipe1.pipe_type) # 发出信号
 
 
 func remove_connection(pipe1: Pipe, pipe2: Pipe):
