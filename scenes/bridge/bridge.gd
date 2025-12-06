@@ -152,8 +152,7 @@ func get_available_upgrades() -> Array[Upgrade]:
 	for upgrade_resource in available_upgrades:
 		var script = upgrade_resource.get_script()
 		if script == AttackUpgradeScript:
-			if not is_attack_upgraded: 
-				upgrades_to_return.append(upgrade_resource)
+			upgrades_to_return.append(upgrade_resource)
 		elif script == DefenseUpgradeScript:
 			# 防御升级目前没有特殊条件，始终可升级
 			upgrades_to_return.append(upgrade_resource)
