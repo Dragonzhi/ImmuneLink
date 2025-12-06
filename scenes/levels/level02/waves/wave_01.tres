@@ -3,21 +3,22 @@
 [ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_4rxoc"]
 [ext_resource type="PackedScene" uid="uid://cjkuu6twi2xhm" path="res://scenes/enemies/CD4TEnemy.tscn" id="2_uf7rh"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_wmn87"]
-[ext_resource type="PackedScene" uid="uid://dv8f6a6cpfla" path="res://scenes/enemies/MacrophageEnemy.tscn" id="3_8vc6k"]
 [ext_resource type="Script" path="res://scripts/managers/SpawnerWaveConfig.gd" id="3_uf7rh"]
+[ext_resource type="PackedScene" uid="uid://tlfxb2l7y5rr" path="res://scenes/enemies/DCEnemy.tscn" id="4_8vc6k"]
 
 [sub_resource type="Resource" id="Resource_imkwl"]
 script = ExtResource("1_4rxoc")
 enemy_scene = ExtResource("2_uf7rh")
 metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
 
-[sub_resource type="Resource" id="Resource_emvfr"]
+[sub_resource type="Resource" id="Resource_2c25r"]
 script = ExtResource("1_4rxoc")
-enemy_scene = ExtResource("3_8vc6k")
+enemy_scene = ExtResource("4_8vc6k")
+weight = 3
 metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
 
 [resource]
 script = ExtResource("2_wmn87")
-default_spawn_infos = Array[ExtResource("1_4rxoc")]([SubResource("Resource_imkwl"), SubResource("Resource_emvfr")])
+default_spawn_infos = Array[ExtResource("1_4rxoc")]([SubResource("Resource_imkwl"), SubResource("Resource_2c25r")])
 default_enemy_count = 3
 default_spawn_interval = 5.0

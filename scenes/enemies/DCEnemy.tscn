@@ -1,0 +1,45 @@
+[gd_scene load_steps=4 format=3 uid="uid://tlfxb2l7y5rr"]
+
+[ext_resource type="PackedScene" uid="uid://cm325e0w41j3h" path="res://scenes/entities/BaseEnemy.tscn" id="1_h5we7"]
+[ext_resource type="Script" uid="uid://dm1qq4tiq2ipx" path="res://scripts/enemies/DCEnemy.gd" id="2_jmpyl"]
+[ext_resource type="Texture2D" uid="uid://yxg64bbebslt" path="res://assets/cells/normall/DC细胞.png" id="2_ro3jm"]
+
+[node name="DCEnemy" instance=ExtResource("1_h5we7")]
+script = ExtResource("2_jmpyl")
+growth_rate_while_attacking = 20.0
+max_growth_value = 100.0
+bridge_traverse_duration = 3.0
+ability_cooldown = 8.0
+bridge_collision_layer = 3
+max_hp = 60.0
+move_speed = 30.0
+
+[node name="Sprite2D" parent="." index="0"]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_ro3jm")
+
+[node name="AbilityTimer" type="Timer" parent="." index="7"]
+one_shot = true
+
+[node name="ResetTimer" type="Timer" parent="." index="8"]
+one_shot = true
+
+[node name="BridgeAbilityIndicator" type="CPUParticles2D" parent="." index="9"]
+emitting = false
+amount = 15
+lifetime = 1.5
+randomness = 0.5
+emission_shape = 2
+emission_sphere_radius = 1.0
+direction = Vector2(0, -1)
+spread = 20.0
+gravity = Vector2(0, -20)
+initial_velocity_min = 10.0
+initial_velocity_max = 30.0
+angular_velocity_min = -720.0
+angular_velocity_max = 720.0
+scale_amount_min = 0.5
+color = Color(0.6, 0.8, 1, 1)
+
+[connection signal="timeout" from="AbilityTimer" to="." method="_on_ability_timer_timeout"]
+[connection signal="timeout" from="ResetTimer" to="." method="_on_reset_timer_timeout"]
