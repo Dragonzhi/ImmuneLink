@@ -21,6 +21,9 @@ func _ready() -> void:
 	if not _wave_timer:
 		printerr("WaveManager requires a child Timer node named 'WaveTimer'.")
 		return
+	# Ensure the signal is connected only once
+	if _wave_timer.timeout.is_connected(_start_next_wave):
+		_wave_timer.timeout.disconnect(_start_next_wave)
 	_wave_timer.timeout.connect(_start_next_wave)
 	
 	_initialize_system()
@@ -89,6 +92,8 @@ func trigger_next_wave():
 # --- Internal Wave Logic ---
 
 func _start_next_wave():
+	_wave_timer.stop() # 确保计时器在处理波次逻辑前已停止，防止重复触发
+	print("DEBUG: [WaveManager] _start_next_wave called.")
 	if not _is_running: return
 
 	_current_wave_index += 1
@@ -137,12 +142,15 @@ func _start_next_wave():
 		if count_for_this_spawner > 0:
 			_active_spawners_count += 1
 			if spawner.has_method("start_spawning"):
+				print("DEBUG: [WaveManager] Telling spawner '%s' to start." % spawner.name)
 				spawner.start_spawning(enemy_infos, spawn_interval, count_for_this_spawner)
 	
 	if _active_spawners_count == 0:
 		print("Wave %s has no active spawners. Skipping." % (_current_wave_index + 1))
 		_finish_current_wave()
+
 func _on_spawner_finished(spawner):
+	print("DEBUG: [WaveManager] Received 'spawner_finished' from: %s" % spawner.name)
 	if not _is_running: return
 	
 	print("Spawner %s has finished its quota." % spawner.name)
@@ -152,6 +160,7 @@ func _on_spawner_finished(spawner):
 		_finish_current_wave()
 
 func _finish_current_wave():
+	print("DEBUG: [WaveManager] _finish_current_wave called.")
 	if not _is_running: return
 	
 	emit_signal("wave_finished", _current_wave_index + 1)
@@ -163,6 +172,7 @@ func _finish_current_wave():
 			spawner.stop_spawning()
 
 	var post_wave_delay = waves[_current_wave_index].post_wave_delay
+	print("DEBUG: [WaveManager] Starting timer for next wave with delay: %s" % post_wave_delay)
 	_wave_timer.start(post_wave_delay)
 
 # --- Helper Methods ---

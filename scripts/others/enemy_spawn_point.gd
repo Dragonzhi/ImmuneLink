@@ -38,6 +38,7 @@ func _ready() -> void:
 
 ## 由 WaveManager 调用，开始生成这一波的敌人
 func start_spawning(new_enemy_list: Array[EnemySpawnInfo], interval: float, count: int):
+	print("DEBUG: [Spawner %s] start_spawning called with interval: %s, count: %s" % [self.name, interval, count])
 	if new_enemy_list.is_empty() or interval <= 0 or count <= 0:
 		return
 		
@@ -45,8 +46,10 @@ func start_spawning(new_enemy_list: Array[EnemySpawnInfo], interval: float, coun
 	_enemies_to_spawn_this_wave = count
 	_enemies_spawned_this_wave = 0
 	
-	if not spawn_timer.timeout.is_connected(spawn_enemy):
-		spawn_timer.timeout.connect(spawn_enemy)
+	# Ensure the signal is connected only once
+	if spawn_timer.timeout.is_connected(spawn_enemy):
+		spawn_timer.timeout.disconnect(spawn_enemy)
+	spawn_timer.timeout.connect(spawn_enemy)
 		
 	spawn_timer.wait_time = interval
 	spawn_timer.start()
@@ -56,7 +59,8 @@ func start_spawning(new_enemy_list: Array[EnemySpawnInfo], interval: float, coun
 func stop_spawning():
 	if not spawn_timer.is_stopped():
 		spawn_timer.stop()
-		print("Spawner %s stopped spawning." % self.name)
+		print("DEBUG: [Spawner %s] Timer stopped." % self.name)
+		# print("Spawner %s stopped spawning." % self.name) # 这行信息重复了
 
 ## (新) 由 WaveManager 调用，根据索引设置当前使用的路径
 func set_active_path_by_index(index: int):
@@ -80,11 +84,7 @@ func get_path_count() -> int:
 
 # --- Internal Functions ---
 func spawn_enemy():
-	if _enemies_spawned_this_wave >= _enemies_to_spawn_this_wave:
-		stop_spawning()
-		emit_signal("spawner_finished", self)
-		return
-
+	print("DEBUG: [Spawner %s] spawn_enemy called. Spawned: %s, Quota: %s" % [self.name, _enemies_spawned_this_wave, _enemies_to_spawn_this_wave])
 	if enemy_list.is_empty():
 		return
 	
@@ -121,7 +121,10 @@ func spawn_enemy():
 	_enemies_spawned_this_wave += 1
 	emit_signal("enemy_spawned")
 	
+	# 在生成完敌人后，再次检查是否已达到或超过配额
+	# 确保信号只在最后一个敌人生成后发出
 	if _enemies_spawned_this_wave >= _enemies_to_spawn_this_wave:
+		print("DEBUG: [Spawner %s] Quota met. Emitting 'spawner_finished'." % self.name)
 		stop_spawning()
 		emit_signal("spawner_finished", self)
 
