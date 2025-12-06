@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Wave" load_steps=5 format=3 uid="uid://cul5xens2pxa8"]
+
+[ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_ityb2"]
+[ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_atmuv"]
+[ext_resource type="Script" path="res://scripts/managers/SpawnerWaveConfig.gd" id="3_ed6o5"]
+
+[sub_resource type="Resource" id="Resource_ityb2"]
+script = ExtResource("1_ityb2")
+metadata/_custom_type_script = "uid://dd58g3gcq2w5n"
+
+[resource]
+script = ExtResource("2_atmuv")
+default_spawn_infos = Array[ExtResource("1_ityb2")]([SubResource("Resource_ityb2")])
+default_enemy_count = 1

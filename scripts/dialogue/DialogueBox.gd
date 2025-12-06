@@ -1,4 +1,5 @@
 # DialogueBox.gd
+class_name DialogueBox
 extends CanvasLayer
 
 ## 对话框UI的控制器，负责显示单句对话、角色信息和打字机效果。

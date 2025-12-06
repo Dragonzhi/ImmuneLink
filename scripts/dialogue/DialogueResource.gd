@@ -9,7 +9,8 @@ extends Resource
 # 字典结构:
 # {
 #   "name": "角色名",
+#   "text": "这是对话的具体内容。",
 #   "portrait": "res://path/to/portrait.png", (可选)
-#   "text": "这是对话的具体内容。"
+#   "focus_target_path": NodePath("path/to/node_to_focus") (可选)
 # }
 @export var dialogue_lines: Array[Dictionary] = []
