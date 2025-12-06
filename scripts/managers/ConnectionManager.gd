@@ -22,6 +22,11 @@ func _process(delta: float):
 	# 遍历所有连接并检查其路径完整性
 	for connection_key in _connections.keys():
 		var connection = _connections[connection_key]
+		
+		# --- 安全检查：确保连接中的对象在场景切换时仍然有效 ---
+		if not is_instance_valid(connection.pipe1):
+			continue # 如果对象已被释放，则跳过此连接的处理
+		
 		var path_to_check = connection.path
 		
 		if _grid_manager.is_path_intact(path_to_check):

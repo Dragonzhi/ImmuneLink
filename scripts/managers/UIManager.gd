@@ -90,6 +90,14 @@ func open_upgrade_menu(upgrades: Array[Upgrade], bridge: Bridge):
 	tween.tween_property(overlay, "color:a", 0.5, fade_duration).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(current_menu, "modulate:a", 1.0, fade_duration).set_trans(Tween.TRANS_SINE)
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		get_tree().paused = false # 确保游戏未暂停
+		if current_menu and current_menu.is_visible(): # 如果升级菜单打开了，先关闭
+			close_upgrade_menu()
+		SceneManager.change_scene_to_file("res://scenes/world/MainMenu.tscn")
+
 func close_upgrade_menu():
 	if not current_menu:
 		return
