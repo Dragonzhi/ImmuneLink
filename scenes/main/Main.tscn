@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=26 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="Script" uid="uid://bc5b7fp0eb10i" path="res://scripts/levels/LevelConfig.gd" id="1_2tpxt"]
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
@@ -16,9 +16,6 @@
 [ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="10_theme"]
 [ext_resource type="Shader" uid="uid://cul7dygdsicnj" path="res://assets/shader/pixelate.gdshader" id="15_tck0d"]
 [ext_resource type="Script" path="res://scripts/tutorial/TutorialManager.gd" id="16_tutorial_mgr"]
-[ext_resource type="Resource" uid="uid://bmmfcvr3fkuve" path="res://dialogues/tutorial_01.tres" id="17_tutorial_dialogue"]
-[ext_resource type="Resource" uid="uid://dhvibcb22nda0" path="res://dialogues/post_connect_dialogue.tres" id="18_post_connect_dialogue"]
-[ext_resource type="Resource" uid="uid://d3lnrl2cc1m64" path="res://dialogues/upgrade_dialogue.tres" id="19_upgrade_dialogue"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u8lgh"]
 size = Vector2(404, 236)
@@ -276,9 +273,6 @@ libraries = {
 
 [node name="TutorialManager" type="Node" parent="."]
 script = ExtResource("16_tutorial_mgr")
-initial_dialogue = ExtResource("17_tutorial_dialogue")
-post_connect_dialogue = ExtResource("18_post_connect_dialogue")
-upgrade_dialogue = ExtResource("19_upgrade_dialogue")
 
 [connection signal="input_event" from="UICancel/Area2D" to="UICancel" method="_on_area_2d_input_event"]
 

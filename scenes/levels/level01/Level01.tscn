@@ -28,9 +28,8 @@ point_count = 5
 [node name="LevelConfig" parent="." index="0"]
 starting_resources = 400
 
-[node name="WaveManager" parent="." index="1" node_paths=PackedStringArray("spawners")]
+[node name="WaveManager" parent="." index="1"]
 waves = Array[ExtResource("2_uialj")]([ExtResource("3_u6ccs"), ExtResource("4_163aq")])
-spawners = [NodePath("../BackGround/EnemySpawns/EnemySpawnPoint01")]
 auto_start_on_ready = false
 
 [node name="bluePipe1" parent="BackGround/Pipes/Blue" index="0"]
@@ -57,9 +56,6 @@ curve = SubResource("Curve2D_qtqmo")
 offset_bottom = -181.0
 
 [node name="OverPanelContainer" parent="UILayer" index="2"]
-process_mode = 3
-
-[node name="AnimationPlayer" parent="." index="10"]
 process_mode = 3
 
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

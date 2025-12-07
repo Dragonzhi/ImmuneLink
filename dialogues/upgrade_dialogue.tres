@@ -10,5 +10,5 @@ dialogue_lines = Array[Dictionary]([{
 }, {
 "focus_target_path": NodePath("Midground/Bridges"),
 "name": "Monitoring System",
-"text": "指令：点击已建立的桥梁，进行升级。提升防御或攻击是关键。"
+"text": "指令：点击已建立的桥梁，进行升级。"
 }])
