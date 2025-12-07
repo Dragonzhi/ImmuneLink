@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_kwkod")
 level_name = "LEVEL 4"
-starting_resources = 200
+starting_resources = 300
 metadata/_custom_type_script = "uid://c0vpaw3fd5v5u"
