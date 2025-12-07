@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Wave" load_steps=10 format=3 uid="uid://f02vl80cakas"]
+[gd_resource type="Resource" script_class="Wave" load_steps=10 format=3 uid="uid://bx504ehpgl0r"]
 
 [ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_264hj"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_vjxo2"]
