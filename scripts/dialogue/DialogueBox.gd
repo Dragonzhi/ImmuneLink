@@ -37,6 +37,7 @@ func _ready() -> void:
 
 ## 公共方法：开始显示一句新的对话
 func show_line(dialogue_line: Dictionary):
+	SoundManager.play_sfx("ui_say") # 播放音效
 	visible = true
 	_is_displaying = true
 	

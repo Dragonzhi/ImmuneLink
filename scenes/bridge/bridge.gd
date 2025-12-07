@@ -87,7 +87,7 @@ func enter_expansion_waiting_state(upgrade_res: Upgrade):
 		deselect()
 	GameManager.deselect_all_turrets()
 	
-	print("Bridge at %s entered EXPANSION_WAITING state." % grid_pos)
+	DebugManager.dprint("Bridge at %s entered EXPANSION_WAITING state." % grid_pos)
 
 ## 取消“等待扩展连接”状态，并返还资源
 func cancel_expansion():
@@ -106,7 +106,7 @@ func cancel_expansion():
 	else:
 		animated_sprite.modulate = Color.WHITE
 	
-	print("Bridge at %s cancelled EXPANSION_WAITING state." % grid_pos)
+	DebugManager.dprint("Bridge at %s cancelled EXPANSION_WAITING state." % grid_pos)
 
 ## 在扩展连接成功后，完成并退出等待状态
 func complete_expansion():
@@ -121,7 +121,7 @@ func complete_expansion():
 	else:
 		animated_sprite.modulate = Color.WHITE
 	
-	print("Bridge at %s completed EXPANSION." % grid_pos)
+	DebugManager.dprint("Bridge at %s completed EXPANSION." % grid_pos)
 
 
 ## 强制刷新此桥梁的连接状态和视觉样式
@@ -198,14 +198,14 @@ func attempt_upgrade(new_upgrade: Upgrade):
 		upgrade_level += 1
 		_apply_upgrade_effects(new_upgrade) # 应用增量
 		_update_stack_visuals() # 更新视觉
-		print("Upgrade stacked. Level: %d" % upgrade_level)
+		DebugManager.dprint("Upgrade stacked. Level: %d" % upgrade_level)
 	else:
 		# 类型不同，先重置再应用新升级
 		_reset_to_base_stats()
 		current_upgrade = new_upgrade
 		upgrade_level = 1
 		_apply_upgrade_effects(new_upgrade)
-		print("Upgrade reset and changed.")
+		DebugManager.dprint("Upgrade reset and changed.")
 
 # --- 升级系统辅助函数 ---
 
@@ -233,7 +233,7 @@ func _reset_to_base_stats():
 	nk_buff_area.monitorable = false
 	magic_aura.emitting = false
 	
-	print("Bridge stats have been reset to base.")
+	DebugManager.dprint("Bridge stats have been reset to base.")
 
 func _apply_upgrade_effects(upgrade: Upgrade):
 	"""根据Upgrade资源的类型，集中处理属性修改。"""
@@ -267,7 +267,7 @@ func _apply_upgrade_effects(upgrade: Upgrade):
 			# 激活NK协议后的视觉效果
 			_update_nk_visuals() # 新函数：更新NK协议的视觉效果
 			apply_visual_upgrade(upgrade)
-			print("NK Protocol activated on bridge %s." % grid_pos)
+			DebugManager.dprint("NK Protocol activated on bridge %s." % grid_pos)
 		else:
 			printerr("GameManager: 资源不足（NK样本），无法应用NK协议升级。")
 			# 可以在此处回滚升级界面或给用户提示
@@ -326,7 +326,7 @@ func activate_attack_mode():
 	hit_area.monitoring = true
 	reload_timer.wait_time = 1.0 / attack_rate
 	reload_timer.start()
-	print("桥段 %s 攻击模式已激活！" % grid_pos)
+	DebugManager.dprint("桥段 %s 攻击模式已激活！" % grid_pos)
 
 # --- Godot Lifecycle & Internal Methods ---
 
@@ -444,9 +444,9 @@ func take_damage(amount: float):
 			hit_area.monitorable = false
 			hit_area.monitoring = false
 
-		print("Bridge at %s destroyed. Reporting to GridManager." % grid_pos)
+		DebugManager.dprint("Bridge at %s destroyed. Reporting to GridManager." % grid_pos)
 		grid_manager.set_bridge_status(grid_pos, true)
-		print("桥段 %s 已被摧毁！" % grid_pos)
+		DebugManager.dprint("桥段 %s 已被摧毁！" % grid_pos)
 
 func repair():
 	is_destroyed = false
@@ -565,11 +565,11 @@ func _on_nk_buff_area_2d_body_entered(body: Node2D) -> void:
 func _on_nk_buff_area_2d_body_exited(body: Node2D) -> void:
 	if body is BaseEnemy:
 		var enemy = body as BaseEnemy
-		print("[DEBUG] Bridge: Enemy '%s' exited NK Aura." % enemy.name)
+		DebugManager.dprint("Bridge: Enemy '%s' exited NK Aura." % enemy.name)
 		# 当敌人离开光环，启动它的debuff移除计时器
 		if enemy.has_node("NKBuffTimer"):
 			var timer = enemy.get_node("NKBuffTimer")
-			print("[DEBUG] Bridge: Found NKBuffTimer on enemy. Starting it now.")
+			DebugManager.dprint("Bridge: Found NKBuffTimer on enemy. Starting it now.")
 			timer.start() # 默认时间在Timer节点上设置
 		else:
-			print("[DEBUG] Bridge: ERROR - NKBuffTimer node not found on enemy!")
+			DebugManager.dprint("Bridge: ERROR - NKBuffTimer node not found on enemy!")

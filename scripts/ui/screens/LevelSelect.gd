@@ -37,10 +37,12 @@ func _ready() -> void:
 # --- 信号处理函数 ---
 
 func _on_back_button_pressed() -> void:
+	SoundManager.play_sfx("ui_cancel")
 	if SceneManager:
 		SceneManager.change_scene_to_file(main_menu_scene_path)
 
 func _on_level_button_pressed(level_number: int) -> void:
+	SoundManager.play_sfx("ui_accept")
 	print("选择了关卡 %d" % level_number)
 	if SceneManager:
 		# 目前所有按钮都先跳转到同一个主游戏场景

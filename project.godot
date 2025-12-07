@@ -17,6 +17,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+SoundManager="*res://scenes/managers/SoundManager.tscn"
+DebugManager="*res://scripts/managers/DebugManager.gd"
 GridManager="*res://scripts/managers/GridManager.gd"
 PathFXManager="*res://scripts/managers/PathFXManager.gd"
 GameCamera="*res://scripts/camera/ShakeableCamera.gd"

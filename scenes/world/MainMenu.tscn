@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bkhq73a620q5k"]
+[gd_scene load_steps=5 format=3 uid="uid://bkhq73a620q5k"]
 
 [ext_resource type="Script" uid="uid://bnitpbw33bqhh" path="res://scenes/world/MainMenu.gd" id="1_abcde"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="2_fghij"]
 [ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="3_klmno"]
+[ext_resource type="PackedScene" uid="uid://d1e2f3g4h5i6j" path="res://scenes/ui/BaseButton.tscn" id="4_base_button"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -43,12 +44,12 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/separation = 4
 
-[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer/MenuPanel/VBoxContainer"]
+[node name="StartButton" parent="CenterContainer/VBoxContainer/MenuPanel/VBoxContainer" instance=ExtResource("4_base_button")]
 layout_mode = 2
 theme = ExtResource("3_klmno")
 text = "开始任务"
 
-[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer/MenuPanel/VBoxContainer"]
+[node name="QuitButton" parent="CenterContainer/VBoxContainer/MenuPanel/VBoxContainer" instance=ExtResource("4_base_button")]
 layout_mode = 2
 theme = ExtResource("3_klmno")
 text = "退出任务"

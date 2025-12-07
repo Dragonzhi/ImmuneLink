@@ -3,10 +3,10 @@
 [ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_qwkhf"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_tnha3"]
 [ext_resource type="Resource" uid="uid://dett8c7ggrkf1" path="res://scenes/levels/level02/waves/wave_01.tres" id="3_hu4y5"]
-[ext_resource type="Resource" path="res://scenes/levels/level02/waves/wave_02.tres" id="4_es6ef"]
-[ext_resource type="Resource" path="res://scenes/levels/level02/waves/wave_03.tres" id="5_4u8lj"]
-[ext_resource type="Resource" path="res://scenes/levels/level02/waves/wave_04.tres" id="6_jvkam"]
-[ext_resource type="Resource" path="res://scenes/levels/level02/waves/wave_05.tres" id="7_snb68"]
+[ext_resource type="Resource" uid="uid://cdhstuoele1" path="res://scenes/levels/level02/waves/wave_02.tres" id="4_es6ef"]
+[ext_resource type="Resource" uid="uid://nonixsi6fmkh" path="res://scenes/levels/level02/waves/wave_03.tres" id="5_4u8lj"]
+[ext_resource type="Resource" uid="uid://bx504ehpgl0r" path="res://scenes/levels/level02/waves/wave_04.tres" id="6_jvkam"]
+[ext_resource type="Resource" uid="uid://bi03rfybi3fy4" path="res://scenes/levels/level02/waves/wave_05.tres" id="7_snb68"]
 
 [node name="Main" instance=ExtResource("1_qwkhf")]
 

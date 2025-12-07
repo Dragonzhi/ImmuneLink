@@ -236,6 +236,8 @@ func start_death_sequence():
 	if is_dying: return
 	is_dying = true
 	
+	SoundManager.play_sfx("enemy_death") # 播放死亡音效
+	
 	# --- 清理所有 Buff 和计时器 ---
 	nk_buff_timer.stop()
 	
@@ -304,7 +306,7 @@ func apply_buff(type: String, multiplier: float, duration: float):
 			# 首次施加此类型Buff
 			var old_speed = move_speed
 			move_speed *= multiplier
-			print("DEBUG: Enemy '%s' apply_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
+			DebugManager.dprint("Enemy '%s' apply_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
 			
 			# 根据类型选择不同的粒子效果
 			if type == "nk_slow":
@@ -327,7 +329,7 @@ func apply_buff(type: String, multiplier: float, duration: float):
 
 
 func remove_buff(type: String):
-	print("[DEBUG] BaseEnemy: Attempting to remove buff '%s'." % type)
+	DebugManager.dprint("BaseEnemy: Attempting to remove buff '%s'." % type)
 	if _active_buffs.has(type):
 		
 		# 对于非nk_slow的buff，清理其动态创建的计时器
@@ -340,7 +342,7 @@ func remove_buff(type: String):
 			# 将速度恢复到被Buff前的原始值
 			var old_speed = move_speed
 			move_speed = _original_move_speed 
-			print("[DEBUG] BaseEnemy: '%s' remove_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
+			DebugManager.dprint("BaseEnemy: '%s' remove_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
 			
 			# 根据类型停止相应的粒子效果
 			if type == "nk_slow":
@@ -350,7 +352,7 @@ func remove_buff(type: String):
 		
 		_active_buffs.erase(type)
 	else:
-		print("[DEBUG] BaseEnemy: Buff '%s' not found in _active_buffs." % type)
+		DebugManager.dprint("BaseEnemy: Buff '%s' not found in _active_buffs." % type)
 
 
 # 物理碰撞现在处理桥梁交互，这里可以留空或用于其他逻辑
@@ -359,5 +361,5 @@ func _on_area_2d_area_entered(area: Area2D) -> void:
 
 
 func _on_nk_buff_timer_timeout() -> void:
-	print("[DEBUG] BaseEnemy: NKBuffTimer timeout! Removing nk_slow buff.")
+	DebugManager.dprint("BaseEnemy: NKBuffTimer timeout! Removing nk_slow buff.")
 	remove_buff("nk_slow")
