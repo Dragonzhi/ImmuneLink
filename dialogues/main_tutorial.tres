@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TutorialSequence" load_steps=9 format=3 uid="uid://qh7tmv6hw1hf"]
+
+[ext_resource type="Script" uid="uid://3pn5um83pqfk" path="res://scripts/tutorial/TutorialSequence.gd" id="1_seq"]
+[ext_resource type="Script" uid="uid://4f5pvs1hs7tr" path="res://scripts/tutorial/TutorialStep.gd" id="2_ruvv2"]
+[ext_resource type="Resource" uid="uid://8htkhgdsvcp4" path="res://dialogues/tutorial_step_1_initial.tres" id="3_5wymt"]
+[ext_resource type="Resource" uid="uid://bxnejdq0jnc0w" path="res://dialogues/tutorial_step_2_wait_blue_connection.tres" id="4_y23ur"]
+[ext_resource type="Resource" uid="uid://moc2kd37hsg4" path="res://dialogues/tutorial_step_3_post_connect_dialogue.tres" id="5_cd562"]
+[ext_resource type="Resource" uid="uid://b47d827n6qfkd" path="res://dialogues/tutorial_step_4_trigger_wave.tres" id="6_hgauv"]
+[ext_resource type="Resource" uid="uid://gpujm6o4k55t" path="res://dialogues/tutorial_step_5_wait_upgrade_timer.tres" id="7_osohv"]
+[ext_resource type="Resource" uid="uid://cdxutj5b7qfsw" path="res://dialogues/tutorial_step_6_upgrade_dialogue.tres" id="8_13kl6"]
+
+[resource]
+script = ExtResource("1_seq")
+sequence_name = "main教程序列"
+steps = Array[ExtResource("2_ruvv2")]([ExtResource("3_5wymt"), ExtResource("4_y23ur"), ExtResource("5_cd562"), ExtResource("6_hgauv"), ExtResource("7_osohv"), ExtResource("8_13kl6")])
+metadata/_custom_type_script = "uid://3pn5um83pqfk"

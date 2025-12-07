@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="LevelConfig" load_steps=2 format=3 uid="uid://d0ggmctqs1xg2"]
+
+[ext_resource type="Script" uid="uid://c0vpaw3fd5v5u" path="res://scripts/resources/LevelConfig.gd" id="1_teik5"]
+
+[resource]
+script = ExtResource("1_teik5")
+level_name = "LEVEL 1"
+starting_resources = 129
+tutorial_sequence_path = "res://dialogues/main_tutorial.tres"
+metadata/_custom_type_script = "uid://c0vpaw3fd5v5u"

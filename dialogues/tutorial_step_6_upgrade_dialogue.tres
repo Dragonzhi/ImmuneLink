@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TutorialStep" load_steps=3 format=3 uid="uid://cdxutj5b7qfsw"]
+
+[ext_resource type="Resource" uid="uid://d3lnrl2cc1m64" path="res://dialogues/upgrade_dialogue.tres" id="1_apr4c"]
+[ext_resource type="Script" uid="uid://4f5pvs1hs7tr" path="res://scripts/tutorial/TutorialStep.gd" id="2_k7h8a"]
+
+[resource]
+script = ExtResource("2_k7h8a")
+dialogue_resource = ExtResource("1_apr4c")
+trigger_condition = 1
+metadata/_custom_type_script = "uid://4f5pvs1hs7tr"

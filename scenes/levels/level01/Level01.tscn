@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://c0aqyjnsgocdf"]
+[gd_scene load_steps=9 format=3 uid="uid://c0aqyjnsgocdf"]
 
 [ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_yqdcf"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_uialj"]
 [ext_resource type="Resource" uid="uid://bktbxy4finrku" path="res://scenes/levels/level01/waves/wave_01.tres" id="3_u6ccs"]
 [ext_resource type="Resource" uid="uid://cqhwo0uq2kjc5" path="res://scenes/levels/level01/waves/wave_02.tres" id="4_163aq"]
+[ext_resource type="Resource" uid="uid://cul5xens2pxa8" path="res://scenes/levels/level01/waves/wave_00.tres" id="5_u6ccs"]
 
 [sub_resource type="Curve2D" id="Curve2D_i2pqh"]
 _data = {
@@ -25,18 +26,18 @@ point_count = 5
 
 [node name="Main" instance=ExtResource("1_yqdcf")]
 
-[node name="LevelConfig" parent="." index="0"]
-starting_resources = 400
-
-[node name="WaveManager" parent="." index="1"]
-waves = Array[ExtResource("2_uialj")]([ExtResource("3_u6ccs"), ExtResource("4_163aq")])
+[node name="WaveManager" parent="." index="0"]
+waves = Array[ExtResource("2_uialj")]([ExtResource("3_u6ccs"), ExtResource("4_163aq"), ExtResource("5_u6ccs")])
 auto_start_on_ready = false
+
+[node name="redPipe1" parent="BackGround/Pipes/Red" index="0"]
+position = Vector2(296, 218)
 
 [node name="bluePipe1" parent="BackGround/Pipes/Blue" index="0"]
 position = Vector2(88, 216)
 
 [node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
-position = Vector2(120, 8)
+position = Vector2(88, 8)
 rotation = 3.1415927
 direction = Vector2i(0, -1)
 
@@ -59,3 +60,4 @@ offset_bottom = -181.0
 process_mode = 3
 
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]
+[editable path="UILayer/GameUI"]

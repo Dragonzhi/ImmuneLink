@@ -6,6 +6,7 @@ var is_transitioning: bool = false
 var scene_data: Dictionary = {}
 
 func _ready():
+	DebugManager.register_category("SceneManager", false)
 	# -- 程序化创建UI --
 	var canvas = CanvasLayer.new()
 	canvas.layer = 128
@@ -36,6 +37,7 @@ func change_scene_to_file(scene_path: String):
 	if GridManager and GridManager.has_method("clear"):
 		GridManager.clear()
 	
+	DebugManager.dprint("SceneManager", "路径: %s" % scene_path)
 	# 2. 切换场景
 	var error = get_tree().change_scene_to_file(scene_path)
 	
@@ -46,6 +48,7 @@ func change_scene_to_file(scene_path: String):
 		await tween_err.finished
 		transition_rect.visible = false
 		is_transitioning = false
+		DebugManager.dprint("SceneManager", "错误: %s" % error)
 		return
 
 	# 3. 等待场景切换完成的信号，并获取新场景节点

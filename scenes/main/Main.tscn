@@ -1,6 +1,5 @@
-[gd_scene load_steps=26 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=24 format=3 uid="uid://0nk3tfn6rk4s"]
 
-[ext_resource type="Script" uid="uid://bc5b7fp0eb10i" path="res://scripts/levels/LevelConfig.gd" id="1_2tpxt"]
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="Script" path="res://scripts/managers/WaveManager.gd" id="1_rikml"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_vc03v"]
@@ -15,7 +14,6 @@
 [ext_resource type="PackedScene" uid="uid://dpsk4yq8w7h6g" path="res://scenes/ui/GameUI.tscn" id="9_gameui"]
 [ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="10_theme"]
 [ext_resource type="Shader" uid="uid://cul7dygdsicnj" path="res://assets/shader/pixelate.gdshader" id="15_tck0d"]
-[ext_resource type="Script" path="res://scripts/tutorial/TutorialManager.gd" id="16_tutorial_mgr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u8lgh"]
 size = Vector2(404, 236)
@@ -108,10 +106,6 @@ _data = {
 }
 
 [node name="Main" type="Node2D"]
-
-[node name="LevelConfig" type="Node" parent="."]
-script = ExtResource("1_2tpxt")
-starting_resources = 2000
 
 [node name="WaveManager" type="Node" parent="." node_paths=PackedStringArray("spawners")]
 script = ExtResource("1_rikml")
@@ -270,9 +264,6 @@ process_mode = 3
 libraries = {
 &"": SubResource("AnimationLibrary_tck0d")
 }
-
-[node name="TutorialManager" type="Node" parent="."]
-script = ExtResource("16_tutorial_mgr")
 
 [connection signal="input_event" from="UICancel/Area2D" to="UICancel" method="_on_area_2d_input_event"]
 

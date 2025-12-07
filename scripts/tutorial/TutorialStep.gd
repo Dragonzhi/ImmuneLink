@@ -2,14 +2,15 @@ extends Resource
 class_name TutorialStep
 
 enum TriggerCondition {
-    NONE,                   # 无特定触发，仅在延迟后继续
-    DIALOGUE_FINISHED,      # 等待特定对话完成
-    CONNECTION_MADE_TYPE,   # 等待特定类型的连接建立 (例如蓝色管道)
-    TIMER_EXPIRED,          # 等待自定义计时器到期
-    ENEMY_DEFEATED_COUNT,   # 等待一定数量的敌人被击败
-    BRIDGE_BUILT,           # 等待桥梁建成
-    CUSTOM_SIGNAL,          # 等待自定义信号 (更高级)
-    INPUT_ACTION_PRESSED,   # 等待特定输入动作按下
+	NONE,                   # 无特定触发，仅在延迟后继续
+	DIALOGUE_FINISHED,      # 等待特定对话完成
+	CONNECTION_MADE_TYPE,   # 等待特定类型的连接建立 (例如蓝色管道)
+	TIMER_EXPIRED,          # 等待自定义计时器到期
+	ENEMY_DEFEATED_COUNT,   # 等待一定数量的敌人被击败
+	BRIDGE_BUILT,           # 等待桥梁建成
+	CUSTOM_SIGNAL,          # 等待自定义信号 (更高级)
+	INPUT_ACTION_PRESSED,   # 等待特定输入动作按下
+	ACTION_TRIGGER_WAVE,    # 新增：触发敌人波次
 }
 
 @export var step_name: String = "未命名步骤" # 用于编辑器显示，方便识别
@@ -21,4 +22,4 @@ enum TriggerCondition {
 @export var delay_after_completion: float = 0.0 # 步骤完成后，进入下一个步骤前的延迟
 
 func _to_string() -> String:
-    return "步骤: %s (对话: %s, 触发: %s)" % [step_name, dialogue_resource.resource_path.get_file() if dialogue_resource else "无", TriggerCondition.keys()[trigger_condition]]
+	return "步骤: %s (对话: %s, 触发: %s)" % [step_name, dialogue_resource.resource_path.get_file() if dialogue_resource else "无", TriggerCondition.keys()[trigger_condition]]

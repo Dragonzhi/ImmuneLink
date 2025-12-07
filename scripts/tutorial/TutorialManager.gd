@@ -1,14 +1,14 @@
 # TutorialManager.gd
-class_name TutorialManager
+#class_name TutorialManager # Autoload 脚本不需要 class_name
 extends Node
 
 ## 教程管理器，用于引导玩家完成教学关卡步骤。
 ## 现在通过 TutorialSequence 资源驱动，实现灵活配置。
 
-@export var tutorial_sequence: TutorialSequence # 教程序列数据
 @export var dialogue_box_node_path: NodePath # DialogueBox 节点的路径，例如 "../../GameUI/DialogueBox"
 
 var _wave_manager: WaveManager
+var _current_tutorial_sequence: TutorialSequence = null # 新增：存储当前教程序列
 var _current_step_index: int = -1
 var _current_step_timer: Timer = null # 用于 TIMER_EXPIRED 触发条件
 
@@ -16,18 +16,14 @@ var _current_step_timer: Timer = null # 用于 TIMER_EXPIRED 触发条件
 signal tutorial_completed
 
 func _ready() -> void:
-	# 获取场景中的WaveManager节点
-	_wave_manager = get_node_or_null("../WaveManager")
-	assert(is_instance_valid(_wave_manager), "TutorialManager could not find sibling node WaveManager!")
-
 	# 禁用WaveManager的自动开始功能，由教程控制
-	if _wave_manager:
-		_wave_manager.auto_start_on_ready = false
+	#if _wave_manager:
+		#_wave_manager.auto_start_on_ready = false
 
 	# DebugManager 注册
 	DebugManager.register_category("TutorialManager", false)
 
-	# 等待场景过渡结束后再开始教程
+	# 等待场景过渡结束后。现在start_tutorial_with_sequence由GameManager调用
 	_wait_and_start_tutorial()
 
 func _wait_and_start_tutorial():
@@ -38,30 +34,40 @@ func _wait_and_start_tutorial():
 	# 额外等待一帧，确保输入系统完全准备就绪
 	await get_tree().process_frame
 		
-	# 过渡已结束，现在可以安全地开始教学
-	start_tutorial()
+	# 过渡已结束，现在等待GameManager调用 start_tutorial_with_sequence
 
-## 启动教程
-func start_tutorial():
-	if not tutorial_sequence:
-		printerr("TutorialManager: No TutorialSequence assigned!")
+## 启动教程，并传入要运行的教程序列
+func start_tutorial_with_sequence(sequence: TutorialSequence):
+	# 获取场景中的WaveManager节点
+	# 注意：如果TutorialManager是Autoload，则WaveManager也应是Autoload或由GameManager管理
+	_wave_manager = get_node_or_null("/root/Main/WaveManager") # 假设WaveManager是Autoload或Main的直接子节点
+	if not _wave_manager:
+		printerr("TutorialManager: 无法找到WaveManager!")
+		# 如果是Autoload，这里可能会失败，直到WaveManager的_ready执行
+
+	_current_tutorial_sequence = sequence # 保存传入的序列
+
+	if not _current_tutorial_sequence:
+		printerr("TutorialManager: 没有提供教程序列！")
 		return
-	
+
 	_current_step_index = -1 # 重置步骤索引
-	DebugManager.dprint("TutorialManager", "教程开始: '%s'" % tutorial_sequence.sequence_name)
+	DebugManager.dprint("TutorialManager", "教程开始: '%s'" % _current_tutorial_sequence.sequence_name)
 	_go_to_next_step()
 
 ## 推进到下一个教程步骤
 func _go_to_next_step():
 	_cleanup_current_step() # 清理上一步的监听器和计时器
 	
+	if not _current_tutorial_sequence: return # 如果没有序列，则不进行
+
 	_current_step_index += 1
-	if _current_step_index >= tutorial_sequence.steps.size():
+	if _current_step_index >= _current_tutorial_sequence.steps.size():
 		DebugManager.dprint("TutorialManager", "所有教程步骤已完成！")
 		emit_signal("tutorial_completed")
 		return
 
-	var current_step = tutorial_sequence.steps[_current_step_index]
+	var current_step = _current_tutorial_sequence.steps[_current_step_index]
 	DebugManager.dprint("TutorialManager", "执行步骤: %s" % current_step.step_name)
 	
 	_execute_step(current_step)
@@ -79,7 +85,7 @@ func _execute_step(step: TutorialStep):
 	elif not step.message_text.is_empty():
 		# 如果没有 DialogueResource 但有 message_text，可以在这里显示一个临时的UI提示
 		# For now, just print to console
-		print("教程提示: %s" % step.message_text)
+		print("教程提示: %s" % step.message_text) # 这里的print仍然使用，因为不是DebugManager的常规输出
 
 	# 3. 等待触发条件
 	match step.trigger_condition:
@@ -142,15 +148,25 @@ func _execute_step(step: TutorialStep):
 			DebugManager.dprint("TutorialManager", "等待输入动作: %s" % step.trigger_data)
 			# Input 监听将在 _input 函数中进行处理
 		
+		TutorialStep.TriggerCondition.ACTION_TRIGGER_WAVE:
+			# 立即触发敌人波次
+			if _wave_manager:
+				_wave_manager.trigger_next_wave()
+				DebugManager.dprint("TutorialManager", "已触发敌人波次。")
+			else:
+				printerr("TutorialManager: WaveManager 未找到，无法触发波次！")
+			_handle_step_completion(step)
+		
 		_:
 			printerr("TutorialManager: 未知触发条件：%s" % step.trigger_condition)
 			_handle_step_completion(step) # 错误，直接完成
 
 func _input(event: InputEvent) -> void:
-	if _current_step_index < 0 or _current_step_index >= tutorial_sequence.steps.size():
-		return # 不在教程进行中
+	# 只有当教程正在进行中，并且当前步骤需要监听输入时才处理
+	if _current_step_index < 0 || _current_step_index >= _current_tutorial_sequence.steps.size():
+		return 
 
-	var current_step = tutorial_sequence.steps[_current_step_index]
+	var current_step = _current_tutorial_sequence.steps[_current_step_index]
 	if current_step.trigger_condition == TutorialStep.TriggerCondition.INPUT_ACTION_PRESSED:
 		if event.is_action_pressed(current_step.trigger_data):
 			DebugManager.dprint("TutorialManager", "输入动作 '%s' 已按下。" % current_step.trigger_data)
@@ -194,13 +210,23 @@ func _cleanup_current_step():
 
 func _on_current_dialogue_finished(resource: DialogueResource):
 	# 确保是当前步骤的对话
-	var current_step = tutorial_sequence.steps[_current_step_index]
+	# 注意: _current_tutorial_sequence 可能会在 start_tutorial_with_sequence 未被调用时为 null
+	if not _current_tutorial_sequence or _current_step_index < 0 || _current_step_index >= _current_tutorial_sequence.steps.size():
+		DebugManager.dprint("TutorialManager", "对话完成信号，但教程状态异常。")
+		return
+
+	var current_step = _current_tutorial_sequence.steps[_current_step_index]
 	if current_step.dialogue_resource == resource:
 		DebugManager.dprint("TutorialManager", "对话 '%s' 已完成。" % resource.resource_path.get_file())
 		_handle_step_completion(current_step)
 
 func _on_connection_made_type(pipe_type: int):
-	var current_step = tutorial_sequence.steps[_current_step_index]
+	# 注意: _current_tutorial_sequence 可能会在 start_tutorial_with_sequence 未被调用时为 null
+	if not _current_tutorial_sequence or _current_step_index < 0 || _current_step_index >= _current_tutorial_sequence.steps.size():
+		DebugManager.dprint("TutorialManager", "连接建立信号，但教程状态异常。")
+		return
+
+	var current_step = _current_tutorial_sequence.steps[_current_step_index]
 	if current_step.trigger_condition == TutorialStep.TriggerCondition.CONNECTION_MADE_TYPE:
 		# 假设 trigger_data 存储的是 Pipe.PipeType 的整数值或字符串名称
 		# 需要将 pipe_type (int) 转换为 PipeType 的字符串名称进行比较
@@ -215,5 +241,10 @@ func _on_connection_made_type(pipe_type: int):
 
 func _on_custom_timer_timeout(step: TutorialStep):
 	# 确保是当前步骤的计时器
+	# 注意: _current_tutorial_sequence 可能会在 start_tutorial_with_sequence 未被调用时为 null
+	if not _current_tutorial_sequence or _current_step_index < 0 || _current_step_index >= _current_tutorial_sequence.steps.size():
+		DebugManager.dprint("TutorialManager", "计时器超时，但教程状态异常。")
+		return
+	
 	DebugManager.dprint("TutorialManager", "计时器条件 '%s' 已满足。" % step.step_name)
 	_handle_step_completion(step)

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dpsk4yq8w7h6g"]
+[gd_scene load_steps=3 format=3 uid="uid://dpsk4yq8w7h6g"]
 
 [ext_resource type="Script" uid="uid://b44a6hmargnou" path="res://scripts/ui/GameUI.gd" id="1_abcde"]
+[ext_resource type="PackedScene" uid="uid://cmd7kak7nst2" path="res://scenes/ui/dialogue/DialogueBox.tscn" id="2_3pxe2"]
 
 [node name="GameUI" type="Control"]
 layout_mode = 3
@@ -47,3 +48,6 @@ text = "修复值: 0 / 100"
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "资源: 100"
+
+[node name="DialogueBox" parent="." instance=ExtResource("2_3pxe2")]
+visible = false

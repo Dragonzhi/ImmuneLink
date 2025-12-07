@@ -28,6 +28,7 @@ VhsMonitorEffect="*res://scenes/world/VHSMonitorEffect.tscn"
 DialogueManager="*res://scripts/dialogue/DialogueManager.gd"
 SoundManager="*res://scenes/managers/SoundManager.tscn"
 DebugManager="*res://scripts/managers/DebugManager.gd"
+TutorialManager="*res://scenes/tutorial/TutorialManager.tscn"
 
 [display]
 

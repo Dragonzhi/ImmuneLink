@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="LevelConfig" load_steps=2 format=3 uid="uid://b7vg4k7l2xg04"]
+
+[ext_resource type="Script" uid="uid://c0vpaw3fd5v5u" path="res://scripts/resources/LevelConfig.gd" id="1_rmrvo"]
+
+[resource]
+script = ExtResource("1_rmrvo")
+level_name = "LEVEL 2"
+starting_resources = 200
+metadata/_custom_type_script = "uid://c0vpaw3fd5v5u"

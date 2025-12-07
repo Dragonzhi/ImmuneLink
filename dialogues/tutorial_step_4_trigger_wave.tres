@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="TutorialStep" load_steps=2 format=3 uid="uid://b47d827n6qfkd"]
+
+[ext_resource type="Script" uid="uid://4f5pvs1hs7tr" path="res://scripts/tutorial/TutorialStep.gd" id="1_pmw86"]
+
+[resource]
+script = ExtResource("1_pmw86")
+trigger_condition = 8
+metadata/_custom_type_script = "uid://4f5pvs1hs7tr"
