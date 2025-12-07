@@ -236,7 +236,7 @@ func start_death_sequence():
 	if is_dying: return
 	is_dying = true
 	
-	SoundManager.play_sfx("enemy_death") # 播放死亡音效
+	SoundManager.play_sfx("enemy_die") # 播放死亡音效
 	
 	# --- 清理所有 Buff 和计时器 ---
 	nk_buff_timer.stop()
@@ -273,6 +273,7 @@ func start_death_sequence():
 	tween.finished.connect(queue_free)
 
 func _play_spawn_animation():
+	SoundManager.play_sfx("enemy_show") # 播放敌人出现音效
 	scale = Vector2.ZERO
 	if is_instance_valid(sprite):
 		sprite.modulate.a = 0.0

@@ -51,6 +51,8 @@ func _activate_bridge_traversal():
 	_is_traversing_bridges = true
 	_can_use_ability = false
 	
+	SoundManager.play_sfx("DC_") # 播放DC细胞能力音效
+	
 	# 激活视觉提示
 	if _indicator:
 		_indicator.emitting = true

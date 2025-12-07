@@ -31,7 +31,7 @@ point_count = 8
 [node name="Main" instance=ExtResource("1_53rhq")]
 
 [node name="LevelConfig" parent="." index="0"]
-starting_resources = 200
+starting_resources = 250
 
 [node name="WaveManager" parent="." index="1"]
 waves = Array[ExtResource("2_iseop")]([ExtResource("3_m4daj"), ExtResource("4_5akfg"), ExtResource("5_v6xt8"), ExtResource("6_a0puf"), ExtResource("7_lxp62"), ExtResource("8_v6xt8")])
@@ -58,13 +58,9 @@ direction = Vector2i(0, -1)
 curve = SubResource("Curve2D_a0puf")
 
 [node name="Path02" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="5"]
-position = Vector2(-21.713394, 0)
-scale = Vector2(1.1277258, 1)
 curve = SubResource("Curve2D_v6xt8")
 
 [node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="6"]
-position = Vector2(139, 0)
-scale = Vector2(2.1487603, 1)
 curve = SubResource("Curve2D_jtyld")
 
 [node name="TutorialManager" parent="." index="11"]

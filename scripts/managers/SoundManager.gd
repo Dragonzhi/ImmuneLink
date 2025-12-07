@@ -26,11 +26,25 @@ func _ready() -> void:
 	preload_sfx("ui_def", "res://assets/audio/tone1.ogg")
 	preload_sfx("ui_error", "res://assets/audio/zap2.ogg")
 	preload_sfx("ui_say", "res://assets/audio/confirmation_001.ogg")
+	preload_sfx("CD4T_buff", "res://assets/audio/slime_000.ogg")
+	preload_sfx("pipe_click", "res://assets/audio/switch_002.ogg")
+	preload_sfx("pipe_def", "res://assets/audio/question_004.ogg")
+	preload_sfx("pipe_yes", "res://assets/audio/phaserUp1.ogg")
+	preload_sfx("wave_come", "res://assets/audio/lowFrequency_explosion_000.ogg")
+	preload_sfx("bridge_attack", "res://assets/audio/laserSmall_000.ogg")
+	preload_sfx("bridge_connect", "res://assets/audio/glass_001.ogg")
+	preload_sfx("bridge_fail", "res://assets/audio/error_008.ogg")
+	preload_sfx("enemy_show", "res://assets/audio/drop_001.ogg")
+	preload_sfx("enemy_die", "res://assets/audio/impactMetal_001.ogg")
+	preload_sfx("NK_get", "res://assets/audio/toggle_001.ogg")
+	preload_sfx("bridge_hit", "res://assets/audio/pluck_001.ogg")
+	preload_sfx("DC_", "res://assets/audio/slime_001.ogg")
+	preload_sfx("game_over", "res://assets/audio/lowDown.ogg")
 	
-	# preload_sfx("enemy_hit", "res://assets/sfx/enemy_hit.wav")
-	 #preload_sfx("enemy_death", "res://assets/sfx/enemy_death.wav")
-	# preload_sfx("tower_shoot", "res://assets/sfx/tower_shoot.wav")
+	preload_music("main", "res://assets/music/music01.mp3")
 	# preload_music("level_1_bgm", "res://assets/music/level_1.ogg")
+	#SoundManager.play_sfx("game_over")
+	#SoundManager.play_music("main")
 	
 	# 你可以稍后取消注释并填充这些
 	pass

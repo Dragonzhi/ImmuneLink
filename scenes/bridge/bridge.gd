@@ -425,8 +425,11 @@ func set_sprite_modulate(color: Color):
 func take_damage(amount: float):
 	if current_bridge_state == State.DESTROYED: return
 	current_health -= amount
+	SoundManager.play_sfx("bridge_hit") # 播放桥受击音效
 	health_bar.update_health(current_health) 
 	if current_health <= 0:
+		if is_destroyed: return # 防止重复触发
+		SoundManager.play_sfx("bridge_fail") # 播放桥被摧毁的音效
 		current_health = 0
 		is_destroyed = true
 		current_bridge_state = State.DESTROYED
@@ -493,6 +496,8 @@ func _on_reload_timer_timeout():
 	var target = enemies_in_range[0]
 	var shot = CalmingShotScene.instantiate()
 	
+	SoundManager.play_sfx("bridge_attack") # 播放桥攻击音效
+	
 	get_tree().get_root().get_node("Main/Foreground/Particles").add_child(shot)
 	shot.global_position = global_position
 	shot.launch(target, attack_upgrade_damage)
@@ -513,6 +518,7 @@ func _on_hurt_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: 
 		State.NORMAL:
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
 				GameManager.select_turret(self)
+				SoundManager.play_sfx("brigde_press") # 播放点击桥梁音效
 				get_viewport().set_input_as_handled()
 		State.DESTROYED:
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():

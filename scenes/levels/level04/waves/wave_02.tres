@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_0sisg"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_ahohe"]
 [ext_resource type="PackedScene" uid="uid://dpemoeolhg5ja" path="res://scenes/enemies/VirusEnemy.tscn" id="2_g20x4"]
-[ext_resource type="PackedScene" uid="uid://cjkuu6twi2xhm" path="res://scenes/enemies/CD4Tenemy.tscn" id="3_6h040"]
+[ext_resource type="PackedScene" uid="uid://cjkuu6twi2xhm" path="res://scenes/enemies/CD4TEnemy.tscn" id="3_6h040"]
 [ext_resource type="Script" path="res://scripts/managers/SpawnerWaveConfig.gd" id="3_g20x4"]
 
 [sub_resource type="Resource" id="Resource_2nxls"]

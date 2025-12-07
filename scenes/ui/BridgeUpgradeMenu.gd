@@ -60,6 +60,7 @@ func populate_menu(upgrades: Array[Upgrade], target_bridge: Bridge):
 
 # 按钮点击处理函数
 func _on_button_pressed(upgrade: Upgrade):
+	SoundManager.play_sfx("ui_accept") # 播放点击升级按钮音效
 	# 菜单的工作只是发出信号，告知哪个升级被选中了。
 	# 所有游戏逻辑（花钱、应用升级）都由上层管理者（GameManager）处理。
 	emit_signal("upgrade_selected", upgrade)

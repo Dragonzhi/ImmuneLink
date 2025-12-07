@@ -32,6 +32,7 @@ func _ready() -> void:
 
 # --- 新增：游戏结束横幅 ---
 func show_game_over_banner(message: String):
+	SoundManager.play_sfx("game_over") # 播放游戏结束音效
 	animation_player.play("Win")
 	over_label.text = message
 	## 创建一个半透明的灰色背景条

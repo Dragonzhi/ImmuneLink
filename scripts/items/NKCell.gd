@@ -5,6 +5,7 @@ signal collected(cell_node)
 
 ## 当NK细胞被拾取时调用
 func collect():
+	SoundManager.play_sfx("NK_get") # 播放NK细胞拾取音效
 	print("NK Cell collected at %s" % global_position)
 	# 在这里可以添加被拾取时的视觉/声音效果，例如一个Tween动画
 	

@@ -84,6 +84,8 @@ func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int
 			if is_pipe_used:
 				print("管道已被使用!")
 				return
+			
+			SoundManager.play_sfx("pipe_click") # 播放点击管道音效
 				
 			# 找到最近的连接点
 			var closest_point = _get_closest_connection_point(event.global_position)

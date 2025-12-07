@@ -173,6 +173,8 @@ func _finish_building(end_node: Node, end_pos: Vector2i):
 		for item in validation_result.items_to_collect:
 			item.collect()
 		
+		SoundManager.play_sfx("pipe_yes") # 播放管道连接成功音效
+		
 		_setup_sequential_build(path_to_build, start_pipe.direction, end_pipe.direction)
 		
 		connection_manager.add_connection(start_pipe, end_pipe, path_to_build.duplicate())
@@ -209,6 +211,8 @@ func _finish_building(end_node: Node, end_pos: Vector2i):
 		# --- 拾取物品 ---
 		for item in validation_result.items_to_collect:
 			item.collect()
+			
+		SoundManager.play_sfx("bridge_connect") # 播放桥连接成功音效
 			
 		var dynamic_start_dir = current_path[0] - current_path[1]
 		var dynamic_end_dir = current_path.back() - current_path[current_path.size() - 2]
@@ -308,6 +312,7 @@ func _create_single_bridge_segment(grid_pos: Vector2i, is_secondary_bridge: bool
 	bridge_segment.setup_bridge_tile(neighbors)
 
 func _cancel_building():
+	SoundManager.play_sfx("pipe_def") # 播放管道建造失败音效
 	_reset_build_mode(true)
 
 func _reset_build_mode(clear_path: bool):

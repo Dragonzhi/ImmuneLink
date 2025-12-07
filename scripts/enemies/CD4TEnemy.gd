@@ -32,6 +32,7 @@ func _ready() -> void:
 
 ## --- 新增Buff脉冲逻辑 ---
 func _on_buff_pulse_timer_timeout() -> void:
+	SoundManager.play_sfx("CD4T_buff") # 播放buff音效
 	_play_buff_animation()
 	
 	# 获取光环范围内所有敌人，并给它们施加Buff

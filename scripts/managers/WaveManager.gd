@@ -111,6 +111,7 @@ func _start_next_wave():
 	_active_spawners_count = 0
 
 	emit_signal("wave_started", _current_wave_index + 1)
+	SoundManager.play_sfx("wave_come") # 播放新波次音效
 	print("Starting Wave ", _current_wave_index + 1)
 
 	# For each spawner, find its config and start it if it has a quota.
