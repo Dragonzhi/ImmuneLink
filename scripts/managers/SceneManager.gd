@@ -32,6 +32,10 @@ func change_scene_to_file(scene_path: String):
 	tween_out.tween_property(transition_rect, "color:a", 1.0, 0.4)
 	await tween_out.finished
 
+	# --- 在切换场景前清空所有单例管理器的数据 ---
+	if GridManager and GridManager.has_method("clear"):
+		GridManager.clear()
+	
 	# 2. 切换场景
 	var error = get_tree().change_scene_to_file(scene_path)
 	

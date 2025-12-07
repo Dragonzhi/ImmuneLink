@@ -31,6 +31,11 @@ func _draw():
 	if is_grid_visible:
 		for grid_pos in occupied_cells.keys():
 			var node = occupied_cells[grid_pos]
+			
+			# --- 新增：防止对已释放的实例进行操作 ---
+			if not is_instance_valid(node):
+				continue
+			
 			var rect_pos = grid_to_world(grid_pos) - Vector2(grid_size / 2, grid_size / 2)
 			var rect_size = Vector2(grid_size, grid_size)
 			
@@ -162,3 +167,12 @@ func is_path_intact(path_points: Array[Vector2i]) -> bool:
 
 func get_occupied_cells_debug() -> Dictionary:
 	return occupied_cells
+
+func clear():
+	"""
+	Clears all state from the GridManager, typically called on scene changes.
+	"""
+	occupied_cells.clear()
+	_destroyed_bridge_cells.clear()
+	queue_redraw()
+	print("GridManager state cleared.")

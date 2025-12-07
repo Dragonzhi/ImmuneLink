@@ -89,7 +89,7 @@ func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int
 				
 			# 找到最近的连接点
 			var closest_point = _get_closest_connection_point(event.global_position)
-			if closest_point:
+			if closest_point and closest_point.name == "ConnectionPoint1":
 				var start_grid_pos = grid_manager.world_to_grid(closest_point.global_position)
 				# 通知BridgeBuilder开始建造
 				if bridge_builder:
