@@ -76,7 +76,7 @@ curve = SubResource("Curve2D_iyccs")
 curve = SubResource("Curve2D_dlgts")
 
 [node name="NKCell" parent="Midground/Items" index="0" instance=ExtResource("10_dlgts")]
-position = Vector2(135, 185)
+position = Vector2(138, 128)
 
 [node name="TutorialManager" parent="." index="11"]
 initial_dialogue = null

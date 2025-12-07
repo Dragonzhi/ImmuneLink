@@ -252,3 +252,14 @@ func deselect_all_turrets():
 		ui_manager.close_upgrade_menu()
 		
 	_selected_turret = null
+
+# --- Debug Toggle ---
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_debug"): # 可以通过项目设置修改为其他键，例如"ui_select" for F1
+		print("--- Toggling Debug Categories ---")
+		var categories = DebugManager.get_all_categories()
+		for category in categories:
+			DebugManager.toggle_category(category)
+			var status = "ENABLED" if DebugManager.is_category_enabled(category) else "DISABLED"
+			print("Category '%s' is now %s" % [category, status])
+		print("---------------------------------")

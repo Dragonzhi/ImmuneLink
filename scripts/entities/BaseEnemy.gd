@@ -40,6 +40,7 @@ var _original_move_speed: float
 var _active_buffs: Dictionary = {} # Stores active buffs, key: buff_type, value: {timer, original_value, current_multiplier}
 
 func _ready() -> void:
+	DebugManager.register_category("BaseEnemy", false)
 	# 应用个体数值浮动
 	var variation_factor = randf_range(0.9, 1.1) # +/- 10% 浮动
 	max_hp *= variation_factor
@@ -273,7 +274,7 @@ func start_death_sequence():
 	tween.finished.connect(queue_free)
 
 func _play_spawn_animation():
-	SoundManager.play_sfx("enemy_show") # 播放敌人出现音效
+	#SoundManager.play_sfx("enemy_show") # 播放敌人出现音效
 	scale = Vector2.ZERO
 	if is_instance_valid(sprite):
 		sprite.modulate.a = 0.0
@@ -307,7 +308,7 @@ func apply_buff(type: String, multiplier: float, duration: float):
 			# 首次施加此类型Buff
 			var old_speed = move_speed
 			move_speed *= multiplier
-			DebugManager.dprint("Enemy '%s' apply_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
+			DebugManager.dprint("BaseEnemy", "Enemy '%s' apply_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
 			
 			# 根据类型选择不同的粒子效果
 			if type == "nk_slow":
@@ -330,7 +331,7 @@ func apply_buff(type: String, multiplier: float, duration: float):
 
 
 func remove_buff(type: String):
-	DebugManager.dprint("BaseEnemy: Attempting to remove buff '%s'." % type)
+	DebugManager.dprint("BaseEnemy", "BaseEnemy: Attempting to remove buff '%s'." % type)
 	if _active_buffs.has(type):
 		
 		# 对于非nk_slow的buff，清理其动态创建的计时器
@@ -343,7 +344,7 @@ func remove_buff(type: String):
 			# 将速度恢复到被Buff前的原始值
 			var old_speed = move_speed
 			move_speed = _original_move_speed 
-			DebugManager.dprint("BaseEnemy: '%s' remove_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
+			DebugManager.dprint("BaseEnemy", "BaseEnemy: '%s' remove_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
 			
 			# 根据类型停止相应的粒子效果
 			if type == "nk_slow":
@@ -353,7 +354,7 @@ func remove_buff(type: String):
 		
 		_active_buffs.erase(type)
 	else:
-		DebugManager.dprint("BaseEnemy: Buff '%s' not found in _active_buffs." % type)
+		DebugManager.dprint("BaseEnemy", "BaseEnemy: Buff '%s' not found in _active_buffs." % type)
 
 
 # 物理碰撞现在处理桥梁交互，这里可以留空或用于其他逻辑
@@ -362,5 +363,5 @@ func _on_area_2d_area_entered(area: Area2D) -> void:
 
 
 func _on_nk_buff_timer_timeout() -> void:
-	DebugManager.dprint("BaseEnemy: NKBuffTimer timeout! Removing nk_slow buff.")
+	DebugManager.dprint("BaseEnemy", "BaseEnemy: NKBuffTimer timeout! Removing nk_slow buff.")
 	remove_buff("nk_slow")

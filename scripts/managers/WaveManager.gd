@@ -18,6 +18,7 @@ var _is_running: bool = false
 var _active_spawners_count: int = 0
 
 func _ready() -> void:
+	DebugManager.register_category("WaveManager", false) # 注册调试类别
 	if not _wave_timer:
 		printerr("WaveManager requires a child Timer node named 'WaveTimer'.")
 		return
@@ -53,7 +54,7 @@ func _connect_to_listeners():
 	if particle_bg and particle_bg.has_method("_on_wave_started"):
 		wave_started.connect(particle_bg._on_wave_started)
 	else:
-		print("WaveManager did not find ParticleBackground, or it's missing the '_on_wave_started' method.")
+		DebugManager.dprint("WaveManager", "WaveManager 未找到 ParticleBackground，或其缺少 '_on_wave_started' 方法。")
 
 # --- Public Control API ---
 
@@ -64,7 +65,7 @@ func start_spawning(delay: float = -1.0):
 		return
 		
 	var start_delay = initial_delay if delay < 0 else delay
-	print("Wave system will start in %s seconds." % start_delay)
+	DebugManager.dprint("WaveManager", "波次系统将在 %s 秒后启动。" % start_delay)
 	
 	_is_running = true
 	_wave_timer.start(start_delay)
@@ -77,7 +78,7 @@ func stop_wave_system():
 			spawner.stop_spawning()
 	if not _wave_timer.is_stopped():
 		_wave_timer.stop()
-	print("Wave system stopped.")
+	DebugManager.dprint("WaveManager", "波次系统已停止。")
 
 ## 手动触发下一波
 func trigger_next_wave():
@@ -93,16 +94,16 @@ func trigger_next_wave():
 
 func _start_next_wave():
 	_wave_timer.stop() # 确保计时器在处理波次逻辑前已停止，防止重复触发
-	print("DEBUG: [WaveManager] _start_next_wave called.")
+	DebugManager.dprint("WaveManager", "_start_next_wave 被调用。")
 	if not _is_running: return
 
 	_current_wave_index += 1
 	if _current_wave_index >= waves.size():
 		if loop_waves:
-			print("All waves completed. Looping back to Wave 1.")
+			DebugManager.dprint("WaveManager", "所有波次已完成。循环回到第一波。")
 			_current_wave_index = 0 # 重置为第一波
 		else:
-			print("All waves completed!")
+			DebugManager.dprint("WaveManager", "所有波次已完成！")
 			emit_signal("all_waves_completed")
 			_is_running = false
 			return
@@ -112,7 +113,7 @@ func _start_next_wave():
 
 	emit_signal("wave_started", _current_wave_index + 1)
 	SoundManager.play_sfx("wave_come") # 播放新波次音效
-	print("Starting Wave ", _current_wave_index + 1)
+	DebugManager.dprint("WaveManager", "正在启动第 %s 波。" % (_current_wave_index + 1))
 
 	# For each spawner, find its config and start it if it has a quota.
 	for spawner in spawners:
@@ -143,29 +144,29 @@ func _start_next_wave():
 		if count_for_this_spawner > 0:
 			_active_spawners_count += 1
 			if spawner.has_method("start_spawning"):
-				print("DEBUG: [WaveManager] Telling spawner '%s' to start." % spawner.name)
+				DebugManager.dprint("WaveManager", "通知生成器 '%s' 开始生成。" % spawner.name)
 				spawner.start_spawning(enemy_infos, spawn_interval, count_for_this_spawner)
 	
 	if _active_spawners_count == 0:
-		print("Wave %s has no active spawners. Skipping." % (_current_wave_index + 1))
+		DebugManager.dprint("WaveManager", "第 %s 波没有活跃的生成器。跳过。" % (_current_wave_index + 1))
 		_finish_current_wave()
 
 func _on_spawner_finished(spawner):
-	print("DEBUG: [WaveManager] Received 'spawner_finished' from: %s" % spawner.name)
+	DebugManager.dprint("WaveManager", "收到生成器 '%s' 发出的 'spawner_finished' 信号。" % spawner.name)
 	if not _is_running: return
 	
-	print("Spawner %s has finished its quota." % spawner.name)
+	DebugManager.dprint("WaveManager", "生成器 '%s' 已完成其配额。" % spawner.name)
 	_active_spawners_count -= 1
 	
 	if _active_spawners_count <= 0:
 		_finish_current_wave()
 
 func _finish_current_wave():
-	print("DEBUG: [WaveManager] _finish_current_wave called.")
+	DebugManager.dprint("WaveManager", "_finish_current_wave 被调用。")
 	if not _is_running: return
 	
 	emit_signal("wave_finished", _current_wave_index + 1)
-	print("Wave ", _current_wave_index + 1, " finished.")
+	DebugManager.dprint("WaveManager", "第 %s 波次已完成。" % (_current_wave_index + 1))
 	
 	# This is now redundant as spawners stop themselves, but good for safety.
 	for spawner in spawners:
@@ -173,7 +174,7 @@ func _finish_current_wave():
 			spawner.stop_spawning()
 
 	var post_wave_delay = waves[_current_wave_index].post_wave_delay
-	print("DEBUG: [WaveManager] Starting timer for next wave with delay: %s" % post_wave_delay)
+	DebugManager.dprint("WaveManager", "正在为下一波启动计时器，延迟：%s。" % post_wave_delay)
 	_wave_timer.start(post_wave_delay)
 
 # --- Helper Methods ---

@@ -22,6 +22,7 @@ var _enemies_to_spawn_this_wave: int = 0
 var _enemies_spawned_this_wave: int = 0
 
 func _ready() -> void:
+	DebugManager.register_category("EnemySpawnPoint", false)
 	if _paths.is_empty():
 		printerr("敌人生成点错误: 未找到任何Path2D子节点！")
 		set_process_mode(Node.PROCESS_MODE_DISABLED)
@@ -38,7 +39,7 @@ func _ready() -> void:
 
 ## 由 WaveManager 调用，开始生成这一波的敌人
 func start_spawning(new_enemy_list: Array[EnemySpawnInfo], interval: float, count: int):
-	print("DEBUG: [Spawner %s] start_spawning called with interval: %s, count: %s" % [self.name, interval, count])
+	DebugManager.dprint("EnemySpawnPoint", "生成器 %s: 开始生成，间隔：%s，数量：%s。" % [self.name, interval, count])
 	if new_enemy_list.is_empty() or interval <= 0 or count <= 0:
 		return
 		
@@ -53,13 +54,13 @@ func start_spawning(new_enemy_list: Array[EnemySpawnInfo], interval: float, coun
 		
 	spawn_timer.wait_time = interval
 	spawn_timer.start()
-	print("Spawner %s started spawning. Quota: %s" % [self.name, _enemies_to_spawn_this_wave])
+	DebugManager.dprint("EnemySpawnPoint", "生成器 %s 已开始生成。配额：%s。" % [self.name, _enemies_to_spawn_this_wave])
 
 ## 停止生成
 func stop_spawning():
 	if not spawn_timer.is_stopped():
 		spawn_timer.stop()
-		print("DEBUG: [Spawner %s] Timer stopped." % self.name)
+		DebugManager.dprint("EnemySpawnPoint", "生成器 %s: 计时器已停止。" % self.name)
 		# print("Spawner %s stopped spawning." % self.name) # 这行信息重复了
 
 ## (新) 由 WaveManager 调用，根据索引设置当前使用的路径
@@ -76,7 +77,7 @@ func set_active_path_by_index(index: int):
 	if PathFXManager:
 		PathFXManager.play_path_animation(_paths[current_path_index])
 	_update_path_visualizer()
-	print("Spawner %s 的路径已切换到: %s (Index: %d)" % [self.name, _paths[current_path_index].name, index])
+	DebugManager.dprint("EnemySpawnPoint", "生成器 %s 的路径已切换到: %s (索引: %d)" % [self.name, _paths[current_path_index].name, index])
 
 ## (新) 获取该出生点总共有几条路径
 func get_path_count() -> int:
@@ -84,7 +85,7 @@ func get_path_count() -> int:
 
 # --- Internal Functions ---
 func spawn_enemy():
-	print("DEBUG: [Spawner %s] spawn_enemy called. Spawned: %s, Quota: %s" % [self.name, _enemies_spawned_this_wave, _enemies_to_spawn_this_wave])
+	DebugManager.dprint("EnemySpawnPoint", "生成器 %s: spawn_enemy 被调用。已生成：%s，配额：%s。" % [self.name, _enemies_spawned_this_wave, _enemies_to_spawn_this_wave])
 	if enemy_list.is_empty():
 		return
 	
@@ -124,7 +125,7 @@ func spawn_enemy():
 	# 在生成完敌人后，再次检查是否已达到或超过配额
 	# 确保信号只在最后一个敌人生成后发出
 	if _enemies_spawned_this_wave >= _enemies_to_spawn_this_wave:
-		print("DEBUG: [Spawner %s] Quota met. Emitting 'spawner_finished'." % self.name)
+		DebugManager.dprint("EnemySpawnPoint", "生成器 %s: 配额已满足。发出 'spawner_finished' 信号。" % self.name)
 		stop_spawning()
 		emit_signal("spawner_finished", self)
 

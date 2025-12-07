@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://ck2ojl0edch6c"]
+[gd_scene load_steps=14 format=3 uid="uid://ck2ojl0edch6c"]
 
 [ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_53rhq"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_iseop"]
@@ -9,6 +9,7 @@
 [ext_resource type="Resource" uid="uid://dwjkyh3txjrd3" path="res://scenes/levels/level04/waves/wave_03.tres" id="6_a0puf"]
 [ext_resource type="Resource" uid="uid://f02vl80cakas" path="res://scenes/levels/level04/waves/wave_04.tres" id="7_lxp62"]
 [ext_resource type="Resource" uid="uid://cy1sktrnamsbs" path="res://scenes/levels/level04/waves/wave_05.tres" id="8_v6xt8"]
+[ext_resource type="PackedScene" uid="uid://b8w8c8v8c8v8c" path="res://scenes/items/NKCell.tscn" id="10_a0puf"]
 
 [sub_resource type="Curve2D" id="Curve2D_a0puf"]
 _data = {
@@ -62,6 +63,9 @@ curve = SubResource("Curve2D_v6xt8")
 
 [node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="6"]
 curve = SubResource("Curve2D_jtyld")
+
+[node name="NKCell" parent="Midground/Items" index="0" instance=ExtResource("10_a0puf")]
+position = Vector2(345, 139)
 
 [node name="TutorialManager" parent="." index="11"]
 initial_dialogue = null

@@ -8,6 +8,7 @@ var _connections: Dictionary = {}
 var _grid_manager: GridManager
 
 func _ready() -> void:
+	DebugManager.register_category("ConnectionManager", false)
 	_grid_manager = get_node("/root/GridManager")
 	if not _grid_manager:
 		printerr("ConnectionManager: GridManager not found!")
@@ -50,7 +51,7 @@ func _process(delta: float):
 # --- Public API ---
 func reset():
 	_connections.clear()
-	DebugManager.dprint("ConnectionManager state has been reset.")
+	DebugManager.dprint("ConnectionManager", "ConnectionManager state has been reset.")
 
 
 

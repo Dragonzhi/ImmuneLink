@@ -12,6 +12,7 @@ var _sfx_players: Array[AudioStreamPlayer]
 var _current_sfx_player_index: int = 0
 
 func _ready() -> void:
+	DebugManager.register_category("SoundManager", false) # 注册调试类别
 	# 将所有 SFX 播放器收集到一个数组中以便快速访问
 	_sfx_players.clear() 
 	for child in sfx_players_container.get_children():
@@ -56,7 +57,7 @@ func preload_sfx(sound_name: String, path: String) -> void:
 		if stream:
 			sfx_library[sound_name] = stream
 		else:
-			DebugManager.dprint("SoundManager Error: Failed to load SFX at path: %s" % path)
+			DebugManager.dprint("SoundManager", "SoundManager Error: Failed to load SFX at path: %s" % path)
 
 ## 预加载一段音乐并将其存储在库中
 func preload_music(music_name: String, path: String) -> void:
@@ -65,12 +66,12 @@ func preload_music(music_name: String, path: String) -> void:
 		if stream:
 			music_library[music_name] = stream
 		else:
-			DebugManager.dprint("SoundManager Error: Failed to load music at path: %s" % path)
+			DebugManager.dprint("SoundManager", "SoundManager Error: Failed to load music at path: %s" % path)
 
 ## 播放指定名称的音效
 func play_sfx(sound_name: String) -> void:
 	if not sfx_library.has(sound_name):
-		DebugManager.dprint("SoundManager Error: SFX not found in library: %s" % sound_name)
+		DebugManager.dprint("SoundManager", "SoundManager Error: SFX not found in library: %s" % sound_name)
 		return
 
 	# 从池中找到一个当前未播放的 AudioStreamPlayer
@@ -79,12 +80,12 @@ func play_sfx(sound_name: String) -> void:
 		player.stream = sfx_library[sound_name]
 		player.play()
 	else:
-		DebugManager.dprint("SoundManager Warning: No available SFX players to play: %s" % sound_name)
+		DebugManager.dprint("SoundManager", "SoundManager Warning: No available SFX players to play: %s" % sound_name)
 
 ## 播放指定名称的音乐（会停止当前正在播放的音乐）
 func play_music(music_name: String, loop: bool = true) -> void:
 	if not music_library.has(music_name):
-		DebugManager.dprint("SoundManager Error: Music not found in library: %s" % music_name)
+		DebugManager.dprint("SoundManager", "SoundManager Error: Music not found in library: %s" % music_name)
 		return
 		
 	music_player.stream = music_library[music_name]
