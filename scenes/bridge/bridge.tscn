@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://de0pjmcrfoc5m"]
+[gd_scene load_steps=46 format=3 uid="uid://de0pjmcrfoc5m"]
 
 [ext_resource type="Script" uid="uid://nq74hij6o8fv" path="res://scenes/bridge/bridge.gd" id="1_c301t"]
 [ext_resource type="Texture2D" uid="uid://d35j2wd643idj" path="res://assets/bridge/bridge-sheet.png" id="2_ll4hc"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://b5w5j3y5w5j3y" path="res://scenes/ui/HealthBar.tscn" id="6_healthbar"]
 [ext_resource type="Resource" uid="uid://d2wph64at3d5d" path="res://scripts/upgrades/resourses/connect_rate_upgrade_level_1.tres" id="7_connect"]
 [ext_resource type="Resource" uid="uid://8um4q2h0i84s" path="res://scripts/upgrades/resourses/expansion_upgrade.tres" id="8_expand"]
+[ext_resource type="PackedScene" uid="uid://curnuijna66gp" path="res://scenes/effects/magic_aura.tscn" id="10_ypspu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jnwta"]
 size = Vector2(14, 14)
@@ -258,7 +259,7 @@ bg_color = Color(0, 0.956863, 0.0941176, 1)
 radius = 100.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_yduyu"]
-radius = 64.0
+radius = 70.0
 
 [node name="Bridge" type="StaticBody2D" node_paths=PackedStringArray("health_bar") groups=["bridges"]]
 collision_layer = 4
@@ -316,6 +317,9 @@ collision_mask = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NKBuffArea2D"]
 shape = SubResource("CircleShape2D_yduyu")
 debug_color = Color(0.8888896, 0.2952351, 0.37775803, 0.41960785)
+
+[node name="MagicAura" parent="." instance=ExtResource("10_ypspu")]
+emitting = false
 
 [connection signal="input_event" from="HurtArea2D" to="." method="_on_hurt_area_2d_input_event"]
 [connection signal="mouse_entered" from="HurtArea2D" to="." method="_on_hurt_area_2d_mouse_entered"]

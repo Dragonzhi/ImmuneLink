@@ -231,6 +231,7 @@ func _reset_to_base_stats():
 	reload_timer.stop()
 	nk_buff_area.monitoring = false # 重置时禁用光环
 	nk_buff_area.monitorable = false
+	magic_aura.emitting = false
 	
 	print("Bridge stats have been reset to base.")
 
@@ -297,12 +298,15 @@ func _update_stack_visuals():
 	animated_sprite.modulate = base_color # 恢复基础桥梁颜色
 	up_level_sprite.modulate = base_color.lerp(TARGET_COLOR, factor)
 
+@onready var magic_aura: GPUParticles2D = $MagicAura
+
 func _update_nk_visuals():
 	"""更新NK协议激活后的视觉效果。"""
 	# 使用一个独特的颜色来表示NK协议激活的桥梁
-	animated_sprite.modulate = Color.LIME_GREEN.lerp(Color.WHITE, 0.5) # 淡绿色
+	#animated_sprite.modulate = Color.LIME_GREEN.lerp(Color.WHITE, 0.5) # 淡绿色
 	# 可以选择隐藏up_level_sprite或改变其图标，表示这是“最终”升级之一
 	# up_level_sprite.visible = false
+	magic_aura.emitting = true
 
 
 # 由 Upgrade 资源调用，用来更新视觉表现
