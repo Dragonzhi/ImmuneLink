@@ -555,14 +555,21 @@ func _on_hurt_area_2d_mouse_exited() -> void:
 func _on_nk_buff_area_2d_body_entered(body: Node2D) -> void:
 	if body is BaseEnemy:
 		var enemy = body as BaseEnemy
-		print("DEBUG: Enemy '%s' ENTERED NK Aura of bridge '%s'." % [enemy.name, self.name])
-		# 给敌人施加一个永久的减速debuff（直到它离开区域）
-		# 注意：这里的duration设为-1或一个极大值，因为我们会在它离开时手动移除
-		enemy.apply_buff("nk_slow", nk_aura_slow_multiplier, 9999)
+		# 当敌人进入光环，停止它的debuff移除计时器
+		if enemy.has_node("NKBuffTimer"):
+			enemy.get_node("NKBuffTimer").stop()
+		
+		# 施加一个“永久”的debuff（直到离开区域并经过延迟后）
+		enemy.apply_buff("nk_slow", nk_aura_slow_multiplier, -1) # duration -1 表示永久
 
-func _on_nk_aura_body_exited(body: Node2D):
+func _on_nk_buff_area_2d_body_exited(body: Node2D) -> void:
 	if body is BaseEnemy:
 		var enemy = body as BaseEnemy
-		print("DEBUG: Enemy '%s' EXITED NK Aura of bridge '%s'." % [enemy.name, self.name])
-		# 移除减速debuff
-		enemy.remove_buff("nk_slow")
+		print("[DEBUG] Bridge: Enemy '%s' exited NK Aura." % enemy.name)
+		# 当敌人离开光环，启动它的debuff移除计时器
+		if enemy.has_node("NKBuffTimer"):
+			var timer = enemy.get_node("NKBuffTimer")
+			print("[DEBUG] Bridge: Found NKBuffTimer on enemy. Starting it now.")
+			timer.start() # 默认时间在Timer节点上设置
+		else:
+			print("[DEBUG] Bridge: ERROR - NKBuffTimer node not found on enemy!")

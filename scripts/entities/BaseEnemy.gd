@@ -34,7 +34,7 @@ var distance_along_path: float = 0.0
 signal path_finished(enemy: BaseEnemy)
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var attack_timer: Timer = $AttackTimer
-# PathCheckTimer is now removed, logic is handled in _physics_process
+@onready var nk_buff_timer: Timer = $NKBuffTimer # 获取场景中的计时器节点
 
 var _original_move_speed: float
 var _active_buffs: Dictionary = {} # Stores active buffs, key: buff_type, value: {timer, original_value, current_multiplier}
@@ -236,6 +236,22 @@ func start_death_sequence():
 	if is_dying: return
 	is_dying = true
 	
+	# --- 清理所有 Buff 和计时器 ---
+	nk_buff_timer.stop()
+	
+	# 停止并清理所有激活的buff计时器
+	for type in _active_buffs.keys():
+		var buff_timer: Timer = _active_buffs[type]
+		if is_instance_valid(buff_timer):
+			buff_timer.stop()
+			buff_timer.queue_free()
+	_active_buffs.clear()
+	
+	# 关闭所有粒子效果
+	buff_particles.emitting = false
+	slow_particles.emitting = false
+	# --- 清理逻辑结束 ---
+	
 	# 播放死亡特效
 	#VFXManager.play_effect("enemy_death", global_position)
 	
@@ -279,9 +295,11 @@ func apply_buff(type: String, multiplier: float, duration: float):
 	# 统一处理速度相关的buff
 	if type == "speed" or type == "nk_slow":
 		if _active_buffs.has(type):
-			# 如果Buff已存在，只刷新其计时器
-			var buff_timer: Timer = _active_buffs[type]
-			buff_timer.start(duration)
+			if type == "nk_slow":
+				nk_buff_timer.stop() # 如果是nk_slow，则停止移除计时器
+			else:
+				var buff_timer: Timer = _active_buffs[type] # 其他buff，刷新计时器
+				buff_timer.start(duration)
 		else:
 			# 首次施加此类型Buff
 			var old_speed = move_speed
@@ -291,29 +309,38 @@ func apply_buff(type: String, multiplier: float, duration: float):
 			# 根据类型选择不同的粒子效果
 			if type == "nk_slow":
 				slow_particles.emitting = true # 开启减速粒子
+				# 注意：nk_slow 的持续时间由其计时器控制，这里传入的duration被忽略
 			else: # "speed"
 				buff_particles.emitting = true # 开启加速粒子
-				
-			var buff_timer = Timer.new()
-			buff_timer.wait_time = duration
-			buff_timer.one_shot = true
-			buff_timer.timeout.connect(remove_buff.bind(type))
-			add_child(buff_timer)
-			buff_timer.start()
+				var buff_timer = Timer.new()
+				buff_timer.wait_time = duration
+				buff_timer.one_shot = true
+				buff_timer.timeout.connect(remove_buff.bind(type))
+				add_child(buff_timer)
+				buff_timer.start()
+				_active_buffs[type] = buff_timer
 			
-			_active_buffs[type] = buff_timer
+			# 无论哪种，都将其记录在_active_buffs中，方便统一管理
+			if not _active_buffs.has(type):
+				# 对于nk_slow，我们不存储计时器，但仍需标记其为激活状态
+				_active_buffs[type] = null 
+
 
 func remove_buff(type: String):
+	print("[DEBUG] BaseEnemy: Attempting to remove buff '%s'." % type)
 	if _active_buffs.has(type):
-		var buff_timer: Timer = _active_buffs[type]
+		
+		# 对于非nk_slow的buff，清理其动态创建的计时器
+		if type != "nk_slow":
+			var buff_timer: Timer = _active_buffs[type]
+			if is_instance_valid(buff_timer):
+				buff_timer.queue_free()
 		
 		if type == "speed" or type == "nk_slow":
 			# 将速度恢复到被Buff前的原始值
-			# 注意：这里需要一个更健壮的系统来处理多个速度buff叠加的情况
-			# 目前的简单实现是直接恢复到_original_move_speed
 			var old_speed = move_speed
 			move_speed = _original_move_speed 
-			print("DEBUG: Enemy '%s' remove_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
+			print("[DEBUG] BaseEnemy: '%s' remove_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
 			
 			# 根据类型停止相应的粒子效果
 			if type == "nk_slow":
@@ -321,11 +348,16 @@ func remove_buff(type: String):
 			else: # "speed"
 				buff_particles.emitting = false # 关闭加速粒子
 		
-		# 清理
-		if is_instance_valid(buff_timer):
-			buff_timer.queue_free()
 		_active_buffs.erase(type)
+	else:
+		print("[DEBUG] BaseEnemy: Buff '%s' not found in _active_buffs." % type)
+
 
 # 物理碰撞现在处理桥梁交互，这里可以留空或用于其他逻辑
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	pass
+
+
+func _on_nk_buff_timer_timeout() -> void:
+	print("[DEBUG] BaseEnemy: NKBuffTimer timeout! Removing nk_slow buff.")
+	remove_buff("nk_slow")
