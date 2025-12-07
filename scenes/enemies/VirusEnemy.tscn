@@ -7,7 +7,7 @@
 radius = 4.0
 
 [node name="VirusEnemy" instance=ExtResource("1_a5nqt")]
-max_hp = 10.0
+max_hp = 25.0
 move_speed = 80.0
 damage = 5.0
 attack_rate = 2.0
