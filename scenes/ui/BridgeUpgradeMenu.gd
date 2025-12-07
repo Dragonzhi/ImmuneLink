@@ -57,6 +57,10 @@ func populate_menu(upgrades: Array[Upgrade], target_bridge: Bridge):
 		
 		# 连接信号，并将此按钮对应的Upgrade资源绑定给处理函数
 		button.pressed.connect(_on_button_pressed.bind(upgrade_res))
+	
+	# 在所有子节点都添加完毕后，延迟调用位置调整函数
+	# 这能确保菜单的最终尺寸已经被计算出来
+	call_deferred("_adjust_position")
 
 # 按钮点击处理函数
 func _on_button_pressed(upgrade: Upgrade):
@@ -64,3 +68,43 @@ func _on_button_pressed(upgrade: Upgrade):
 	# 菜单的工作只是发出信号，告知哪个升级被选中了。
 	# 所有游戏逻辑（花钱、应用升级）都由上层管理者（GameManager）处理。
 	emit_signal("upgrade_selected", upgrade)
+
+# --- 私有方法 ---
+
+func _adjust_position():
+	# 再次等待一帧可以进一步提高获取正确尺寸的稳定性
+	await get_tree().process_frame
+
+	var screen_size = get_viewport().get_visible_rect().size
+	
+	# --- 手动计算所有子节点的真实边界框 ---
+	var child_bounds = Rect2()
+	var first_child = true
+	for child in get_children():
+		if not child is Control: continue
+		
+		var rect = child.get_rect() # 获取子节点相对于自己的矩形
+		rect.position += child.position # 将其位置转换为相对于父节点的坐标
+		
+		if first_child:
+			child_bounds = rect
+			first_child = false
+		else:
+			child_bounds = child_bounds.merge(rect)
+	
+	# 如果没有子节点，为避免出错直接返回
+	if first_child:
+		return
+	# ------------------------------------------
+
+	# --- 使用正确的边界框和偏移来计算和限制位置 ---
+	var menu_size = child_bounds.size
+	# 菜单的有效视觉位置 = 节点原点 + 计算出的边界框左上角偏移
+	var effective_pos = global_position + child_bounds.position
+
+	# 将有效位置限制在屏幕范围内
+	effective_pos.x = clamp(effective_pos.x, 0, screen_size.x - menu_size.x)
+	effective_pos.y = clamp(effective_pos.y, 0, screen_size.y - menu_size.y)
+	
+	# 根据被限制后的有效位置，反推出节点原点应该在的位置
+	global_position = effective_pos - child_bounds.position
