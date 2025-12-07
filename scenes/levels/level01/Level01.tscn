@@ -31,7 +31,7 @@ waves = Array[ExtResource("2_uialj")]([ExtResource("3_u6ccs"), ExtResource("4_16
 auto_start_on_ready = false
 
 [node name="redPipe1" parent="BackGround/Pipes/Red" index="0"]
-position = Vector2(296, 218)
+position = Vector2(328, 218)
 
 [node name="bluePipe1" parent="BackGround/Pipes/Blue" index="0"]
 position = Vector2(88, 216)

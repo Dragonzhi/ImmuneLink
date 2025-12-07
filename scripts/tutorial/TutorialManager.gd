@@ -21,7 +21,7 @@ func _ready() -> void:
 		#_wave_manager.auto_start_on_ready = false
 
 	# DebugManager 注册
-	DebugManager.register_category("TutorialManager", false)
+	DebugManager.register_category("TutorialManager", true) # Set to true to enable debug output
 
 	# 等待场景过渡结束后。现在start_tutorial_with_sequence由GameManager调用
 	_wait_and_start_tutorial()
@@ -37,13 +37,11 @@ func _wait_and_start_tutorial():
 	# 过渡已结束，现在等待GameManager调用 start_tutorial_with_sequence
 
 ## 启动教程，并传入要运行的教程序列
-func start_tutorial_with_sequence(sequence: TutorialSequence):
-	# 获取场景中的WaveManager节点
-	# 注意：如果TutorialManager是Autoload，则WaveManager也应是Autoload或由GameManager管理
-	_wave_manager = get_node_or_null("/root/Main/WaveManager") # 假设WaveManager是Autoload或Main的直接子节点
+func start_tutorial_with_sequence(sequence: TutorialSequence, wave_manager: WaveManager):
+	_wave_manager = wave_manager
 	if not _wave_manager:
-		printerr("TutorialManager: 无法找到WaveManager!")
-		# 如果是Autoload，这里可能会失败，直到WaveManager的_ready执行
+		printerr("TutorialManager: start_tutorial_with_sequence 未提供 WaveManager 实例!")
+		return
 
 	_current_tutorial_sequence = sequence # 保存传入的序列
 
@@ -156,7 +154,17 @@ func _execute_step(step: TutorialStep):
 			else:
 				printerr("TutorialManager: WaveManager 未找到，无法触发波次！")
 			_handle_step_completion(step)
-		
+		TutorialStep.TriggerCondition.UPGRADE_MENU_OPENED:
+			# 等待升级菜单打开
+			# 连接到 GameManager 的 upgrade_menu_opened 信号
+			var game_manager = get_node_or_null("/root/GameManager") # Corrected path
+			if game_manager:
+				game_manager.upgrade_menu_opened.connect(_on_upgrade_menu_opened.bind(step))
+				DebugManager.dprint("TutorialManager", "Connecting to GameManager.upgrade_menu_opened.") # Debug print
+			else:
+				printerr("TutorialManager: 无法找到 GameManager 节点！")
+				_handle_step_completion(step)
+
 		_:
 			printerr("TutorialManager: 未知触发条件：%s" % step.trigger_condition)
 			_handle_step_completion(step) # 错误，直接完成
@@ -164,7 +172,7 @@ func _execute_step(step: TutorialStep):
 func _input(event: InputEvent) -> void:
 	# 只有当教程正在进行中，并且当前步骤需要监听输入时才处理
 	if _current_step_index < 0 || _current_step_index >= _current_tutorial_sequence.steps.size():
-		return 
+		return
 
 	var current_step = _current_tutorial_sequence.steps[_current_step_index]
 	if current_step.trigger_condition == TutorialStep.TriggerCondition.INPUT_ACTION_PRESSED:
@@ -191,6 +199,10 @@ func _cleanup_current_step():
 		DialogueManager.dialogue_finished.disconnect(_on_current_dialogue_finished)
 	if ConnectionManager.connection_made.is_connected(_on_connection_made_type):
 		ConnectionManager.connection_made.disconnect(_on_connection_made_type)
+	
+		var game_manager = get_node_or_null("/root/GameManager")
+		if game_manager and game_manager.upgrade_menu_opened.is_connected(_on_upgrade_menu_opened):
+			game_manager.upgrade_menu_opened.disconnect(_on_upgrade_menu_opened)
 	
 	# Disconnect all other potential connections here (e.g., from GameManager, BridgeBuilder)
 	# if GameManager.enemy_defeated.is_connected(_on_enemy_defeated):
@@ -247,4 +259,14 @@ func _on_custom_timer_timeout(step: TutorialStep):
 		return
 	
 	DebugManager.dprint("TutorialManager", "计时器条件 '%s' 已满足。" % step.step_name)
+	_handle_step_completion(step)
+
+func _on_upgrade_menu_opened(step: TutorialStep, bridge: Bridge):
+	DebugManager.dprint("TutorialManager", "_on_upgrade_menu_opened triggered for step: %s, bridge: %s" % [step.step_name, bridge.name]) # Debug print
+	# 升级菜单打开信号处理 (由 GameManager 发出)
+	# 如果 trigger_data 包含特定的桥梁名称，可以进一步检查
+	# if not step.trigger_data.is_empty() and step.trigger_data != bridge.name:
+	#    return
+	
+	DebugManager.dprint("TutorialManager", "升级菜单已打开，完成步骤: '%s'" % step.step_name)
 	_handle_step_completion(step)

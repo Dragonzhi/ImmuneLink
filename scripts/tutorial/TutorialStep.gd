@@ -10,7 +10,8 @@ enum TriggerCondition {
 	BRIDGE_BUILT,           # 等待桥梁建成
 	CUSTOM_SIGNAL,          # 等待自定义信号 (更高级)
 	INPUT_ACTION_PRESSED,   # 等待特定输入动作按下
-	ACTION_TRIGGER_WAVE,    # 新增：触发敌人波次
+	ACTION_TRIGGER_WAVE,    # 触发敌人波次
+	UPGRADE_MENU_OPENED,    # 等待升级菜单打开
 }
 
 @export var step_name: String = "未命名步骤" # 用于编辑器显示，方便识别

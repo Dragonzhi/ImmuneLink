@@ -6,4 +6,5 @@
 script = ExtResource("1_b4hrt")
 level_name = "LEVEL 3"
 starting_resources = 200
+tutorial_sequence_path = "res://dialogues/level3_tutorial.tres"
 metadata/_custom_type_script = "uid://c0vpaw3fd5v5u"

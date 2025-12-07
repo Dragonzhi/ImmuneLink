@@ -37,10 +37,7 @@ point_count = 8
 
 [node name="Main" instance=ExtResource("1_jlpby")]
 
-[node name="LevelConfig" parent="." index="0"]
-starting_resources = 400
-
-[node name="WaveManager" parent="." index="1"]
+[node name="WaveManager" parent="." index="0"]
 waves = Array[ExtResource("2_ckcjh")]([ExtResource("3_lq1al"), ExtResource("4_pcbvt"), ExtResource("5_lq1al"), ExtResource("6_pcbvt"), ExtResource("7_uogj4"), ExtResource("8_esco1")])
 
 [node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
@@ -76,11 +73,6 @@ curve = SubResource("Curve2D_iyccs")
 curve = SubResource("Curve2D_dlgts")
 
 [node name="NKCell" parent="Midground/Items" index="0" instance=ExtResource("10_dlgts")]
-position = Vector2(138, 128)
-
-[node name="TutorialManager" parent="." index="11"]
-initial_dialogue = null
-post_connect_dialogue = null
-upgrade_dialogue = null
+position = Vector2(136, 69)
 
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

@@ -4,6 +4,7 @@ signal repair_value_changed(new_value: float)
 signal resource_value_changed(new_value: float)
 signal time_remaining_changed(new_time: float)
 signal nk_samples_changed(new_count: int) # 新增：NK样本数量变化信号
+signal upgrade_menu_opened(bridge: Bridge) # 新增：当升级菜单打开时发出信号
 
 var _pending_level_config: LevelConfig = null # 存储下个关卡要使用的配置
 var _current_active_level_config: LevelConfig = null
@@ -40,6 +41,9 @@ func _ready() -> void:
 	get_tree().scene_changed.connect(_on_scene_changed)
 	game_timer.timeout.connect(_on_game_timer_timeout)
 	
+	# DebugManager 注册
+	DebugManager.register_category("GameManager", true) # Enable GameManager debug output
+
 	# 初始化
 	_on_scene_changed()
 
@@ -127,7 +131,12 @@ func _on_scene_changed():
 			var tutorial_seq_res = load(_pending_level_config.tutorial_sequence_path)
 			if tutorial_seq_res is TutorialSequence:
 				if TutorialManager:
-					TutorialManager.start_tutorial_with_sequence(tutorial_seq_res)
+					# 获取 WaveManager 实例
+					var wave_manager_instance = get_node_or_null("/root/Main/WaveManager")
+					if wave_manager_instance:
+						TutorialManager.start_tutorial_with_sequence(tutorial_seq_res, wave_manager_instance)
+					else:
+						printerr("GameManager: 无法找到 WaveManager 节点，无法启动教程！")
 				else:
 					printerr("GameManager: TutorialManager Autoload未找到！")
 			else:
@@ -263,6 +272,11 @@ func select_turret(turret: Node):
 			if not upgrades.is_empty():
 				if ui_manager and ui_manager.has_method("open_upgrade_menu"):
 					ui_manager.open_upgrade_menu(upgrades, _selected_turret)
+					# --- 新增：打开升级菜单后发出信号 ---
+					if _selected_turret is Bridge: # 仅在打开桥梁的菜单时发出
+						DebugManager.dprint("GameManager", "Emitting upgrade_menu_opened for bridge: %s" % _selected_turret.name)
+						emit_signal("upgrade_menu_opened", _selected_turret)
+					# --------------------------------------------------
 
 func deselect_all_turrets():
 	var ui_manager = get_node_or_null("/root/Main/UIManager") # 即用即取

@@ -6,5 +6,5 @@
 script = ExtResource("1_dialogue_res")
 dialogue_lines = Array[Dictionary]([{
 "name": "Monitoring System",
-"text": "连接建立成功。现在，你已掌握基础操作。"
+"text": "连接建立成功。现在，资源值会缓慢的增加"
 }])

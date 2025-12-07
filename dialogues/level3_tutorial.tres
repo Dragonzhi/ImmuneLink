@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="TutorialSequence" load_steps=6 format=3 uid="uid://c4efquciv4lej"]
+
+[ext_resource type="Script" uid="uid://3pn5um83pqfk" path="res://scripts/tutorial/TutorialSequence.gd" id="1_fysnu"]
+[ext_resource type="Script" uid="uid://4f5pvs1hs7tr" path="res://scripts/tutorial/TutorialStep.gd" id="2_cephg"]
+[ext_resource type="Script" path="res://scripts/dialogue/DialogueResource.gd" id="3_cephg"]
+
+[sub_resource type="Resource" id="Resource_8r87d"]
+script = ExtResource("3_cephg")
+dialogue_lines = Array[Dictionary]([{
+"focus_target_path": NodePath("Midground/Items/NKCell"),
+"name": "Monitoring System",
+"text": "检测到环境内存在 【NK细胞】，连通桥的时候经过其即可捕获，其将为你赋予一个新的桥梁升级"
+}])
+
+[sub_resource type="Resource" id="Resource_eyj6c"]
+script = ExtResource("2_cephg")
+dialogue_resource = SubResource("Resource_8r87d")
+delay_before_trigger = 2.0
+trigger_condition = 1
+metadata/_custom_type_script = "uid://4f5pvs1hs7tr"
+
+[resource]
+script = ExtResource("1_fysnu")
+steps = Array[ExtResource("2_cephg")]([SubResource("Resource_eyj6c")])
+metadata/_custom_type_script = "uid://3pn5um83pqfk"

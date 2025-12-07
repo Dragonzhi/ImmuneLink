@@ -2,6 +2,8 @@ extends Control
 
 # 信号，当按钮被点击时发出。传递的是具体的 Upgrade 资源，而不是索引。
 signal upgrade_selected(upgrade: Upgrade)
+# 新增：当升级菜单被打开并填充完毕后发出
+signal menu_opened
 
 @export var button_scene: PackedScene # 如果有自定义按钮场景，可以在这里设置
 @export var button_radius: float = 60.0
@@ -20,6 +22,7 @@ func populate_menu(upgrades: Array[Upgrade], target_bridge: Bridge):
 		child.queue_free()
 		
 	if upgrades.is_empty():
+		emit_signal("menu_opened") # 如果没有升级，也算打开了空菜单
 		return
 
 	var angle_step = (2 * PI) / upgrades.size()
@@ -61,6 +64,7 @@ func populate_menu(upgrades: Array[Upgrade], target_bridge: Bridge):
 	# 在所有子节点都添加完毕后，延迟调用位置调整函数
 	# 这能确保菜单的最终尺寸已经被计算出来
 	call_deferred("_adjust_position")
+	emit_signal("menu_opened") # 在菜单填充完毕后发出信号
 
 # 按钮点击处理函数
 func _on_button_pressed(upgrade: Upgrade):

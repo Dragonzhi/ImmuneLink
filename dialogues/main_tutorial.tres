@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="TutorialSequence" load_steps=9 format=3 uid="uid://qh7tmv6hw1hf"]
+[gd_resource type="Resource" script_class="TutorialSequence" load_steps=16 format=3 uid="uid://qh7tmv6hw1hf"]
 
 [ext_resource type="Script" uid="uid://3pn5um83pqfk" path="res://scripts/tutorial/TutorialSequence.gd" id="1_seq"]
 [ext_resource type="Script" uid="uid://4f5pvs1hs7tr" path="res://scripts/tutorial/TutorialStep.gd" id="2_ruvv2"]
@@ -8,9 +8,53 @@
 [ext_resource type="Resource" uid="uid://b47d827n6qfkd" path="res://dialogues/tutorial_step_4_trigger_wave.tres" id="6_hgauv"]
 [ext_resource type="Resource" uid="uid://gpujm6o4k55t" path="res://dialogues/tutorial_step_5_wait_upgrade_timer.tres" id="7_osohv"]
 [ext_resource type="Resource" uid="uid://cdxutj5b7qfsw" path="res://dialogues/tutorial_step_6_upgrade_dialogue.tres" id="8_13kl6"]
+[ext_resource type="Script" path="res://scripts/dialogue/DialogueResource.gd" id="9_y23ur"]
+
+[sub_resource type="Resource" id="Resource_5wymt"]
+script = ExtResource("2_ruvv2")
+trigger_condition = 3
+trigger_data = "5.0"
+metadata/_custom_type_script = "uid://4f5pvs1hs7tr"
+
+[sub_resource type="Resource" id="Resource_cd562"]
+script = ExtResource("9_y23ur")
+dialogue_lines = Array[Dictionary]([{
+"name": "Monitoring System",
+"text": "镇静火力可以攻击敌人"
+}, {
+"name": "Monitoring System",
+"text": "纳米装甲可以提桥的血量，并附加自回血"
+}, {
+"name": "Monitoring System",
+"text": "动力泵会提高当前连接管的获取速率。"
+}])
+
+[sub_resource type="Resource" id="Resource_hgauv"]
+script = ExtResource("2_ruvv2")
+dialogue_resource = SubResource("Resource_cd562")
+trigger_condition = 1
+metadata/_custom_type_script = "uid://4f5pvs1hs7tr"
+
+[sub_resource type="Resource" id="Resource_y23ur"]
+script = ExtResource("2_ruvv2")
+trigger_condition = 3
+trigger_data = "2.0"
+metadata/_custom_type_script = "uid://4f5pvs1hs7tr"
+
+[sub_resource type="Resource" id="Resource_osohv"]
+script = ExtResource("9_y23ur")
+dialogue_lines = Array[Dictionary]([{
+"name": "Monitoring System",
+"text": "攒足资源连接生命管道，修复值累计到100%就可以获得胜利"
+}])
+
+[sub_resource type="Resource" id="Resource_13kl6"]
+script = ExtResource("2_ruvv2")
+dialogue_resource = SubResource("Resource_osohv")
+metadata/_custom_type_script = "uid://4f5pvs1hs7tr"
 
 [resource]
 script = ExtResource("1_seq")
 sequence_name = "main教程序列"
-steps = Array[ExtResource("2_ruvv2")]([ExtResource("3_5wymt"), ExtResource("4_y23ur"), ExtResource("5_cd562"), ExtResource("6_hgauv"), ExtResource("7_osohv"), ExtResource("8_13kl6")])
+steps = Array[ExtResource("2_ruvv2")]([ExtResource("3_5wymt"), ExtResource("4_y23ur"), ExtResource("5_cd562"), ExtResource("6_hgauv"), ExtResource("7_osohv"), ExtResource("8_13kl6"), SubResource("Resource_5wymt"), SubResource("Resource_hgauv"), SubResource("Resource_y23ur"), SubResource("Resource_13kl6")])
 metadata/_custom_type_script = "uid://3pn5um83pqfk"
