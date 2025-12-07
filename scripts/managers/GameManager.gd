@@ -102,6 +102,11 @@ func _on_scene_changed():
 	var level_config = get_tree().current_scene.find_child("LevelConfig", true, false)
 	if level_config:
 		print("DEBUG: GameManager is initializing a new level.")
+		# --- 新增：在初始化新关卡时，重置 ConnectionManager 的状态 ---
+		if ConnectionManager:
+			ConnectionManager.reset()
+		# ----------------------------------------------------
+		
 		# --- 初始化新关卡状态 ---
 		self._resource_value = level_config.starting_resources
 		self._nk_cell_samples = 0 # 重置NK细胞样本

@@ -47,6 +47,13 @@ func _process(delta: float):
 	if total_blue_pipe_rate > 0:
 		GameManager.add_resource_value(total_blue_pipe_rate * delta)
 
+# --- Public API ---
+func reset():
+	_connections.clear()
+	DebugManager.dprint("ConnectionManager state has been reset.")
+
+
+
 ## 为指定桥梁所在的连接线路上应用加速乘数
 func apply_boost_to_connection_of_bridge(bridge: Bridge, rate_multiplier: float):
 	for connection_key in _connections.keys():

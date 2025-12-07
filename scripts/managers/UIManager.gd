@@ -102,7 +102,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_tree().paused = false # 确保游戏未暂停
 		if current_menu and current_menu.is_visible(): # 如果升级菜单打开了，先关闭
 			close_upgrade_menu()
-		SceneManager.change_scene_to_file("res://scenes/world/MainMenu.tscn")
+		SceneManager.change_scene_to_file("res://scenes/ui/screens/LevelSelect.tscn")
 
 func close_upgrade_menu():
 	if not current_menu:
