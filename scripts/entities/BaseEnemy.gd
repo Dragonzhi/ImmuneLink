@@ -273,9 +273,11 @@ func _play_spawn_animation():
 
 ## --- Buff/Debuff 方法 ---
 @onready var buff_particles: CPUParticles2D = $BuffParticles
+@onready var slow_particles: CPUParticles2D = $SlowParticles # 新增：获取减速粒子节点
 
 func apply_buff(type: String, multiplier: float, duration: float):
-	if type == "speed" or type == "nk_slow": # 同时处理加速和减速
+	# 统一处理速度相关的buff
+	if type == "speed" or type == "nk_slow":
 		if _active_buffs.has(type):
 			# 如果Buff已存在，只刷新其计时器
 			var buff_timer: Timer = _active_buffs[type]
@@ -286,33 +288,38 @@ func apply_buff(type: String, multiplier: float, duration: float):
 			move_speed *= multiplier
 			print("DEBUG: Enemy '%s' apply_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
 			
-			# 根据类型设置不同颜色
+			# 根据类型选择不同的粒子效果
 			if type == "nk_slow":
-				buff_particles.color = Color.CYAN # 减速时用青色
-			else:
-				buff_particles.color = Color.WHITE # 默认或加速时用白色
+				slow_particles.emitting = true # 开启减速粒子
+			else: # "speed"
+				buff_particles.emitting = true # 开启加速粒子
 				
-			buff_particles.emitting = true
 			var buff_timer = Timer.new()
 			buff_timer.wait_time = duration
 			buff_timer.one_shot = true
-			# 使用 bind 将buff类型传递给超时处理函数
 			buff_timer.timeout.connect(remove_buff.bind(type))
 			add_child(buff_timer)
 			buff_timer.start()
 			
-			_active_buffs[type] = buff_timer # 只需存储Timer节点本身
+			_active_buffs[type] = buff_timer
 
 func remove_buff(type: String):
 	if _active_buffs.has(type):
 		var buff_timer: Timer = _active_buffs[type]
 		
-		if type == "speed" or type == "nk_slow": # 同时处理加速和减速
+		if type == "speed" or type == "nk_slow":
 			# 将速度恢复到被Buff前的原始值
+			# 注意：这里需要一个更健壮的系统来处理多个速度buff叠加的情况
+			# 目前的简单实现是直接恢复到_original_move_speed
 			var old_speed = move_speed
-			move_speed = _original_move_speed
+			move_speed = _original_move_speed 
 			print("DEBUG: Enemy '%s' remove_buff('%s'). Speed changed from %s to %s." % [self.name, type, old_speed, move_speed])
-			buff_particles.emitting = false
+			
+			# 根据类型停止相应的粒子效果
+			if type == "nk_slow":
+				slow_particles.emitting = false # 关闭减速粒子
+			else: # "speed"
+				buff_particles.emitting = false # 关闭加速粒子
 		
 		# 清理
 		if is_instance_valid(buff_timer):

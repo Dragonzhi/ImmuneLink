@@ -18,6 +18,12 @@ move_speed = 30.0
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("2_ro3jm")
 
+[node name="HealthBar" parent="." index="3"]
+offset_left = -7.0
+offset_top = -11.0
+offset_right = 49.0
+offset_bottom = -3.0
+
 [node name="AbilityTimer" type="Timer" parent="." index="7"]
 one_shot = true
 

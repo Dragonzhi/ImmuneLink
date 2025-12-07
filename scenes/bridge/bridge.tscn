@@ -319,6 +319,7 @@ shape = SubResource("CircleShape2D_yduyu")
 debug_color = Color(0.8888896, 0.2952351, 0.37775803, 0.41960785)
 
 [node name="MagicAura" parent="." instance=ExtResource("10_ypspu")]
+self_modulate = Color(1, 1, 1, 0.49019608)
 emitting = false
 
 [connection signal="input_event" from="HurtArea2D" to="." method="_on_hurt_area_2d_input_event"]
