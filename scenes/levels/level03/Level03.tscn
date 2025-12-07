@@ -38,7 +38,7 @@ point_count = 8
 [node name="Main" instance=ExtResource("1_jlpby")]
 
 [node name="LevelConfig" parent="." index="0"]
-starting_resources = 200
+starting_resources = 400
 
 [node name="WaveManager" parent="." index="1"]
 waves = Array[ExtResource("2_ckcjh")]([ExtResource("3_lq1al"), ExtResource("4_pcbvt"), ExtResource("5_lq1al"), ExtResource("6_pcbvt"), ExtResource("7_uogj4"), ExtResource("8_esco1")])

@@ -11,7 +11,7 @@
 [node name="Main" instance=ExtResource("1_qwkhf")]
 
 [node name="LevelConfig" parent="." index="0"]
-starting_resources = 200
+starting_resources = 400
 
 [node name="WaveManager" parent="." index="1"]
 waves = Array[ExtResource("2_tnha3")]([ExtResource("3_hu4y5"), ExtResource("4_es6ef"), ExtResource("5_4u8lj"), ExtResource("6_jvkam"), ExtResource("7_snb68")])
