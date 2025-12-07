@@ -64,40 +64,40 @@ func apply_boost_to_connection_of_bridge(bridge: Bridge, rate_multiplier: float)
 			# 找到连接，更新其乘数
 			# 这里我们只是简单地乘以新的乘数，您可以根据需要调整逻辑
 			# 例如，可以存储所有应用的乘数，或限制最大乘数
-			connection.multiplier = connection.get("multiplier", 1.0) * rate_multiplier
-			print("连接 %s 的速率乘数已更新为 %s" % [connection_key, connection.multiplier])
+			connection.multiplier = connection.get("multiplier", 1.0) + (rate_multiplier - 1.0)
+			DebugManager.dprint("ConnectionManager", "连接 %s 的速率乘数已更新为 %s" % [connection_key, connection.multiplier])
 			return
-	print("ConnectionManager: 未找到桥梁 %s 所在的连接线路。" % bridge.name)
+	DebugManager.dprint("ConnectionManager", "未找到桥梁 %s 所在的连接线路。" % bridge.name)
 
 ## 辅助函数：判断桥梁是否位于一个激活的连接线路上
 func is_bridge_on_active_line(bridge: Bridge) -> bool:
-	print("DEBUG [ConnectionManager]: **检查内部状态** _connections: %s" % _connections)
+	DebugManager.dprint("ConnectionManager", "**检查内部状态** _connections: %s" % _connections)
 
 	if not is_instance_valid(bridge):
-		print("DEBUG [ConnectionManager]: is_bridge_on_active_line called with invalid bridge.")
+		DebugManager.dprint("ConnectionManager", "is_bridge_on_active_line 调用时传入了无效桥梁。")
 		return false
 	
 	var bridge_pos = bridge.grid_pos
-	print("DEBUG [ConnectionManager]: 正在检查位于 %s 的桥梁是否在激活的线路上..." % bridge_pos)
+	DebugManager.dprint("ConnectionManager", "正在检查位于 %s 的桥梁是否在激活的线路上..." % bridge_pos)
 
 	for connection_key in _connections.keys():
 		var connection = _connections[connection_key]
 		var connection_path = connection.path
 		
-		print("DEBUG [ConnectionManager]:  -> 正在匹配线路 %s (路径: %s)" % [connection_key, connection_path])
+		DebugManager.dprint("ConnectionManager", "-> 正在匹配线路 %s (路径: %s)" % [connection_key, connection.path])
 		
 		if connection_path.has(bridge_pos):
-			print("DEBUG [ConnectionManager]:  --> 找到！桥梁在此线路路径上。正在检查线路是否完整...")
+			DebugManager.dprint("ConnectionManager", "--> 找到！桥梁在此线路路径上。正在检查线路是否完整...")
 			var is_intact = _grid_manager.is_path_intact(connection_path)
-			print("DEBUG [ConnectionManager]:  --> _grid_manager.is_path_intact 返回: %s" % is_intact)
+			DebugManager.dprint("ConnectionManager", "--> _grid_manager.is_path_intact 返回: %s" % is_intact)
 			if is_intact:
-				print("DEBUG [ConnectionManager]:  ---> 线路完整。最终返回: true")
+				DebugManager.dprint("ConnectionManager", "---> 线路完整。最终返回: true")
 				return true # 找到了，并且线路是完整的
 			else:
-				print("DEBUG [ConnectionManager]:  ---> 线路已损坏。继续检查下一条线路...")
+				DebugManager.dprint("ConnectionManager", "---> 线路已损坏。继续检查下一条线路...")
 		# 如果不在此路径上，则继续循环，这是正常行为
 			
-	print("DEBUG [ConnectionManager]: 桥梁 %s 未在任何已连接的线路中找到。最终返回: false" % bridge_pos)
+	DebugManager.dprint("ConnectionManager", "桥梁 %s 未在任何已连接的线路中找到。最终返回: false" % bridge_pos)
 	return false
 
 
@@ -110,7 +110,7 @@ func add_connection(pipe1: Pipe, pipe2: Pipe, path: Array[Vector2i]):
 	
 	if _connections.has(connection_key):
 		# Connection already exists, maybe update path? For now, just print.
-		print("ConnectionManager: Connection between %s and %s already exists." % [pipe1.name, pipe2.name])
+		DebugManager.dprint("ConnectionManager", "连接管理器：管道 %s 和 %s 之间的连接已存在。" % [pipe1.name, pipe2.name])
 		return
 		
 	_connections[connection_key] = {
@@ -124,7 +124,7 @@ func add_connection(pipe1: Pipe, pipe2: Pipe, path: Array[Vector2i]):
 	pipe1.on_connected()
 	pipe2.on_connected()
 	
-	print("连接已注册: ", pipe1.name, " <-> ", pipe2.name)
+	DebugManager.dprint("ConnectionManager", "连接已注册: %s <-> %s" % [pipe1.name, pipe2.name])
 	emit_signal("connection_made", pipe1.pipe_type) # 发出信号
 
 
@@ -136,6 +136,6 @@ func remove_connection(pipe1: Pipe, pipe2: Pipe):
 	
 	if _connections.has(connection_key):
 		_connections.erase(connection_key)
-		print("连接已移除: ", pipe1.name, " <-> ", pipe2.name)
+		DebugManager.dprint("ConnectionManager", "连接已移除: %s <-> %s" % [pipe1.name, pipe2.name])
 	else:
-		print("ConnectionManager: Attempted to remove non-existent connection between %s and %s" % [pipe1.name, pipe2.name])
+		DebugManager.dprint("ConnectionManager", "连接管理器：尝试移除不存在的 %s 和 %s 之间的连接。" % [pipe1.name, pipe2.name])
