@@ -114,7 +114,7 @@ func _start_next_wave():
 	emit_signal("wave_started", _current_wave_index + 1)
 	SoundManager.play_sfx("wave_come") # 播放新波次音效
 	DebugManager.dprint("WaveManager", "正在启动第 %s 波。" % (_current_wave_index + 1))
-
+	VhsMonitorEffect.play_glitch()
 	# For each spawner, find its config and start it if it has a quota.
 	for spawner in spawners:
 		# --- 新增：根据波数设置路径 ---

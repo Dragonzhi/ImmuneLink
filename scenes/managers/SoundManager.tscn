@@ -25,3 +25,18 @@ bus = &"SFX"
 
 [node name="SFXPlayer5" type="AudioStreamPlayer" parent="SFXPlayers"]
 bus = &"SFX"
+
+[node name="SFXPlayer6" type="AudioStreamPlayer" parent="SFXPlayers"]
+bus = &"SFX"
+
+[node name="SFXPlayer7" type="AudioStreamPlayer" parent="SFXPlayers"]
+bus = &"SFX"
+
+[node name="SFXPlayer8" type="AudioStreamPlayer" parent="SFXPlayers"]
+bus = &"SFX"
+
+[node name="SFXPlayer9" type="AudioStreamPlayer" parent="SFXPlayers"]
+bus = &"SFX"
+
+[node name="SFXPlayer10" type="AudioStreamPlayer" parent="SFXPlayers"]
+bus = &"SFX"

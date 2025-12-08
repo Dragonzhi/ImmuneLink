@@ -468,6 +468,9 @@ func take_damage(amount: float):
 		
 		health_bar.hide() 
 		GameCamera.shake(1, 0.3) 
+		if VhsMonitorEffect:
+			VhsMonitorEffect.play_damage_effect(0.3)
+			VhsMonitorEffect.play_vertical_roll(0.3)
 		animated_sprite.visible = true 
 		animated_sprite.modulate = Color(0.4, 0.4, 0.4)
 		animated_sprite.stop()
