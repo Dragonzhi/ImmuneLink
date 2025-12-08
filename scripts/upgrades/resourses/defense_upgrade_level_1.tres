@@ -5,7 +5,8 @@
 
 [resource]
 script = ExtResource("1_4yncp")
+health_increase = 100.0
 upgrade_name = "纳米装甲"
 description = "Defense_1"
-cost = 30
+cost = 20
 icon = ExtResource("1_cb4io")
