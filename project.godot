@@ -47,6 +47,11 @@ folder_colors={
 "res://scripts/": "teal"
 }
 
+[global_group]
+
+spawners=""
+pipes=""
+
 [gui]
 
 theme/custom="uid://dshck318jhgki"

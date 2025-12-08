@@ -11,14 +11,20 @@ enum PipeType {
 	SIGNAL
 }
 
+# 使用枚举让方向在编辑器中更易于设置
+enum Direction { RIGHT, DOWN, LEFT, UP }
+
 @export var pipe_type : PipeType
-'''
-* 朝右： (-1, 0)
-* 朝下： (0, -1)
-* 朝左： (1, 0)
-* 朝上： (0, 1)
-'''
-@export var direction: Vector2i = Vector2i.ZERO
+
+@export var direction_enum: Direction = Direction.RIGHT:
+	set(value):
+		direction_enum = value
+		if is_inside_tree(): # 确保节点已在场景树中，以防在实例化时出错
+			_update_direction_from_enum()
+
+## pipe的出口方向向量，由direction_enum自动计算
+var direction: Vector2i = Vector2i.RIGHT
+
 ## 每秒传输的资源量
 @export var resource_per_second: float = 1.0
 
@@ -31,6 +37,7 @@ var is_pipe_used: bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	_update_direction_from_enum() # 根据编辑器设置初始化方向向量
 	# 获取单例引用
 	grid_manager = get_node("/root/GridManager")
 	bridge_builder = get_node("/root/Main/BridgeBuilder")
@@ -51,6 +58,19 @@ func _ready() -> void:
 			self.modulate = Color(0,0.5,1)
 		PipeType.SIGNAL:
 			self.modulate = Color.YELLOW
+
+# 根据枚举值更新方向向量
+# 注意: 我们使用Godot的标准坐标系方向 (X向右为正, Y向下为正)
+func _update_direction_from_enum():
+	match direction_enum:
+		Direction.RIGHT:
+			direction = Vector2i(-1, 0)
+		Direction.DOWN:
+			direction = Vector2i(0, -1)
+		Direction.LEFT:
+			direction = Vector2i(1, 0)
+		Direction.UP:
+			direction = Vector2i(0, 1)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 @warning_ignore("unused_parameter")

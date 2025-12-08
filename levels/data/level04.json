@@ -1,0 +1,288 @@
+{
+	"level_name": "Main",
+	"pipes": [
+		{
+			"direction": "UP",
+			"name": "redPipe1",
+			"position": [
+				200.0,
+				218.0
+			],
+			"type": "LIFE"
+		},
+		{
+			"direction": "DOWN",
+			"name": "redPipe2",
+			"position": [
+				40.0,
+				8.0
+			],
+			"type": "LIFE"
+		},
+		{
+			"direction": "UP",
+			"name": "bluePipe1",
+			"position": [
+				88.0,
+				203.0
+			],
+			"type": "SUPPLY"
+		},
+		{
+			"direction": "RIGHT",
+			"name": "bluePipe2",
+			"position": [
+				4.0,
+				56.0
+			],
+			"type": "SUPPLY"
+		},
+		{
+			"direction": "UP",
+			"name": "bluePipe3",
+			"position": [
+				296.0,
+				203.0
+			],
+			"type": "SUPPLY"
+		},
+		{
+			"direction": "DOWN",
+			"name": "bluePipe4",
+			"position": [
+				264.0,
+				8.0
+			],
+			"type": "SUPPLY"
+		}
+	],
+	"spawners": [
+		{
+			"paths": [
+				[
+					[
+						200.0,
+						48.0
+					],
+					[
+						67.0,
+						0.0
+					],
+					[
+						13.0,
+						76.0
+					],
+					[
+						8.0,
+						176.0
+					],
+					[
+						82.0,
+						108.0
+					],
+					[
+						200.0,
+						176.0
+					],
+					[
+						324.0,
+						154.0
+					],
+					[
+						218.0,
+						107.0
+					],
+					[
+						360.0,
+						18.0
+					],
+					[
+						200.0,
+						48.0
+					]
+				],
+				[
+					[
+						200.0,
+						48.0
+					],
+					[
+						151.861877441406,
+						18.0
+					],
+					[
+						65.8480682373047,
+						25.0
+					],
+					[
+						49.0,
+						139.0
+					],
+					[
+						113.732048034668,
+						98.0
+					],
+					[
+						264.0,
+						178.0
+					],
+					[
+						55.2071838378906,
+						32.0
+					],
+					[
+						80.0359191894531,
+						180.0
+					],
+					[
+						121.712715148926,
+						44.0
+					],
+					[
+						260.044189453125,
+						77.0
+					],
+					[
+						370.0,
+						124.0
+					],
+					[
+						288.419891357422,
+						65.0
+					],
+					[
+						360.0,
+						12.0
+					],
+					[
+						200.0,
+						48.0
+					]
+				],
+				[
+					[
+						135.3115234375,
+						48.0
+					],
+					[
+						155.323059082031,
+						192.0
+					],
+					[
+						206.515380859375,
+						68.0
+					],
+					[
+						131.123077392578,
+						10.0
+					],
+					[
+						47.3538360595703,
+						110.0
+					],
+					[
+						106.457679748535,
+						173.0
+					],
+					[
+						199.534606933594,
+						152.0
+					],
+					[
+						135.3115234375,
+						48.0
+					]
+				]
+			],
+			"position": [
+				200.0,
+				48.0
+			]
+		}
+	],
+	"starting_resources": 250,
+	"waves": [
+		{
+			"default_enemy_count": 20,
+			"default_spawn_interval": 1.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 5.0
+		},
+		{
+			"default_enemy_count": 25,
+			"default_spawn_interval": 1.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 10.0
+		},
+		{
+			"default_enemy_count": 25,
+			"default_spawn_interval": 1.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 8
+				},
+				{
+					"type": "CD4TEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 10.0
+		},
+		{
+			"default_enemy_count": 30,
+			"default_spawn_interval": 1.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 15.0
+		},
+		{
+			"default_enemy_count": 30,
+			"default_spawn_interval": 1.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 5
+				},
+				{
+					"type": "CD4TEnemy",
+					"weight": 1
+				},
+				{
+					"type": "DCEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 5.0
+		},
+		{
+			"default_enemy_count": 200,
+			"default_spawn_interval": 0.5,
+			"enemies": [
+				{
+					"type": "CD4TEnemy",
+					"weight": 1
+				},
+				{
+					"type": "VirusEnemy",
+					"weight": 2
+				}
+			],
+			"post_wave_delay": 15.0
+		}
+	]
+}

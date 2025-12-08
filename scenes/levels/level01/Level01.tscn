@@ -32,13 +32,17 @@ auto_start_on_ready = false
 
 [node name="redPipe1" parent="BackGround/Pipes/Red" index="0"]
 position = Vector2(328, 218)
+direction_enum = 3
+
+[node name="redPipe2" parent="BackGround/Pipes/Red" index="1"]
+direction_enum = 1
 
 [node name="bluePipe1" parent="BackGround/Pipes/Blue" index="0"]
 position = Vector2(88, 216)
+direction_enum = 3
 
 [node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
 position = Vector2(4, 120)
-direction = Vector2i(0, -1)
 
 [node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" index="0" node_paths=PackedStringArray("_paths")]
 _paths = [NodePath("Path01"), NodePath("Path02"), NodePath("Path03")]

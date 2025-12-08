@@ -30,30 +30,33 @@ _data = {
 point_count = 8
 
 [node name="Main" instance=ExtResource("1_53rhq")]
+export_path = "res://levels/data/level04.json"
 
-[node name="LevelConfig" parent="." index="0"]
-starting_resources = 400
-
-[node name="WaveManager" parent="." index="1"]
+[node name="WaveManager" parent="." index="0"]
 waves = Array[ExtResource("2_iseop")]([ExtResource("3_m4daj"), ExtResource("4_5akfg"), ExtResource("5_v6xt8"), ExtResource("6_a0puf"), ExtResource("7_lxp62"), ExtResource("8_v6xt8")])
 
 [node name="redPipe1" parent="BackGround/Pipes/Red" index="0"]
 position = Vector2(200, 218)
+direction_enum = 3
 
 [node name="redPipe2" parent="BackGround/Pipes/Red" index="1"]
 position = Vector2(40, 8)
 rotation = 3.1415927
+direction_enum = 1
+
+[node name="bluePipe1" parent="BackGround/Pipes/Blue" index="0"]
+direction_enum = 3
 
 [node name="bluePipe3" parent="BackGround/Pipes/Blue" index="2" instance=ExtResource("2_xp5jw")]
 position = Vector2(296, 203)
 pipe_type = 1
-direction = Vector2i(0, 1)
+direction_enum = 3
 
 [node name="bluePipe4" parent="BackGround/Pipes/Blue" index="3" instance=ExtResource("2_xp5jw")]
 position = Vector2(264, 8)
 rotation = 3.1415927
 pipe_type = 1
-direction = Vector2i(0, -1)
+direction_enum = 1
 
 [node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
 curve = SubResource("Curve2D_a0puf")
@@ -66,10 +69,5 @@ curve = SubResource("Curve2D_jtyld")
 
 [node name="NKCell" parent="Midground/Items" index="0" instance=ExtResource("10_a0puf")]
 position = Vector2(345, 139)
-
-[node name="TutorialManager" parent="." index="11"]
-initial_dialogue = null
-post_connect_dialogue = null
-upgrade_dialogue = null
 
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]
