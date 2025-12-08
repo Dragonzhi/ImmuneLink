@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dei1div6dxurl"]
+[gd_scene load_steps=9 format=3 uid="uid://dei1div6dxurl"]
 
 [ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_qwkhf"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_tnha3"]
@@ -8,17 +8,24 @@
 [ext_resource type="Resource" uid="uid://bx504ehpgl0r" path="res://scenes/levels/level02/waves/wave_04.tres" id="6_jvkam"]
 [ext_resource type="Resource" uid="uid://bi03rfybi3fy4" path="res://scenes/levels/level02/waves/wave_05.tres" id="7_snb68"]
 
+[sub_resource type="Curve2D" id="Curve2D_es6ef"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -32, 0, 0, 0, 0, 0, -216, 33, 0, 0, 0, 0, -187, 87, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0)
+}
+point_count = 6
+
 [node name="Main" instance=ExtResource("1_qwkhf")]
 
-[node name="LevelConfig" parent="." index="0"]
-starting_resources = 400
-
-[node name="WaveManager" parent="." index="1"]
+[node name="WaveManager" parent="." index="0"]
 waves = Array[ExtResource("2_tnha3")]([ExtResource("3_hu4y5"), ExtResource("4_es6ef"), ExtResource("5_4u8lj"), ExtResource("6_jvkam"), ExtResource("7_snb68")])
 
-[node name="TutorialManager" parent="." index="11"]
-initial_dialogue = null
-post_connect_dialogue = null
-upgrade_dialogue = null
+[node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
+position = Vector2(4, 40)
+
+[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" index="0"]
+position = Vector2(244, 67)
+
+[node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
+curve = SubResource("Curve2D_es6ef")
 
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

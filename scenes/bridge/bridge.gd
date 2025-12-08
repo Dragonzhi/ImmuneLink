@@ -29,6 +29,7 @@ const NKProtocolUpgradeResource = preload("res://scripts/upgrades/resourses/NKPr
 @export var health_bar: ProgressBar
 @export_group("Upgrades")
 @export var available_upgrades: Array[Upgrade] = []
+@export var max_upgrades_per_type: int = 3 # 每种升级类型的最大叠加次数
 @export var is_secondary: bool = false # 是否为扩展出来的桥梁
 @export var secondary_color: Color = Color.WHITE # 次级桥梁的颜色，默认为白色
 
@@ -45,9 +46,10 @@ var grid_pos: Vector2i
 var is_destroyed: bool = false
 
 # --- 升级系统状态 ---
-var current_upgrade: Upgrade = null # 当前生效的升级
-var upgrade_level: int = 0         # 当前升级的叠加等级
-var _base_stats: Dictionary = {}   # 用于存储桥梁的初始属性
+var current_upgrade: Upgrade = null   # 当前生效的升级
+var upgrade_level: int = 0            # 当前升级的叠加等级
+var _upgrade_counts: Dictionary = {}  # key: upgrade_resource_path, value: count
+var _base_stats: Dictionary = {}      # 用于存储桥梁的初始属性
 
 # --- 升级相关状态和数据 ---
 var is_attack_upgraded: bool = false
@@ -150,16 +152,26 @@ func get_available_upgrades() -> Array[Upgrade]:
 	# 只有在常规状态下才可升级
 	if current_bridge_state != State.NORMAL:
 		return upgrades_to_return
-		
+
+	# 检查函数：检查升级是否已达上限
+	var can_upgrade = func(upgrade_res: Upgrade):
+		var current_count = _upgrade_counts.get(upgrade_res.resource_path, 0)
+		return current_count < max_upgrades_per_type
+
 	# --- 新增：检查并添加NK协议升级 ---
 	if GameManager.get_nk_cell_samples() > 0 and not is_nk_upgraded:
-		upgrades_to_return.append(NKProtocolUpgradeResource)
+		if can_upgrade.call(NKProtocolUpgradeResource):
+			upgrades_to_return.append(NKProtocolUpgradeResource)
 	
 	var on_active_line = false
 	if ConnectionManager and ConnectionManager.has_method("is_bridge_on_active_line"):
 		on_active_line = ConnectionManager.is_bridge_on_active_line(self)
 
 	for upgrade_resource in available_upgrades:
+		# 在添加任何升级前，都检查其是否已达上限
+		if not can_upgrade.call(upgrade_resource):
+			continue # 如果达到上限，则跳过此升级
+
 		var script = upgrade_resource.get_script()
 		if script == AttackUpgradeScript:
 			upgrades_to_return.append(upgrade_resource)
@@ -181,6 +193,13 @@ func get_available_upgrades() -> Array[Upgrade]:
 func attempt_upgrade(new_upgrade: Upgrade):
 	if not new_upgrade: return
 
+	# --- 检查升级次数是否已达上限 ---
+	var upgrade_path = new_upgrade.resource_path
+	var current_count = _upgrade_counts.get(upgrade_path, 0)
+	if current_count >= max_upgrades_per_type:
+		DebugManager.dprint("Bridge", "升级 '%s' 已达到最大等级 %d，无法继续升级。" % [upgrade_path, max_upgrades_per_type])
+		return
+
 	var new_upgrade_script = new_upgrade.get_script()
 
 	# --- 首次升级 ---
@@ -188,6 +207,7 @@ func attempt_upgrade(new_upgrade: Upgrade):
 		current_upgrade = new_upgrade
 		upgrade_level = 1
 		_apply_upgrade_effects(new_upgrade)
+		_update_upgrade_count(new_upgrade) # 更新计数
 		return
 
 	# --- 后续升级 ---
@@ -197,6 +217,7 @@ func attempt_upgrade(new_upgrade: Upgrade):
 		# 类型相同，进行叠加
 		upgrade_level += 1
 		_apply_upgrade_effects(new_upgrade) # 应用增量
+		_update_upgrade_count(new_upgrade) # 更新计数
 		_update_stack_visuals() # 更新视觉
 		DebugManager.dprint("Bridge", "升级叠加。等级：%d" % upgrade_level)
 	else:
@@ -205,9 +226,18 @@ func attempt_upgrade(new_upgrade: Upgrade):
 		current_upgrade = new_upgrade
 		upgrade_level = 1
 		_apply_upgrade_effects(new_upgrade)
+		_update_upgrade_count(new_upgrade) # 更新计数
 		DebugManager.dprint("Bridge", "升级已重置并更改。")
 
 # --- 升级系统辅助函数 ---
+
+## 更新指定升级的计数
+func _update_upgrade_count(upgrade: Upgrade):
+	var upgrade_path = upgrade.resource_path
+	var current_count = _upgrade_counts.get(upgrade_path, 0)
+	_upgrade_counts[upgrade_path] = current_count + 1
+	DebugManager.dprint("Bridge", "升级 '%s' 的计数更新为 %d。" % [upgrade_path, _upgrade_counts[upgrade_path]])
+
 
 func _reset_to_base_stats():
 	"""将桥梁的属性和视觉重置到初始状态。"""
@@ -223,6 +253,7 @@ func _reset_to_base_stats():
 	# 重置状态变量
 	current_upgrade = null
 	upgrade_level = 0
+	_upgrade_counts.clear() # !! 清空升级计数
 	
 	# 如果有攻击模式，需要禁用
 	up_level_sprite.visible = false

@@ -38,11 +38,16 @@ func populate_menu(upgrades: Array[Upgrade], target_bridge: Bridge):
 			button = Button.new()
 			# 从Upgrade资源获取信息来设置按钮
 			button.icon = upgrade_res.icon
+			# 默认文本设置
 			button.text = "%s\n(%s G)" % [upgrade_res.upgrade_name, upgrade_res.cost]
 			button.add_theme_font_size_override("font_size", button_font_size) # 应用字体大小
 		
-		# --- 新增：检查资源是否足够 ---
-		if current_resources < upgrade_res.cost:
+		# --- 检查升级是否达到上限或资源是否足够 ---
+		var current_upgrade_count = selected_bridge._upgrade_counts.get(upgrade_res.resource_path, 0)
+		if current_upgrade_count >= selected_bridge.max_upgrades_per_type:
+			button.disabled = true
+			button.text = "%s\n(已达上限)" % upgrade_res.upgrade_name
+		elif current_resources < upgrade_res.cost:
 			button.disabled = true
 		# --------------------------
 		

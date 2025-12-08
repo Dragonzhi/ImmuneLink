@@ -12,17 +12,17 @@ _data = {
 }
 point_count = 6
 
-[sub_resource type="Curve2D" id="Curve2D_gsbbr"]
+[sub_resource type="Curve2D" id="Curve2D_u6ccs"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 2, 0, 0, 0, 0, 65, 129, 0, 0, 0, 0, 12, 132, 0, 0, 0, 0, 0, 0)
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 53, 0, 0, 0, 0, 99, 130, 0, 0, 0, 0, 31, 144, 0, 0, 0, 0, -62, 139, 0, 0, 0, 0, 0, 0)
 }
-point_count = 5
+point_count = 6
 
-[sub_resource type="Curve2D" id="Curve2D_qtqmo"]
+[sub_resource type="Curve2D" id="Curve2D_163aq"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -36, -17, 0, 0, 0, 0, -177, 101, 0, 0, 0, 0, -133, 102, 0, 0, 0, 0, 0, 0)
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -36, -17, 0, 0, 0, 0, -177, 143, 0, 0, 0, 0, 0, 0)
 }
-point_count = 5
+point_count = 4
 
 [node name="Main" instance=ExtResource("1_yqdcf")]
 
@@ -37,8 +37,7 @@ position = Vector2(328, 218)
 position = Vector2(88, 216)
 
 [node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
-position = Vector2(88, 8)
-rotation = 3.1415927
+position = Vector2(4, 120)
 direction = Vector2i(0, -1)
 
 [node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" index="0" node_paths=PackedStringArray("_paths")]
@@ -48,10 +47,10 @@ _paths = [NodePath("Path01"), NodePath("Path02"), NodePath("Path03")]
 curve = SubResource("Curve2D_i2pqh")
 
 [node name="Path02" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="5"]
-curve = SubResource("Curve2D_gsbbr")
+curve = SubResource("Curve2D_u6ccs")
 
 [node name="Path03" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="6"]
-curve = SubResource("Curve2D_qtqmo")
+curve = SubResource("Curve2D_163aq")
 
 [node name="GameUI" parent="UILayer" index="1"]
 offset_bottom = -181.0
