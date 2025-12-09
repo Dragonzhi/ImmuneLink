@@ -1,8 +1,8 @@
-[gd_scene load_steps=25 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=26 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="Script" path="res://scripts/managers/WaveManager.gd" id="1_rikml"]
-[ext_resource type="Script" uid="uid://bnow6hwjshjdk" path="res://scripts/managers/LevelExporter.gd" id="1_tck0d"]
+[ext_resource type="Script" uid="uid://dahe52pnq8e6u" path="res://scenes/main/MainController.gd" id="1_tck0d"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_vc03v"]
 [ext_resource type="Resource" uid="uid://bktbxy4finrku" path="res://scenes/levels/level01/waves/wave_01.tres" id="3_grv7h"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="3_u1xfj"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://dpsk4yq8w7h6g" path="res://scenes/ui/GameUI.tscn" id="9_gameui"]
 [ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="10_theme"]
 [ext_resource type="Shader" uid="uid://cul7dygdsicnj" path="res://assets/shader/pixelate.gdshader" id="15_tck0d"]
+[ext_resource type="Script" uid="uid://j5rup82g2mki" path="res://scripts/levels/LevelLoader.gd" id="16_loader"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u8lgh"]
 size = Vector2(404, 236)
@@ -108,7 +109,9 @@ _data = {
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_tck0d")
-export_path = "res://levels/data/main.json"
+
+[node name="LevelLoader" type="Node" parent="."]
+script = ExtResource("16_loader")
 
 [node name="WaveManager" type="Node" parent="." node_paths=PackedStringArray("spawners")]
 script = ExtResource("1_rikml")

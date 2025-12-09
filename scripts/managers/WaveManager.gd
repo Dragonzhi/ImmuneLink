@@ -27,12 +27,12 @@ func _ready() -> void:
 		_wave_timer.timeout.disconnect(_start_next_wave)
 	_wave_timer.timeout.connect(_start_next_wave)
 	
-	_initialize_system()
+	initialize_system()
 	
 	if auto_start_on_ready:
 		start_spawning()
 
-func _initialize_system():
+func initialize_system():
 	# Connect to other nodes that need to react to waves
 	_connect_to_listeners()
 

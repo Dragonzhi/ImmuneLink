@@ -1,5 +1,5 @@
 @tool
-extends Node2D
+extends Node
 
 ## Level Exporter Tool
 ##
