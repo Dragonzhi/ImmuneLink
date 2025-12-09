@@ -42,7 +42,7 @@ func _ready() -> void:
 	game_timer.timeout.connect(_on_game_timer_timeout)
 	
 	# DebugManager 注册
-	DebugManager.register_category("GameManager", true) # Enable GameManager debug output
+	DebugManager.register_category("GameManager", false) # Enable GameManager debug output
 
 	# 初始化
 	_on_scene_changed()

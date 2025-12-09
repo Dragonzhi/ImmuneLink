@@ -1,6 +1,139 @@
 {
 	"level_name": "Main",
-	"spawners": [],
+	"pipes": [
+		{
+			"direction": "RIGHT",
+			"name": "redPipe1",
+			"position": [
+				280.0,
+				218.0
+			],
+			"type": "LIFE"
+		},
+		{
+			"direction": "RIGHT",
+			"name": "redPipe2",
+			"position": [
+				264.0,
+				5.0
+			],
+			"type": "LIFE"
+		},
+		{
+			"direction": "RIGHT",
+			"name": "bluePipe1",
+			"position": [
+				88.0,
+				203.0
+			],
+			"type": "SUPPLY"
+		},
+		{
+			"direction": "RIGHT",
+			"name": "bluePipe2",
+			"position": [
+				4.0,
+				56.0
+			],
+			"type": "SUPPLY"
+		}
+	],
+	"spawners": [
+		{
+			"paths": [
+				[
+					[
+						200.0,
+						48.0
+					],
+					[
+						168.0,
+						48.0
+					],
+					[
+						8.0,
+						176.0
+					],
+					[
+						200.0,
+						176.0
+					],
+					[
+						200.0,
+						48.0
+					]
+				],
+				[
+					[
+						200.0,
+						48.0
+					],
+					[
+						328.0,
+						48.0
+					],
+					[
+						264.0,
+						178.0
+					],
+					[
+						220.0,
+						165.0
+					],
+					[
+						237.0,
+						93.0
+					],
+					[
+						200.0,
+						48.0
+					]
+				],
+				[
+					[
+						200.0,
+						48.0
+					],
+					[
+						200.0,
+						16.0
+					],
+					[
+						56.0,
+						16.0
+					],
+					[
+						56.0,
+						48.0
+					],
+					[
+						200.0,
+						48.0
+					]
+				]
+			],
+			"position": [
+				200.0,
+				48.0
+			]
+		}
+	],
 	"starting_resources": 250,
-	"waves": []
+	"waves": [
+		{
+			"default_enemy_count": 5,
+			"default_spawn_interval": 4.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 1
+				},
+				{
+					"type": "GermEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 5.0
+		}
+	]
 }

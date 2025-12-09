@@ -8,91 +8,184 @@ const PIPE_SCENE = preload("res://scenes/pipes/Pipe.tscn")
 const WAVE_CLASS = preload("res://scripts/managers/Wave.gd")
 const ENEMY_SPAWN_INFO_CLASS = preload("res://scripts/others/EnemySpawnInfo.gd")
 
-func load_level(level_path: String):
+func load_level_into_scene(level_path: String, scene_root: Node2D) -> bool:
+	# 1. 加载和解析JSON文件
+	var level_data = _parse_json(level_path)
+	if level_data.is_empty():
+		return false
+
+	# 2. 加载和配置 Pipes
+	_load_pipes(level_data.get("pipes", []), scene_root)
+	
+	# 3. 加载和配置 Spawners
+	_load_spawners(level_data.get("spawners", []), scene_root)
+
+	# 4. 加载和配置 Waves 和 GameManager
+	var waves = _load_waves(level_data.get("waves", []))
+	var starting_resources = level_data.get("starting_resources", 250)
+	
+	var wave_manager = scene_root.find_child("WaveManager", true, false)
+	if wave_manager:
+		wave_manager.waves = waves
+		# Spawners可能已更新, 重新获取
+		var spawners_in_scene: Array[Node] = []
+		for node in scene_root.get_tree().get_nodes_in_group("spawners"):
+			if scene_root.is_ancestor_of(node):
+				spawners_in_scene.append(node)
+		wave_manager.spawners = spawners_in_scene
+	
+	var game_manager = scene_root.find_child("GameManager", true, false)
+	if game_manager and game_manager.has_method("set_resources"):
+		game_manager.set_resources(starting_resources)
+
+	return true
+
+func _parse_json(level_path: String) -> Dictionary:
 	var file = FileAccess.open(level_path, FileAccess.READ)
 	if not file:
-		printerr("Failed to open level file: ", level_path)
-		return null
+		printerr("打开关卡文件失败: ", level_path)
+		return {}
 
 	var content = file.get_as_text()
 	file.close()
 
 	var json_result = JSON.parse_string(content)
 	if json_result == null:
-		printerr("Failed to parse JSON from level file: ", level_path)
-		return null
-
-	var level_data = json_result as Dictionary
-	if level_data.is_empty():
-		printerr("Level data is empty: ", level_path)
-		return null
-
-	# Create a new Node2D to hold the loaded level elements
-	var loaded_level_root = Node2D.new()
-	loaded_level_root.name = level_data.get("level_name", "LoadedLevel")
+		printerr("从关卡文件解析JSON失败: ", level_path)
+		return {}
 	
-	# Set starting resources (if GameManager can access this or pass it)
-	var starting_resources = level_data.get("starting_resources", 250)
-	# GameManager.set_starting_resources(starting_resources) # This would need a reference to GameManager
+	return json_result as Dictionary
 
-	# Load Spawners
-	var spawners_data = level_data.get("spawners", [])
-	for spawner_info in spawners_data:
-		var spawner_instance = ENEMY_SPAWN_POINT_SCENE.instantiate()
-		# Position is stored as [x, y] in JSON
-		var pos_array = spawner_info.get("position", [0, 0])
-		spawner_instance.global_position = Vector2(pos_array[0], pos_array[1])
-		
-		# Add paths to the spawner
-		var paths_data = spawner_info.get("paths", [])
-		# Remove default paths from the scene, as we are loading custom ones
-		for child in spawner_instance.get_children():
-			if child is Path2D and child.name.begins_with("Path"):
-				child.queue_free()
-				
-		for i in range(paths_data.size()):
-			var path_data = paths_data[i]
-			if not path_data.is_empty():
-				var path2d = Path2D.new()
-				path2d.name = "Path%02d" % (i + 1) # Naming like Path01, Path02
-				var curve = Curve2D.new()
-				for point_array in path_data:
-					curve.add_point(Vector2(point_array[0], point_array[1]))
-				path2d.curve = curve
-				spawner_instance.add_child(path2d)
-				# Need to add to group "spawners" for the game logic to pick it up
-				spawner_instance.add_to_group("spawners") # Spawners are added to this group by default in the scene
-		loaded_level_root.add_child(spawner_instance)
+func _load_pipes(pipes_data: Array, scene_root: Node):
+	var pipes_container_red = scene_root.find_child("BackGround/Pipes/Red", true, false)
+	var pipes_container_blue = scene_root.find_child("BackGround/Pipes/Blue", true, false)
+	
+	if not pipes_container_red or not pipes_container_blue:
+		printerr("场景中未找到Pipes容器节点 (Red/Blue)!")
+		return
 
-	# Load Pipes
-	var pipes_data = level_data.get("pipes", [])
+	# 收集场景中现有的Pipes
+	var existing_pipes = {}
+	for child in pipes_container_red.get_children():
+		existing_pipes[child.name] = child
+	for child in pipes_container_blue.get_children():
+		existing_pipes[child.name] = child
+	
+	# 遍历JSON数据，更新或创建Pipe
 	for pipe_info in pipes_data:
-		var pipe_instance = PIPE_SCENE.instantiate()
-		pipe_instance.name = pipe_info.get("name", "Pipe")
-		
-		var pos_array = pipe_info.get("position", [0, 0])
-		pipe_instance.global_position = Vector2(pos_array[0], pos_array[1])
-		
-		var type_str = pipe_info.get("type", "NORMAL")
-		# Ensure PipeType enum exists and set it
-		if type_str in Pipe.PipeType: # Accessing static enum directly
-			pipe_instance.pipe_type = Pipe.PipeType[type_str]
+		var pipe_name = pipe_info.get("name")
+		if pipe_name == null: continue
+
+		var pipe_node: Node2D = existing_pipes.get(pipe_name)
+
+		if pipe_node:
+			# 如果找到同名Pipe，则更新它
+			existing_pipes.erase(pipe_name) # 从“待处理”列表中移除
 		else:
-			printerr("Unknown pipe type: ", type_str)
+			# 如果没找到，则创建新的Pipe
+			pipe_node = PIPE_SCENE.instantiate()
+			pipe_node.name = pipe_name
+			if pipe_info.get("type") == "LIFE":
+				pipes_container_red.add_child(pipe_node)
+			else: # SUPPLY or other types
+				pipes_container_blue.add_child(pipe_node)
+		
+		# 配置Pipe属性
+		var pos_array = pipe_info.get("position", [0, 0])
+		pipe_node.global_position = Vector2(pos_array[0], pos_array[1])
+		
+		var type_str = pipe_info.get("type", "LIFE")
+		if type_str in Pipe.PipeType:
+			pipe_node.pipe_type = Pipe.PipeType[type_str]
 		
 		var direction_str = pipe_info.get("direction", "UP")
-		# Ensure Direction enum exists and set it
-		if direction_str in Pipe.Direction: # Accessing static enum directly
-			pipe_instance.direction_enum = Pipe.Direction[direction_str]
+		if direction_str in Pipe.Direction:
+			pipe_node.direction_enum = Pipe.Direction[direction_str]
 		else:
-			printerr("Unknown pipe direction: ", direction_str)
+			# 如果JSON中的值不匹配，默认设置为 UP
+			pipe_node.direction_enum = Pipe.Direction.UP
 
-		loaded_level_root.add_child(pipe_instance)
-		pipe_instance.add_to_group("pipes") # Add to group "pipes" for the game logic
-		
-	# Load Waves
+		# 根据direction_enum设置节点的旋转
+		match pipe_node.direction_enum:
+			Pipe.Direction.UP:
+				pipe_node.rotation_degrees = 0
+			Pipe.Direction.RIGHT:
+				pipe_node.rotation_degrees = 90
+			Pipe.Direction.DOWN:
+				pipe_node.rotation_degrees = 180
+			Pipe.Direction.LEFT:
+				pipe_node.rotation_degrees = 270
+
+	# 删除JSON中没有定义的、多余的预设Pipe
+	for pipe_name in existing_pipes:
+		existing_pipes[pipe_name].queue_free()
+
+
+func _load_spawners(spawners_data: Array, scene_root: Node):
+	var spawners_container = scene_root.find_child("BackGround/EnemySpawns", true, false)
+	if not spawners_container:
+		printerr("场景中未找到 EnemySpawns 容器节点!")
+		return
+
+	var preset_spawner = spawners_container.find_child("EnemySpawnPoint01", false)
+	
+	# 先清除掉除了预设Spawner之外的所有其他Spawner
+	for spawner in spawners_container.get_children():
+		if spawner != preset_spawner:
+			spawner.queue_free()
+	
+	if spawners_data.is_empty():
+		# 如果JSON中没有spawner，则也删除预设的
+		if preset_spawner:
+			preset_spawner.queue_free()
+		return
+
+	# 使用第一个JSON条目配置预设的Spawner
+	var first_spawner_info = spawners_data[0]
+	if not preset_spawner:
+		# 如果预设的不知为何不存在，就创建一个
+		preset_spawner = ENEMY_SPAWN_POINT_SCENE.instantiate()
+		preset_spawner.name = "EnemySpawnPoint01"
+		spawners_container.add_child(preset_spawner)
+	_configure_spawner(preset_spawner, first_spawner_info)
+
+	# 如果JSON中有更多Spawner，则创建新的
+	if spawners_data.size() > 1:
+		for i in range(1, spawners_data.size()):
+			var spawner_info = spawners_data[i]
+			var new_spawner = ENEMY_SPAWN_POINT_SCENE.instantiate()
+			new_spawner.name = "EnemySpawnPoint%02d" % (i + 1)
+			spawners_container.add_child(new_spawner)
+			_configure_spawner(new_spawner, spawner_info)
+
+func _configure_spawner(spawner_node: Node, spawner_info: Dictionary):
+	# 位置
+	var pos_array = spawner_info.get("position", [0, 0])
+	var spawner_pos = Vector2(pos_array[0], pos_array[1])
+	spawner_node.global_position = spawner_pos
+
+	# 清除现有路径
+	for child in spawner_node.get_children():
+		if child is Path2D:
+			child.queue_free()
+	
+	# 添加新路径
+	var paths_data = spawner_info.get("paths", [])
+	for i in range(paths_data.size()):
+		var path_data = paths_data[i]
+		if not path_data.is_empty():
+			var path2d = Path2D.new()
+			path2d.name = "Path%02d" % (i + 1)
+			var curve = Curve2D.new()
+			for point_array in path_data:
+				var world_point = Vector2(point_array[0], point_array[1])
+				var local_point = world_point - spawner_pos
+				curve.add_point(local_point)
+			path2d.curve = curve
+			spawner_node.add_child(path2d)
+
+func _load_waves(waves_data: Array) -> Array[WAVE_CLASS]:
 	var loaded_waves: Array[WAVE_CLASS] = []
-	var waves_data = level_data.get("waves", [])
 	for wave_data_entry in waves_data:
 		var new_wave = WAVE_CLASS.new()
 		new_wave.default_enemy_count = wave_data_entry.get("default_enemy_count", 0)
@@ -104,33 +197,15 @@ func load_level(level_path: String):
 		for enemy_info_entry in enemies_data:
 			var new_enemy_spawn_info = ENEMY_SPAWN_INFO_CLASS.new()
 			var enemy_type = enemy_info_entry.get("type", "")
-			# Need to convert enemy_type string back to PackedScene
-			# Assuming enemy scenes are in "res://scenes/enemies/" + enemy_type + ".tscn"
 			if not enemy_type.is_empty():
 				var enemy_scene_path = "res://scenes/enemies/" + enemy_type + ".tscn"
 				if ResourceLoader.exists(enemy_scene_path):
 					new_enemy_spawn_info.enemy_scene = load(enemy_scene_path)
 				else:
-					printerr("Enemy scene not found: ", enemy_scene_path)
-			# The 'weight' property in EnemySpawnInfo needs to be set.
-			# In LevelExporter.gd, it exported 'weight', so we should load it here.
+					printerr("未找到敌人场景: ", enemy_scene_path)
 			new_enemy_spawn_info.weight = enemy_info_entry.get("weight", 1) 
 			loaded_enemy_spawn_infos.append(new_enemy_spawn_info)
 		
 		new_wave.default_spawn_infos = loaded_enemy_spawn_infos
 		loaded_waves.append(new_wave)
-		
-	return {
-		"level_root": loaded_level_root,
-		"waves": loaded_waves,
-		"starting_resources": starting_resources
-	}
-
-func _ready():
-	# Example usage (for testing purposes, remove in production)
-	# var loaded_data = load_level("res://levels/data/main.json")
-	# if loaded_data:
-	#     get_tree().root.add_child(loaded_data.level_root)
-	#     print("Level 'main.json' loaded successfully!")
-	#     # Now you can access loaded_data.waves and loaded_data.starting_resources
-	pass
+	return loaded_waves
