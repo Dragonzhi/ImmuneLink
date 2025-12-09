@@ -142,16 +142,19 @@ self_modulate = Color(1, 1, 1, 0.29411766)
 
 [node name="redPipe1" parent="BackGround/Pipes/Red" groups=["pipes"] instance=ExtResource("1_nha0i")]
 position = Vector2(280, 218)
+direction_enum = 3
 
 [node name="redPipe2" parent="BackGround/Pipes/Red" groups=["pipes"] instance=ExtResource("1_nha0i")]
 position = Vector2(264, 5)
 rotation = -3.14159
+direction_enum = 1
 
 [node name="Blue" type="Node2D" parent="BackGround/Pipes"]
 
 [node name="bluePipe1" parent="BackGround/Pipes/Blue" groups=["pipes"] instance=ExtResource("1_nha0i")]
 position = Vector2(88, 203)
 pipe_type = 1
+direction_enum = 3
 
 [node name="bluePipe2" parent="BackGround/Pipes/Blue" groups=["pipes"] instance=ExtResource("1_nha0i")]
 position = Vector2(4, 56)

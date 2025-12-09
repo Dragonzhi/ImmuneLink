@@ -13,7 +13,7 @@ func load_level_into_scene(level_path: String, scene_root: Node2D) -> bool:
 	var level_data = _parse_json(level_path)
 	if level_data.is_empty():
 		return false
-
+	
 	# 2. 加载和配置 Pipes
 	_load_pipes(level_data.get("pipes", []), scene_root)
 	
@@ -57,8 +57,8 @@ func _parse_json(level_path: String) -> Dictionary:
 	return json_result as Dictionary
 
 func _load_pipes(pipes_data: Array, scene_root: Node):
-	var pipes_container_red = scene_root.find_child("BackGround/Pipes/Red", true, false)
-	var pipes_container_blue = scene_root.find_child("BackGround/Pipes/Blue", true, false)
+	var pipes_container_red = scene_root.get_node("BackGround/Pipes/Red")
+	var pipes_container_blue = scene_root.get_node("BackGround/Pipes/Blue")
 	
 	if not pipes_container_red or not pipes_container_blue:
 		printerr("场景中未找到Pipes容器节点 (Red/Blue)!")
@@ -122,7 +122,7 @@ func _load_pipes(pipes_data: Array, scene_root: Node):
 
 
 func _load_spawners(spawners_data: Array, scene_root: Node):
-	var spawners_container = scene_root.find_child("BackGround/EnemySpawns", true, false)
+	var spawners_container = scene_root.get_node("BackGround/EnemySpawns")
 	if not spawners_container:
 		printerr("场景中未找到 EnemySpawns 容器节点!")
 		return
