@@ -47,12 +47,12 @@ direction_enum = 1
 [node name="bluePipe1" parent="BackGround/Pipes/Blue" index="0"]
 direction_enum = 3
 
-[node name="bluePipe3" parent="BackGround/Pipes/Blue" index="2" instance=ExtResource("2_xp5jw")]
+[node name="bluePipe3" parent="BackGround/Pipes/Blue" index="2" groups=["pipes"] instance=ExtResource("2_xp5jw")]
 position = Vector2(296, 203)
 pipe_type = 1
 direction_enum = 3
 
-[node name="bluePipe4" parent="BackGround/Pipes/Blue" index="3" instance=ExtResource("2_xp5jw")]
+[node name="bluePipe4" parent="BackGround/Pipes/Blue" index="3" groups=["pipes"] instance=ExtResource("2_xp5jw")]
 position = Vector2(264, 8)
 rotation = 3.1415927
 pipe_type = 1
