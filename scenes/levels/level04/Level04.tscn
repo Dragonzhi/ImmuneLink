@@ -31,6 +31,9 @@ point_count = 8
 
 [node name="Main" instance=ExtResource("1_53rhq")]
 
+[node name="LevelExproter" parent="." index="0"]
+export_path = "res://levels/data/level04.json"
+
 [node name="WaveManager" parent="." index="2"]
 starting_resources = 300
 waves = Array[ExtResource("2_iseop")]([ExtResource("3_m4daj"), ExtResource("4_5akfg"), ExtResource("5_v6xt8"), ExtResource("6_a0puf"), ExtResource("7_lxp62"), ExtResource("8_v6xt8")])

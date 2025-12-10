@@ -14,7 +14,11 @@ enum PipeType {
 # 使用枚举让方向在编辑器中更易于设置
 enum Direction { RIGHT, DOWN, LEFT, UP }
 
-@export var pipe_type : PipeType
+@export var pipe_type : PipeType:
+	set(value):
+		pipe_type = value
+		if is_inside_tree():
+			_update_color()
 
 @export var direction_enum: Direction = Direction.RIGHT:
 	set(value):
@@ -38,6 +42,8 @@ var is_pipe_used: bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	_update_direction_from_enum() # 根据编辑器设置初始化方向向量
+	_update_color() # 设置初始颜色
+	
 	# 获取单例引用
 	grid_manager = get_node("/root/GridManager")
 	bridge_builder = get_node("/root/Main/BridgeBuilder")
@@ -51,6 +57,8 @@ func _ready() -> void:
 			if point is Marker2D:
 				var grid_pos = grid_manager.world_to_grid(point.global_position)
 				grid_manager.set_grid_occupied(grid_pos, self)
+
+func _update_color():
 	match pipe_type:
 		PipeType.LIFE:
 			self.modulate = Color(1,0.1,0)
@@ -58,6 +66,7 @@ func _ready() -> void:
 			self.modulate = Color(0,0.5,1)
 		PipeType.SIGNAL:
 			self.modulate = Color.YELLOW
+
 
 # 根据枚举值更新方向向量
 # 注意: 我们使用Godot的标准坐标系方向 (X向右为正, Y向下为正)
@@ -141,4 +150,5 @@ func _on_area_2d_mouse_entered() -> void:
 # 当鼠标离开管道区域时
 func _on_area_2d_mouse_exited() -> void:
 	# 恢复原始颜色
-	sprite_2d.modulate = Color.WHITE
+	_update_color() # 调用统一的颜色更新函数
+	sprite_2d.modulate = Color.WHITE # Sprite本身保持白色，让父节点的modulate来控制颜色
