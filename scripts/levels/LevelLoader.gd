@@ -8,18 +8,50 @@ const PIPE_SCENE = preload("res://scenes/pipes/Pipe.tscn")
 const WAVE_CLASS = preload("res://scripts/managers/Wave.gd")
 const ENEMY_SPAWN_INFO_CLASS = preload("res://scripts/others/EnemySpawnInfo.gd")
 
-# 修改后：成功时返回关卡数据字典，失败时返回空字典
-func load_level_from_json(level_path: String, scene_root: Node2D) -> Dictionary:
-	# 1. 加载和解析JSON文件
-	var level_data = _parse_json(level_path)
+# 接收关卡文件名，智能查找路径并加载
+func load_level_from_json(level_filename: String, scene_root: Node2D) -> Dictionary:
+	var final_level_path: String
+	
+	# 1. 智能查找关卡文件路径
+	var user_base_dir = "user://ImmuneLink/"
+	var user_levels_dir = user_base_dir.path_join("levels/")
+	var user_path = user_levels_dir.path_join(level_filename)
+
+	# 确保 user://ImmuneLink/levels/ 目录存在 (尤其是在第一次运行时)
+	var dir_access = DirAccess.open("user://")
+	if not dir_access.dir_exists("ImmuneLink"):
+		var err_create_base = dir_access.make_dir("ImmuneLink")
+		if err_create_base != OK:
+			printerr("LevelLoader 错误: 无法创建 user://ImmuneLink/ 目录！错误码: %s" % err_create_base)
+			return {}
+	if not dir_access.dir_exists("ImmuneLink/levels"):
+		var err_create_levels = dir_access.make_dir("ImmuneLink/levels")
+		if err_create_levels != OK:
+			printerr("LevelLoader 错误: 无法创建 user://ImmuneLink/levels/ 目录！错误码: %s" % err_create_levels)
+			return {}
+
+	if FileAccess.file_exists(user_path):
+		print("LevelLoader: 发现用户自定义关卡，从 user:// 加载: ", user_path)
+		final_level_path = user_path
+	else:
+		var res_path = "res://levels/data/".path_join(level_filename)
+		if FileAccess.file_exists(res_path):
+			print("LevelLoader: 加载内置关卡，从 res:// 加载: ", res_path)
+			final_level_path = res_path
+		else:
+			printerr("LevelLoader 错误: 在 user://levels/ 和 res://levels/data/ 中都未找到关卡文件: ", level_filename)
+			return {}
+			
+	# 2. 加载和解析JSON文件
+	var level_data = _parse_json(final_level_path)
 	if level_data.is_empty():
 		return {}
 	
-	# 2. 加载和配置场景中的节点 (Pipes, Spawners)
+	# 3. 加载和配置场景中的节点 (Pipes, Spawners)
 	_load_pipes(level_data.get("pipes", []), scene_root)
 	_load_spawners(level_data.get("spawners", []), scene_root)
 
-	# 3. 加载和配置 WaveManager 的数据
+	# 4. 加载和配置 WaveManager 的数据
 	var waves = _load_waves(level_data.get("waves", []))
 	var initial_delay = level_data.get("initial_delay", 5.0)
 	
@@ -36,7 +68,7 @@ func load_level_from_json(level_path: String, scene_root: Node2D) -> Dictionary:
 	else:
 		printerr("LevelLoader 错误: 场景中未找到 WaveManager 节点！")
 
-	# 4. 返回关卡数据字典，由 MainController 负责配置 GameManager
+	# 5. 返回关卡数据字典，由 MainController 负责配置 GameManager
 	return level_data
 
 func _parse_json(level_path: String) -> Dictionary:

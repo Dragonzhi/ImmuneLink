@@ -12,7 +12,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_abcde")
-level_names = Array[String](["Level 1", "Level 2", "Level 3", "Level 4", "Level ？"])
+level_names = Array[String](["Level 1", "Level 2", "Level 3", "Level 4", "Level DIY"])
 level_scene_paths = Array[String](["res://scenes/levels/level01/Level01.tscn", "res://scenes/levels/level02/Level02.tscn", "res://scenes/levels/level03/Level03.tscn", "res://scenes/levels/level04/Level04.tscn", "res://scenes/levels/load_level/Level_load.tscn"])
 
 [node name="ParticleBackground" parent="." instance=ExtResource("3_abcde")]
