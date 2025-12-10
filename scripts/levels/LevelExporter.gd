@@ -96,10 +96,24 @@ func _export_level_data():
 			"direction": direction_key
 		})
 		
-	# 3. 搜集波数信息
+	# 3. 搜集来自 WaveManager 的配置和波数信息
 	# 从场景根节点查找WaveManager
 	var wave_manager = scene_root.find_child("WaveManager", true, false)
 	if wave_manager:
+		# 抓取初始资源
+		if "starting_resources" in wave_manager:
+			level_data["starting_resources"] = wave_manager.starting_resources
+			print("从 WaveManager 成功读取 starting_resources: %s" % wave_manager.starting_resources)
+		else:
+			print("警告: 在 WaveManager 中未找到 'starting_resources' 属性，将使用默认值。")
+			
+		# 抓取游戏时间限制
+		if "game_time_limit" in wave_manager:
+			level_data["game_time_limit"] = wave_manager.game_time_limit
+			print("从 WaveManager 成功读取 game_time_limit: %s" % wave_manager.game_time_limit)
+		else:
+			print("警告: 在 WaveManager 中未找到 'game_time_limit' 属性，将使用默认值。")
+
 		# 抓取初始延迟 (initial_delay)
 		if "initial_delay" in wave_manager:
 			level_data["initial_delay"] = wave_manager.initial_delay

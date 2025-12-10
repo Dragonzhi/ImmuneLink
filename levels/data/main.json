@@ -1,5 +1,6 @@
 {
-	"initial_delay": 3.0,
+	"game_time_limit": 360.0,
+	"initial_delay": 5.0,
 	"level_name": "Main",
 	"pipes": [
 		{
@@ -119,7 +120,7 @@
 			]
 		}
 	],
-	"starting_resources": 270,
+	"starting_resources": 250,
 	"waves": [
 		{
 			"default_enemy_count": 5,

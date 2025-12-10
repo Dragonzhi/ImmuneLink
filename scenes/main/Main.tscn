@@ -168,10 +168,9 @@ pipe_type = 1
 
 [node name="EnemySpawns" type="Node2D" parent="BackGround"]
 
-[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" node_paths=PackedStringArray("_paths") groups=["spawners"] instance=ExtResource("4_1rhdn")]
+[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" groups=["spawners"] instance=ExtResource("4_1rhdn")]
 position = Vector2(200, 48)
 delete_enemy_at_path_end = false
-_paths = [NodePath("Path02"), NodePath("Path01"), NodePath("Path03")]
 
 [node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
 curve = SubResource("Curve2D_tck0d")
