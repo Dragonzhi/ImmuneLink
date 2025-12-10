@@ -6,4 +6,7 @@
 load_from_json = true
 level_json_path = "res://levels/data/main.json"
 
+[node name="WaveManager" parent="." index="2"]
+initial_delay = 3.0
+
 [editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

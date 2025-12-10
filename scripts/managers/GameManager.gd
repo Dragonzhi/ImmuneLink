@@ -6,9 +6,6 @@ signal time_remaining_changed(new_time: float)
 signal nk_samples_changed(new_count: int) # 新增：NK样本数量变化信号
 signal upgrade_menu_opened(bridge: Bridge) # 新增：当升级菜单打开时发出信号
 
-var _pending_level_config: LevelConfig = null # 存储下个关卡要使用的配置
-var _current_active_level_config: LevelConfig = null
-
 var wave_manager : WaveManager
 
 var _repair_value: float = 0.0:
@@ -33,26 +30,49 @@ var _time_remaining: float = 0.0:
 		emit_signal("time_remaining_changed", _time_remaining)
 
 var _is_game_over: bool = false
+var _current_level_duration: float = 0.0 # 新增：用于存储关卡总时长以计算得分
 
 @onready var game_timer: Timer = $GameTimer
 
 func _ready() -> void:
-	# 连接自身信号
-	get_tree().scene_changed.connect(_on_scene_changed)
+	# 不再需要连接 scene_changed，将由 MainController 主动调用 setup_level
+	# get_tree().scene_changed.connect(_on_scene_changed)
 	game_timer.timeout.connect(_on_game_timer_timeout)
 	
 	# DebugManager 注册
 	DebugManager.register_category("GameManager", false) # Enable GameManager debug output
 
-	# 初始化
-	_on_scene_changed()
-
 # --- Public Methods ---
 
-## 设置下一个关卡要使用的配置
-func set_next_level_config(config: LevelConfig):
-	_pending_level_config = config
-	DebugManager.dprint("GameManager", "已设置下一个关卡配置: %s" % config.level_name)
+## (新) 设置关卡的唯一入口
+func setup_level(config: Dictionary):
+	DebugManager.dprint("GameManager", "正在通过 setup_level 方法初始化新关卡。")
+
+	# 1. 重置状态
+	self._resource_value = 0
+	self._nk_cell_samples = 0
+	self._repair_value = 0.0
+	self._current_base_health = 100.0
+	self._time_remaining = 0.0
+	self._is_game_over = false
+	self._current_level_duration = 0.0
+
+	if ConnectionManager:
+		ConnectionManager.reset()
+
+	# 2. 应用新配置 (使用 .get(key, default_value) 来确保安全)
+	add_resource_value(config.get("starting_resources", 250))
+	self._time_remaining = config.get("game_time_limit", 300.0)
+	self._current_level_duration = self._time_remaining # 存储关卡总时长用于计分
+
+	DebugManager.dprint("GameManager", "关卡设置完毕. 初始资源: %s, 游戏时间: %s" % [_resource_value, _time_remaining])
+
+	# 3. 启动游戏计时器
+	game_timer.wait_time = 1.0
+	game_timer.start()
+
+func set_time_remaining(time: float):
+	_time_remaining = time
 
 func add_repair_value(amount: float):
 	if _is_game_over: return
@@ -107,50 +127,8 @@ func is_game_over() -> bool:
 # --- Signal Handlers ---
 
 func _on_scene_changed():
-	if not is_instance_valid(get_tree().current_scene): return
-	
-	if _pending_level_config: # 使用 pending 配置
-		DebugManager.dprint("GameManager", "正在初始化新关卡: %s。" % _pending_level_config.level_name)
-
-		if ConnectionManager:
-			ConnectionManager.reset()
-		
-		# --- 初始化新关卡状态，从 LevelConfig 读取 ---
-		self._resource_value = _pending_level_config.starting_resources
-		self._nk_cell_samples = 0
-		self._repair_value = 0.0
-		self._current_base_health = 100.0 # 可改为从LevelConfig读取
-		self._time_remaining = _pending_level_config.level_duration
-		self._is_game_over = false
-		
-		game_timer.wait_time = 1.0
-		game_timer.start()
-
-		# --- 使用关卡配置的序列启动教程 ---
-		if not _pending_level_config.tutorial_sequence_path.is_empty():
-			var tutorial_seq_res = load(_pending_level_config.tutorial_sequence_path)
-			if tutorial_seq_res is TutorialSequence:
-				if TutorialManager:
-					# 获取 WaveManager 实例
-					var wave_manager_instance = get_node_or_null("/root/Main/WaveManager")
-					if wave_manager_instance:
-						TutorialManager.start_tutorial_with_sequence(tutorial_seq_res, wave_manager_instance)
-					else:
-						printerr("GameManager: 无法找到 WaveManager 节点，无法启动教程！")
-				else:
-					printerr("GameManager: TutorialManager Autoload未找到！")
-			else:
-				printerr("GameManager: 加载教程序列失败，路径无效或资源类型不匹配: %s" % _pending_level_config.tutorial_sequence_path)
-		else:
-			DebugManager.dprint("GameManager", "当前关卡没有配置教程序列。")
-		# ----------------------------------------------------
-		_current_active_level_config = _pending_level_config
-		_pending_level_config = null # 使用后重置，避免影响后续关卡加载
-
-	else: # 如果没有 pending 配置，则视为非关卡场景或默认情况
-		DebugManager.dprint("GameManager", "未设置待定关卡配置。非关卡场景或默认初始化。")
-		_current_active_level_config = null 
-		game_timer.stop()
+	# 此函数现在不再需要执行任何操作，因为关卡设置已移至 setup_level 方法
+	pass
 
 func _on_game_timer_timeout():
 	if _is_game_over: return
@@ -205,7 +183,7 @@ func _on_game_over_timer_timeout(is_victory: bool, timer: Timer):
 	# 准备要传递的数据
 	@warning_ignore("narrowing_conversion")
 	var final_score:int = _resource_value + _repair_value # 简单计算一个分数
-	var time_spent = _current_active_level_config.level_duration - _time_remaining
+	var time_spent = _current_level_duration - _time_remaining
 	@warning_ignore("integer_division")
 	var minutes:int = int(time_spent) / 60
 	var seconds:int = int(time_spent) % 60

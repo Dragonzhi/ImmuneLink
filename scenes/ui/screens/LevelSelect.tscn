@@ -1,13 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://c5s4gqj4d6yhj"]
+[gd_scene load_steps=4 format=3 uid="uid://c5s4gqj4d6yhj"]
 
 [ext_resource type="Script" uid="uid://brxgptvoi02pn" path="res://scripts/ui/screens/LevelSelect.gd" id="1_abcde"]
 [ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="2_abcde"]
-[ext_resource type="Script" uid="uid://c0vpaw3fd5v5u" path="res://scripts/resources/LevelConfig.gd" id="2_rinls"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="3_abcde"]
-[ext_resource type="Resource" uid="uid://d0ggmctqs1xg2" path="res://scenes/levels/level01/Level1Config.tres" id="3_neygj"]
-[ext_resource type="Resource" uid="uid://b7vg4k7l2xg04" path="res://scenes/levels/level02/Level2Config.tres" id="4_cb0x2"]
-[ext_resource type="Resource" uid="uid://bdqhv2jof62nt" path="res://scenes/levels/level03/Level3Config.tres" id="5_vf0oa"]
-[ext_resource type="Resource" uid="uid://bxyox8khullxy" path="res://scenes/levels/level04/Level4Config.tres" id="6_2gjr1"]
 
 [node name="LevelSelect" type="Control"]
 layout_mode = 3
@@ -17,8 +12,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_abcde")
-level_configs = Array[ExtResource("2_rinls")]([ExtResource("3_neygj"), ExtResource("4_cb0x2"), ExtResource("5_vf0oa"), ExtResource("6_2gjr1")])
-level_scene_paths = Array[String](["res://scenes/levels/level01/Level01.tscn", "res://scenes/levels/level02/Level02.tscn", "res://scenes/levels/level03/Level03.tscn", "res://scenes/levels/level04/Level04.tscn"])
+level_names = Array[String](["Level 1", "Level 2", "Level 3", "Level 4", "Level ？"])
+level_scene_paths = Array[String](["res://scenes/levels/level01/Level01.tscn", "res://scenes/levels/level02/Level02.tscn", "res://scenes/levels/level03/Level03.tscn", "res://scenes/levels/level04/Level04.tscn", "res://scenes/levels/load_level/Level_load.tscn"])
 
 [node name="ParticleBackground" parent="." instance=ExtResource("3_abcde")]
 

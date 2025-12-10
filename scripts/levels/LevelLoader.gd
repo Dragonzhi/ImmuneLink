@@ -8,37 +8,36 @@ const PIPE_SCENE = preload("res://scenes/pipes/Pipe.tscn")
 const WAVE_CLASS = preload("res://scripts/managers/Wave.gd")
 const ENEMY_SPAWN_INFO_CLASS = preload("res://scripts/others/EnemySpawnInfo.gd")
 
-func load_level_into_scene(level_path: String, scene_root: Node2D) -> bool:
+# 修改后：成功时返回关卡数据字典，失败时返回空字典
+func load_level_from_json(level_path: String, scene_root: Node2D) -> Dictionary:
 	# 1. 加载和解析JSON文件
 	var level_data = _parse_json(level_path)
 	if level_data.is_empty():
-		return false
+		return {}
 	
-	# 2. 加载和配置 Pipes
+	# 2. 加载和配置场景中的节点 (Pipes, Spawners)
 	_load_pipes(level_data.get("pipes", []), scene_root)
-	
-	# 3. 加载和配置 Spawners
 	_load_spawners(level_data.get("spawners", []), scene_root)
 
-	# 4. 加载和配置 Waves 和 GameManager
+	# 3. 加载和配置 WaveManager 的数据
 	var waves = _load_waves(level_data.get("waves", []))
-	var starting_resources = level_data.get("starting_resources", 250)
+	var initial_delay = level_data.get("initial_delay", 5.0)
 	
 	var wave_manager = scene_root.find_child("WaveManager", true, false)
 	if wave_manager:
 		wave_manager.waves = waves
+		wave_manager.initial_delay = initial_delay
 		# Spawners可能已更新, 重新获取
 		var spawners_in_scene: Array[Node] = []
 		for node in scene_root.get_tree().get_nodes_in_group("spawners"):
 			if scene_root.is_ancestor_of(node):
 				spawners_in_scene.append(node)
 		wave_manager.spawners = spawners_in_scene
-	
-	var game_manager = scene_root.find_child("GameManager", true, false)
-	if game_manager and game_manager.has_method("set_resources"):
-		game_manager.set_resources(starting_resources)
+	else:
+		printerr("LevelLoader 错误: 场景中未找到 WaveManager 节点！")
 
-	return true
+	# 4. 返回关卡数据字典，由 MainController 负责配置 GameManager
+	return level_data
 
 func _parse_json(level_path: String) -> Dictionary:
 	var file = FileAccess.open(level_path, FileAccess.READ)
@@ -183,6 +182,13 @@ func _configure_spawner(spawner_node: Node, spawner_info: Dictionary):
 				curve.add_point(local_point)
 			path2d.curve = curve
 			spawner_node.add_child(path2d)
+
+	# 通知 spawner 节点从其子节点更新其内部路径列表
+	if spawner_node.has_method("update_paths_from_children"):
+		# 使用 call_deferred 确保在节点完全准备好后执行，避免潜在的时序问题
+		spawner_node.call_deferred("update_paths_from_children")
+	else:
+		printerr("LevelLoader 警告: 节点 %s 上没有找到 update_paths_from_children 方法。" % spawner_node.name)
 
 func _load_waves(waves_data: Array) -> Array[WAVE_CLASS]:
 	var loaded_waves: Array[WAVE_CLASS] = []

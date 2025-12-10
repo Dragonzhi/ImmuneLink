@@ -4,10 +4,10 @@ extends Node
 ## Level Exporter Tool
 ##
 ## 使用方法:
-## 1. 将此脚本附加到关卡场景的根节点上。
+## 1. 将此脚本附加到关卡场景中任意一个节点上 (推荐创建一个专门的 LevelExporter 节点)。
 ## 2. 确保所有 'EnemySpawnPoint' 节点都被添加到了 "spawners" 组中。
 ## 3. 确保所有预设的 'Pipe' 节点都被添加到了 "pipes" 组中。
-## 4. 在编辑器中选中关卡根节点，然后在检查器(Inspector)中设置 'Export Path'，
+## 4. 在编辑器中选中挂载此脚本的节点，然后在检查器(Inspector)中设置 'Export Path'，
 ##    例如："res://levels/data/level_01.json"。
 ## 5. 勾选 'Export Now' 复选框，脚本将自动执行导出并将该复选框重置为false。
 ##
@@ -28,16 +28,19 @@ func _reset_export_flag():
 
 
 func _export_level_data():
-	if not get_tree():
-		print("无法在没有场景树的情况下导出。\n")
+	if not get_tree() or not get_owner():
+		print("错误: 无法在没有场景树或所有者(owner)的情况下导出。请确保此节点是某个场景的一部分。")
 		return
-		
-	print("开始导出关卡数据...")
+
+	var scene_root = get_owner()
+	print("开始从场景根节点 '%s' 导出关卡数据..." % scene_root.name)
 	
 	# 1. 定义数据结构
 	var level_data = {
-		"level_name": get_name(), # 使用场景文件名作为默认关卡名
+		"level_name": scene_root.name, # 使用场景根节点名作为默认关卡名
 		"starting_resources": 250, # 默认初始资源，可以手动修改JSON文件
+		"initial_delay": 5.0,      # 默认的战前准备时间
+		"game_time_limit": 300.0,  # 默认的游戏时间限制 (5分钟)
 		"spawners": [],
 		"pipes": [], # 新增：用于存放预设管道
 		"waves": []
@@ -94,9 +97,16 @@ func _export_level_data():
 		})
 		
 	# 3. 搜集波数信息
-	# 假设WaveManager是关卡场景的子节点
-	var wave_manager = find_child("WaveManager", true, false)
+	# 从场景根节点查找WaveManager
+	var wave_manager = scene_root.find_child("WaveManager", true, false)
 	if wave_manager:
+		# 抓取初始延迟 (initial_delay)
+		if "initial_delay" in wave_manager:
+			level_data["initial_delay"] = wave_manager.initial_delay
+			print("从 WaveManager 成功读取 initial_delay: %s" % wave_manager.initial_delay)
+		else:
+			print("警告: 在 WaveManager 中未找到 'initial_delay' 属性，将使用默认值。")
+
 		# 在 @tool 模式下，我们必须直接访问导出变量，而不是调用任何函数（包括 'get' 或 'has'）。
 		var waves_array = wave_manager.waves
 		if waves_array and not waves_array.is_empty():

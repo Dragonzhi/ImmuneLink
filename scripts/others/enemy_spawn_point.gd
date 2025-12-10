@@ -14,7 +14,7 @@ var grid_manager: GridManager
 @onready var path_visualizer: Line2D = $PathVisualizer
 
 var tween: Tween
-@export var _paths: Array[Path2D]
+var _paths: Array[Path2D]
 var current_path_index: int = 0
 
 # --- Wave Control Variables ---
@@ -23,17 +23,33 @@ var _enemies_spawned_this_wave: int = 0
 
 func _ready() -> void:
 	DebugManager.register_category("EnemySpawnPoint", false)
-	if _paths.is_empty():
-		printerr("敌人生成点错误: 未找到任何Path2D子节点！")
-		set_process_mode(Node.PROCESS_MODE_DISABLED)
-		return
-	
-	current_path_index = clamp(current_path_index, 0, _paths.size() - 1)
-	
-	_update_path_visualizer()
+	# 使用 call_deferred 确保此方法在 LevelLoader 可能已经添加完子路径后执行。
+	call_deferred("update_paths_from_children")
+
 	path_visualizer.visible = false
 	path_visualizer.modulate.a = 0.0
 	call_deferred("_register_occupied_cells")
+
+## (新) 公共方法，用于从子节点刷新内部的路径列表。
+## LevelLoader 在动态添加 Path2D 子节点后也应调用此方法以确保路径被识别。
+func update_paths_from_children():
+	_paths.clear()
+	for child in get_children():
+		if child is Path2D:
+			_paths.append(child)
+	
+	if _paths.is_empty():
+		printerr("敌人生成点 '%s' 错误: 在子节点中未找到任何 Path2D！" % self.name)
+		set_process_mode(Node.PROCESS_MODE_DISABLED)
+		return
+	
+	# 对路径按名称排序，确保多路径时顺序一致
+	_paths.sort_custom(func(a, b): return a.name < b.name)
+	
+	current_path_index = clamp(current_path_index, 0, _paths.size() - 1)
+	_update_path_visualizer()
+	DebugManager.dprint("EnemySpawnPoint", "生成器 %s: 已从子节点更新路径列表，共找到 %d 条路径。" % [self.name, _paths.size()])
+
 
 # --- Public Methods for WaveManager Control ---
 

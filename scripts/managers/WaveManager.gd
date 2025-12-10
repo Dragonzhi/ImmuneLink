@@ -5,6 +5,11 @@ signal wave_started(wave_number: int)
 signal wave_finished(wave_number: int)
 signal all_waves_completed
 
+@export_group("Level Configuration")
+@export var starting_resources: int = 250
+@export var game_time_limit: float = 300.0 # 单位：秒
+
+@export_group("Wave Behavior")
 @export var waves: Array[Wave]
 @export var spawners: Array[Node]
 @export var loop_waves: bool = false
