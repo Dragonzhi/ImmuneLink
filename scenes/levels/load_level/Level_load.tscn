@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://c24nahsbcyk7d"]
+
+[ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_6icuu"]
+
+[node name="Main" instance=ExtResource("1_6icuu")]
+load_from_json = true
+level_json_path = "res://levels/data/level04.json"
+
+[node name="WaveManager" parent="." index="2"]
+initial_delay = 3.0
+
+[editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

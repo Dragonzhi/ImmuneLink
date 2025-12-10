@@ -16,7 +16,8 @@ point_count = 6
 
 [node name="Main" instance=ExtResource("1_qwkhf")]
 
-[node name="WaveManager" parent="." index="0"]
+[node name="WaveManager" parent="." index="2"]
+starting_resources = 300
 waves = Array[ExtResource("2_tnha3")]([ExtResource("3_hu4y5"), ExtResource("4_es6ef"), ExtResource("5_4u8lj"), ExtResource("6_jvkam"), ExtResource("7_snb68")])
 
 [node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]

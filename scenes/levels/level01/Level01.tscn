@@ -26,7 +26,8 @@ point_count = 4
 
 [node name="Main" instance=ExtResource("1_yqdcf")]
 
-[node name="WaveManager" parent="." index="0"]
+[node name="WaveManager" parent="." index="2"]
+starting_resources = 145
 waves = Array[ExtResource("2_uialj")]([ExtResource("3_u6ccs"), ExtResource("4_163aq"), ExtResource("5_u6ccs")])
 auto_start_on_ready = false
 
@@ -38,10 +39,6 @@ position = Vector2(88, 216)
 
 [node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
 position = Vector2(4, 120)
-direction = Vector2i(0, -1)
-
-[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" index="0" node_paths=PackedStringArray("_paths")]
-_paths = [NodePath("Path01"), NodePath("Path02"), NodePath("Path03")]
 
 [node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
 curve = SubResource("Curve2D_i2pqh")

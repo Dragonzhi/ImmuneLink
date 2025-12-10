@@ -21,7 +21,7 @@ func _ready() -> void:
 		#_wave_manager.auto_start_on_ready = false
 
 	# DebugManager 注册
-	DebugManager.register_category("TutorialManager", true) # Set to true to enable debug output
+	DebugManager.register_category("TutorialManager", false) # Set to true to enable debug output
 
 	# 等待场景过渡结束后。现在start_tutorial_with_sequence由GameManager调用
 	_wait_and_start_tutorial()

@@ -43,9 +43,15 @@ window/stretch/mode="canvas_items"
 folder_colors={
 "res://assets/": "orange",
 "res://dialogues/": "gray",
+"res://levels/": "purple",
 "res://scenes/": "blue",
 "res://scripts/": "teal"
 }
+
+[global_group]
+
+spawners=""
+pipes=""
 
 [gui]
 

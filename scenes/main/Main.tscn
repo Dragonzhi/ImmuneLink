@@ -1,7 +1,9 @@
-[gd_scene load_steps=24 format=3 uid="uid://0nk3tfn6rk4s"]
+[gd_scene load_steps=27 format=3 uid="uid://0nk3tfn6rk4s"]
 
 [ext_resource type="PackedScene" uid="uid://bwc7siyf2lmfb" path="res://scenes/pipes/Pipe.tscn" id="1_nha0i"]
 [ext_resource type="Script" path="res://scripts/managers/WaveManager.gd" id="1_rikml"]
+[ext_resource type="Script" uid="uid://dahe52pnq8e6u" path="res://scenes/main/MainController.gd" id="1_tck0d"]
+[ext_resource type="Script" uid="uid://bnow6hwjshjdk" path="res://scripts/levels/LevelExporter.gd" id="2_hjnkw"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="2_vc03v"]
 [ext_resource type="Resource" uid="uid://bktbxy4finrku" path="res://scenes/levels/level01/waves/wave_01.tres" id="3_grv7h"]
 [ext_resource type="PackedScene" uid="uid://c0glq8w37tx27" path="res://scenes/main/ParticleBackground.tscn" id="3_u1xfj"]
@@ -14,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://dpsk4yq8w7h6g" path="res://scenes/ui/GameUI.tscn" id="9_gameui"]
 [ext_resource type="Theme" uid="uid://dshck318jhgki" path="res://scenes/ui/Theme/MainUITheme.tres" id="10_theme"]
 [ext_resource type="Shader" uid="uid://cul7dygdsicnj" path="res://assets/shader/pixelate.gdshader" id="15_tck0d"]
+[ext_resource type="Script" uid="uid://j5rup82g2mki" path="res://scripts/levels/LevelLoader.gd" id="16_loader"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u8lgh"]
 size = Vector2(404, 236)
@@ -106,6 +109,14 @@ _data = {
 }
 
 [node name="Main" type="Node2D"]
+script = ExtResource("1_tck0d")
+
+[node name="LevelExproter" type="Node" parent="."]
+script = ExtResource("2_hjnkw")
+export_path = "res://levels/data/main.json"
+
+[node name="LevelLoader" type="Node" parent="."]
+script = ExtResource("16_loader")
 
 [node name="WaveManager" type="Node" parent="." node_paths=PackedStringArray("spawners")]
 script = ExtResource("1_rikml")
@@ -134,34 +145,32 @@ self_modulate = Color(1, 1, 1, 0.29411766)
 
 [node name="Red" type="Node2D" parent="BackGround/Pipes"]
 
-[node name="redPipe1" parent="BackGround/Pipes/Red" instance=ExtResource("1_nha0i")]
+[node name="redPipe1" parent="BackGround/Pipes/Red" groups=["pipes"] instance=ExtResource("1_nha0i")]
 position = Vector2(280, 218)
-direction = Vector2i(0, 1)
+direction_enum = 3
 
-[node name="redPipe2" parent="BackGround/Pipes/Red" instance=ExtResource("1_nha0i")]
+[node name="redPipe2" parent="BackGround/Pipes/Red" groups=["pipes"] instance=ExtResource("1_nha0i")]
 position = Vector2(264, 5)
 rotation = -3.14159
-direction = Vector2i(0, -1)
+direction_enum = 1
 
 [node name="Blue" type="Node2D" parent="BackGround/Pipes"]
 
-[node name="bluePipe1" parent="BackGround/Pipes/Blue" instance=ExtResource("1_nha0i")]
+[node name="bluePipe1" parent="BackGround/Pipes/Blue" groups=["pipes"] instance=ExtResource("1_nha0i")]
 position = Vector2(88, 203)
 pipe_type = 1
-direction = Vector2i(0, 1)
+direction_enum = 3
 
-[node name="bluePipe2" parent="BackGround/Pipes/Blue" instance=ExtResource("1_nha0i")]
+[node name="bluePipe2" parent="BackGround/Pipes/Blue" groups=["pipes"] instance=ExtResource("1_nha0i")]
 position = Vector2(4, 56)
 rotation = 1.5708
 pipe_type = 1
-direction = Vector2i(-1, 0)
 
 [node name="EnemySpawns" type="Node2D" parent="BackGround"]
 
-[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" node_paths=PackedStringArray("_paths") instance=ExtResource("4_1rhdn")]
+[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" groups=["spawners"] instance=ExtResource("4_1rhdn")]
 position = Vector2(200, 48)
 delete_enemy_at_path_end = false
-_paths = [NodePath("Path02"), NodePath("Path01"), NodePath("Path03")]
 
 [node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
 curve = SubResource("Curve2D_tck0d")

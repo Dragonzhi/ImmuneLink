@@ -1,0 +1,313 @@
+{
+	"_comment":{
+		"画布大小":"[383,216],即画布的宽度和高度，单位像素(一般设置坐标时不超过这个大小，但超过了只是在画布外而已)",
+		"game_time_limit":"关卡限制时间，单位秒",
+		"initial_delay":"游戏开始前的延迟时间，单位秒",
+		"level_name":"关卡名称(一般不修改)",
+		"pipes":"管道列表",
+		"pipes[].direction":"管道的开口方向",
+		"pipes[].name":"管道的名称",
+		"pipes[].position":"管道的位置",
+		"pipes[].type":"管道的类型:LIFE(生命管道) SUPPLY(补给管道)",
+		"spawners":"敌人生成器列表",
+		"spawners.paths":"敌人生成器的路径列表，可以有多条路径",
+		"spawners.paths[].path":"敌人的路径，其为一个坐标列表",
+		"spawners.position":"敌人生成器的位置",
+		"starting_resources":"初始资源数量",
+		"waves":"敌人波次列表",
+		"waves[].enemies":"波次中的敌人列表",
+		"waves[].enemies[].type":"敌人的类型",
+		"waves[].enemies[].weight":"敌人的权重，权重越高被选中的概率越大",
+		"waves[].default_enemy_count":"波次中总共的敌人数量",
+		"waves[].default_spawn_interval":"波次中敌人的生成间隔，单位秒",
+		"waves[].post_wave_delay":"波次结束后的下一波的延迟时间，单位秒"
+	},
+	"game_time_limit": 300.0,
+	"initial_delay": 5.0,
+	"level_name": "Main",
+	"pipes": [
+		{
+			"direction": "UP",
+			"name": "redPipe1",
+			"position": [
+				200.0,
+				218.0
+			],
+			"type": "LIFE"
+		},
+		{
+			"direction": "DOWN",
+			"name": "redPipe2",
+			"position": [
+				40.0,
+				8.0
+			],
+			"type": "LIFE"
+		},
+		{
+			"direction": "UP",
+			"name": "bluePipe1",
+			"position": [
+				88.0,
+				203.0
+			],
+			"type": "SUPPLY"
+		},
+		{
+			"direction": "RIGHT",
+			"name": "bluePipe2",
+			"position": [
+				4.0,
+				56.0
+			],
+			"type": "SUPPLY"
+		},
+		{
+			"direction": "UP",
+			"name": "bluePipe3",
+			"position": [
+				296.0,
+				203.0
+			],
+			"type": "SUPPLY"
+		},
+		{
+			"direction": "DOWN",
+			"name": "bluePipe4",
+			"position": [
+				264.0,
+				8.0
+			],
+			"type": "SUPPLY"
+		}
+	],
+	"spawners": [
+		{
+			"paths": [
+				[
+					[
+						200.0,
+						48.0
+					],
+					[
+						67.0,
+						0.0
+					],
+					[
+						13.0,
+						76.0
+					],
+					[
+						8.0,
+						176.0
+					],
+					[
+						82.0,
+						108.0
+					],
+					[
+						200.0,
+						176.0
+					],
+					[
+						324.0,
+						154.0
+					],
+					[
+						218.0,
+						107.0
+					],
+					[
+						360.0,
+						18.0
+					],
+					[
+						200.0,
+						48.0
+					]
+				],
+				[
+					[
+						200.0,
+						48.0
+					],
+					[
+						151.861877441406,
+						18.0
+					],
+					[
+						65.8480682373047,
+						25.0
+					],
+					[
+						49.0,
+						139.0
+					],
+					[
+						113.732048034668,
+						98.0
+					],
+					[
+						264.0,
+						178.0
+					],
+					[
+						55.2071838378906,
+						32.0
+					],
+					[
+						80.0359191894531,
+						180.0
+					],
+					[
+						121.712715148926,
+						44.0
+					],
+					[
+						260.044189453125,
+						77.0
+					],
+					[
+						370.0,
+						124.0
+					],
+					[
+						288.419891357422,
+						65.0
+					],
+					[
+						360.0,
+						12.0
+					],
+					[
+						200.0,
+						48.0
+					]
+				],
+				[
+					[
+						135.3115234375,
+						48.0
+					],
+					[
+						155.323059082031,
+						192.0
+					],
+					[
+						206.515380859375,
+						68.0
+					],
+					[
+						131.123077392578,
+						10.0
+					],
+					[
+						47.3538360595703,
+						110.0
+					],
+					[
+						106.457679748535,
+						173.0
+					],
+					[
+						199.534606933594,
+						152.0
+					],
+					[
+						135.3115234375,
+						48.0
+					]
+				]
+			],
+			"position": [
+				200.0,
+				48.0
+			]
+		}
+	],
+	"starting_resources": 300,
+	"waves": [
+		{
+			"default_enemy_count": 20,
+			"default_spawn_interval": 1.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 5.0
+		},
+		{
+			"default_enemy_count": 25,
+			"default_spawn_interval": 1.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 10.0
+		},
+		{
+			"default_enemy_count": 25,
+			"default_spawn_interval": 1.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 8
+				},
+				{
+					"type": "CD4TEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 10.0
+		},
+		{
+			"default_enemy_count": 30,
+			"default_spawn_interval": 1.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 15.0
+		},
+		{
+			"default_enemy_count": 30,
+			"default_spawn_interval": 1.0,
+			"enemies": [
+				{
+					"type": "VirusEnemy",
+					"weight": 5
+				},
+				{
+					"type": "CD4TEnemy",
+					"weight": 1
+				},
+				{
+					"type": "DCEnemy",
+					"weight": 1
+				}
+			],
+			"post_wave_delay": 5.0
+		},
+		{
+			"default_enemy_count": 200,
+			"default_spawn_interval": 0.5,
+			"enemies": [
+				{
+					"type": "CD4TEnemy",
+					"weight": 1
+				},
+				{
+					"type": "VirusEnemy",
+					"weight": 2
+				}
+			],
+			"post_wave_delay": 15.0
+		}
+	]
+}

@@ -5,6 +5,11 @@ signal wave_started(wave_number: int)
 signal wave_finished(wave_number: int)
 signal all_waves_completed
 
+@export_group("Level Configuration")
+@export var starting_resources: int = 250
+@export var game_time_limit: float = 300.0 # 单位：秒
+
+@export_group("Wave Behavior")
 @export var waves: Array[Wave]
 @export var spawners: Array[Node]
 @export var loop_waves: bool = false
@@ -27,12 +32,12 @@ func _ready() -> void:
 		_wave_timer.timeout.disconnect(_start_next_wave)
 	_wave_timer.timeout.connect(_start_next_wave)
 	
-	_initialize_system()
+	initialize_system()
 	
 	if auto_start_on_ready:
 		start_spawning()
 
-func _initialize_system():
+func initialize_system():
 	# Connect to other nodes that need to react to waves
 	_connect_to_listeners()
 
@@ -56,7 +61,38 @@ func _connect_to_listeners():
 	else:
 		DebugManager.dprint("WaveManager", "WaveManager 未找到 ParticleBackground，或其缺少 '_on_wave_started' 方法。")
 
-# --- Public Control API ---
+# --- 公共控制API ---
+
+## 为 LevelExporter 提供波次数据
+## 导出每个波次的默认敌人生成信息。
+## 为了JSON的简洁性，暂时不包含特定生成器的覆盖信息(spawner_overrides)。
+func get_waves_data_for_export() -> Array:
+	var exported_waves = []
+	for wave_resource in waves: # 假设 'waves' 是 Array[Wave]
+		var wave_data = {
+			"enemies": [],
+			"default_enemy_count": wave_resource.default_enemy_count,
+			"default_spawn_interval": wave_resource.default_spawn_interval,
+			"post_wave_delay": wave_resource.post_wave_delay
+		}
+		
+		# 处理默认的敌人生成信息
+		for enemy_spawn_info in wave_resource.default_spawn_infos: # 假设是 Array[EnemySpawnInfo]
+			var enemy_type_name = "Unknown"
+			if enemy_spawn_info.enemy_scene:
+				# 从场景路径中提取敌人类型名称 (例如 "res://scenes/enemies/GermEnemy.tscn" -> "GermEnemy")
+				var path_parts = enemy_spawn_info.enemy_scene.resource_path.split("/")
+				if not path_parts.is_empty():
+					enemy_type_name = path_parts[path_parts.size() - 1].replace(".tscn", "")
+				
+			wave_data["enemies"].append({
+				"type": enemy_type_name,
+				"count": enemy_spawn_info.count,
+				"spawn_delay": enemy_spawn_info.spawn_delay
+			})
+		
+		exported_waves.append(wave_data)
+	return exported_waves
 
 ## 开始自动波次生成
 func start_spawning(delay: float = -1.0):

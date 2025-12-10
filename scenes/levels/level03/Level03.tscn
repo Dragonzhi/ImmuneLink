@@ -37,28 +37,24 @@ point_count = 8
 
 [node name="Main" instance=ExtResource("1_jlpby")]
 
-[node name="WaveManager" parent="." index="0"]
+[node name="WaveManager" parent="." index="2"]
+starting_resources = 300
 waves = Array[ExtResource("2_ckcjh")]([ExtResource("3_lq1al"), ExtResource("4_pcbvt"), ExtResource("5_lq1al"), ExtResource("6_pcbvt"), ExtResource("7_uogj4"), ExtResource("8_esco1")])
 
 [node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
 position = Vector2(88, 5)
 rotation = 3.1415927
-direction = Vector2i(0, -1)
+direction_enum = 1
 
-[node name="bluePipe3" parent="BackGround/Pipes/Blue" index="2" instance=ExtResource("2_sodd5")]
+[node name="bluePipe3" parent="BackGround/Pipes/Blue" index="2" groups=["pipes"] instance=ExtResource("2_sodd5")]
 position = Vector2(4, 168)
 rotation = 1.5707964
 pipe_type = 1
-direction = Vector2i(-1, 0)
 
-[node name="bluePipe4" parent="BackGround/Pipes/Blue" index="3" instance=ExtResource("2_sodd5")]
+[node name="bluePipe4" parent="BackGround/Pipes/Blue" index="3" groups=["pipes"] instance=ExtResource("2_sodd5")]
 position = Vector2(4, 88)
 rotation = 1.5707964
 pipe_type = 1
-direction = Vector2i(-1, 0)
-
-[node name="EnemySpawnPoint01" parent="BackGround/EnemySpawns" index="0" node_paths=PackedStringArray("_paths")]
-_paths = [NodePath("Path02"), NodePath("Path01"), NodePath("Path03"), NodePath("Path04")]
 
 [node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
 curve = SubResource("Curve2D_uogj4")
