@@ -44,13 +44,19 @@ func _ready() -> void:
 	_update_direction_from_enum() # 根据编辑器设置初始化方向向量
 	_update_color() # 设置初始颜色
 	
+	call_deferred("_deferred_initialization") # 延迟初始化和注册
+
+func _deferred_initialization():
 	# 获取单例引用
 	grid_manager = get_node("/root/GridManager")
 	bridge_builder = get_node("/root/Main/BridgeBuilder")
 	if not grid_manager:
-		printerr("错误: 找不到GridManager")
+		printerr("Pipe '%s' 错误: 找不到GridManager" % self.name)
+		return
 	if not bridge_builder:
-		printerr("错误: 找不到BridgeBuilder")
+		printerr("Pipe '%s' 错误: 找不到BridgeBuilder" % self.name)
+		return
+		
 	# 在GridManager中注册所有连接点的位置
 	if connection_points:
 		for point in connection_points.get_children():
