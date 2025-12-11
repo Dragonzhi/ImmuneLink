@@ -43,8 +43,15 @@ func update_paths_from_children():
 		set_process_mode(Node.PROCESS_MODE_DISABLED)
 		return
 	
-	# 对路径按名称排序，确保多路径时顺序一致
-	_paths.sort_custom(func(a, b): return a.name < b.name)
+	# 对路径按名称排序，确保多路径时顺序一致 (使用自然排序确保正确处理 Path1, Path10 等情况)
+	_paths.sort_custom(func(a, b): return String(a.name).naturalnocasecmp_to(String(b.name)) < 0)
+	
+	# -- 新增调试信息 --
+	var sorted_path_names = []
+	for p in _paths:
+		sorted_path_names.append(p.name)
+	DebugManager.dprint("EnemySpawnPoint", "生成器 %s: 路径按名称排序后的最终顺序: %s" % [self.name, sorted_path_names])
+	# --------------------
 	
 	current_path_index = clamp(current_path_index, 0, _paths.size() - 1)
 	_update_path_visualizer()

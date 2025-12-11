@@ -4,7 +4,7 @@
 		"game_time_limit":"关卡限制时间，单位秒",
 		"initial_delay":"游戏开始前的延迟时间，单位秒",
 		"level_name":"关卡名称(一般不修改)",
-		"pipes":"管道列表",
+		"pipes":"管道列表，尽量为双数",
 		"pipes[].direction":"管道的开口方向",
 		"pipes[].name":"管道的名称",
 		"pipes[].position":"管道的位置",
