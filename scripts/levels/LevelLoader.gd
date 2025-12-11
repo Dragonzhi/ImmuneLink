@@ -13,33 +13,30 @@ func load_level_from_json(level_filename: String, scene_root: Node2D) -> Diction
 	var final_level_path: String
 	
 	# 1. 智能查找关卡文件路径
-	var user_base_dir = "user://ImmuneLink/"
-	var user_levels_dir = user_base_dir.path_join("levels/")
-	var user_path = user_levels_dir.path_join(level_filename)
-
-	# 确保 user://ImmuneLink/levels/ 目录存在 (尤其是在第一次运行时)
-	var dir_access = DirAccess.open("user://")
-	if not dir_access.dir_exists("ImmuneLink"):
-		var err_create_base = dir_access.make_dir("ImmuneLink")
-		if err_create_base != OK:
-			printerr("LevelLoader 错误: 无法创建 user://ImmuneLink/ 目录！错误码: %s" % err_create_base)
-			return {}
-	if not dir_access.dir_exists("ImmuneLink/levels"):
-		var err_create_levels = dir_access.make_dir("ImmuneLink/levels")
+	# MOD路径为 exe同级目录/levels/
+	var mod_levels_dir = OS.get_executable_path().get_base_dir().path_join("levels")
+	var mod_path = mod_levels_dir.path_join(level_filename)
+	
+	# 确保 /levels/ 目录存在 (尤其是在第一次运行时)
+	# 注意：在编辑器中运行时，这个路径是项目根目录。导出后才是exe所在目录。
+	var exe_base_dir = OS.get_executable_path().get_base_dir()
+	var dir_access = DirAccess.open(exe_base_dir)
+	if not dir_access.dir_exists("levels"):
+		var err_create_levels = dir_access.make_dir("levels")
 		if err_create_levels != OK:
-			printerr("LevelLoader 错误: 无法创建 user://ImmuneLink/levels/ 目录！错误码: %s" % err_create_levels)
+			printerr("LevelLoader 错误: 无法在执行文件目录 '%s' 创建 'levels' 文件夹！错误码: %s" % [exe_base_dir, err_create_levels])
 			return {}
 
-	if FileAccess.file_exists(user_path):
-		print("LevelLoader: 发现用户自定义关卡，从 user:// 加载: ", user_path)
-		final_level_path = user_path
+	if FileAccess.file_exists(mod_path):
+		print("LevelLoader: 发现MOD关卡，从 /levels/ 文件夹加载: ", mod_path)
+		final_level_path = mod_path
 	else:
 		var res_path = "res://levels/data/".path_join(level_filename)
 		if FileAccess.file_exists(res_path):
 			print("LevelLoader: 加载内置关卡，从 res:// 加载: ", res_path)
 			final_level_path = res_path
 		else:
-			printerr("LevelLoader 错误: 在 user://levels/ 和 res://levels/data/ 中都未找到关卡文件: ", level_filename)
+			printerr("LevelLoader 错误: 在 'levels/' (执行文件目录) 和 'res://levels/data/' 中都未找到关卡文件: ", level_filename)
 			return {}
 			
 	# 2. 加载和解析JSON文件

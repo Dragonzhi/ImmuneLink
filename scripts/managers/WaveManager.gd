@@ -8,6 +8,8 @@ signal all_waves_completed
 @export_group("Level Configuration")
 @export var starting_resources: int = 250
 @export var game_time_limit: float = 300.0 # 单位：秒
+@export_file("*.tres") var tutorial_sequence_path: String = ""
+
 
 @export_group("Wave Behavior")
 @export var waves: Array[Wave]

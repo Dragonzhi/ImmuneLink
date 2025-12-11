@@ -28,6 +28,7 @@ point_count = 4
 
 [node name="WaveManager" parent="." index="2"]
 starting_resources = 145
+tutorial_sequence_path = "uid://qh7tmv6hw1hf"
 waves = Array[ExtResource("2_uialj")]([ExtResource("3_u6ccs"), ExtResource("4_163aq"), ExtResource("5_u6ccs")])
 auto_start_on_ready = false
 
@@ -38,7 +39,7 @@ position = Vector2(328, 218)
 position = Vector2(88, 216)
 
 [node name="bluePipe2" parent="BackGround/Pipes/Blue" index="1"]
-position = Vector2(4, 120)
+position = Vector2(4, 104)
 
 [node name="Path01" parent="BackGround/EnemySpawns/EnemySpawnPoint01" index="4"]
 curve = SubResource("Curve2D_i2pqh")

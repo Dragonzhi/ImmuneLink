@@ -30,6 +30,12 @@ func _ready():
 			printerr("MainController: 从JSON加载关卡失败: %s" % level_filename)
 			return
 		print("MainController: 成功从JSON加载场景节点。")
+		
+		# 将当前场景的 WaveManager 实例传递给 GameManager
+		if is_instance_valid(wave_manager):
+			GameManager.wave_manager = wave_manager
+		else:
+			printerr("MainController: JSON模式下未能获取到 WaveManager 实例！")
 
 	else:
 		# --- 预设模式 ---
@@ -38,6 +44,9 @@ func _ready():
 			printerr("MainController: 预设模式下未找到 WaveManager 节点！")
 			return
 		
+		# 将当前场景的 WaveManager 实例传递给 GameManager
+		GameManager.wave_manager = wave_manager
+
 		# 从WaveManager直接读取配置，构建配置字典
 		config_data = {
 			"starting_resources": wave_manager.starting_resources,

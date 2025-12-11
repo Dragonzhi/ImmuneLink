@@ -70,6 +70,23 @@ func setup_level(config: Dictionary):
 	# 3. 启动游戏计时器
 	game_timer.wait_time = 1.0
 	game_timer.start()
+	
+	# 4. 初始化教程系统（如果存在）
+	if is_instance_valid(wave_manager) and not wave_manager.tutorial_sequence_path.is_empty():
+		var tutorial_path = wave_manager.tutorial_sequence_path
+		if ResourceLoader.exists(tutorial_path):
+			var tutorial_sequence = load(tutorial_path)
+			if tutorial_sequence is TutorialSequence: # 确保加载的是正确的资源类型
+				# TutorialManager 是一个 Autoload (singleton)
+				if TutorialManager and TutorialManager.has_method("start_tutorial_with_sequence"):
+					TutorialManager.start_tutorial_with_sequence(tutorial_sequence, wave_manager)
+					DebugManager.dprint("GameManager", "已启动教程: %s" % tutorial_path)
+				else:
+					printerr("GameManager: 无法找到 TutorialManager 节点或其 start_tutorial_with_sequence 方法。")
+			else:
+				printerr("GameManager: 加载的教程资源不是 TutorialSequence 类型: %s" % tutorial_path)
+		else:
+			printerr("GameManager: 教程资源文件不存在: %s" % tutorial_path)
 
 func set_time_remaining(time: float):
 	_time_remaining = time
