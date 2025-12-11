@@ -1,0 +1,26 @@
+name: Deploy Game
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'  # 只有 docs 文件夹下的文件变动才触发
+      - '.github/workflows/deploy.yml'  # 工作流本身变动也触发
+
+jobs:
+  build-and-deploy:
+    if: github.event_name == 'push'  # 确保是 push 事件
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs  # 直接发布 docs 文件夹
+          keep_files: false    # 每次清空 gh-pages 内容
