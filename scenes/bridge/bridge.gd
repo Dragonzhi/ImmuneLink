@@ -39,6 +39,7 @@ var bridge_builder_instance:BridgeBuilder = null
 enum State { NORMAL, DESTROYED, EXPANSION_WAITING }
 var current_bridge_state: State = State.NORMAL
 var _pending_expansion_upgrade: Upgrade = null # 暂存待处理的扩展升级资源
+var _ignore_hover_events: bool = false # 用于临时禁用悬停效果的标志
 
 var current_health: float
 var grid_manager: GridManager
@@ -80,14 +81,18 @@ func enter_expansion_waiting_state(upgrade_res: Upgrade):
 	current_bridge_state = State.EXPANSION_WAITING
 	_pending_expansion_upgrade = upgrade_res
 	
+	# 总是将主桥梁精灵变为AQUA色，这是最清晰的视觉提示
+	animated_sprite.modulate = Color.AQUA
+	# 如果升级图标可见，也一并改变它的颜色
 	if up_level_sprite.visible:
 		up_level_sprite.modulate = Color.AQUA
-	else:
-		animated_sprite.modulate = Color.AQUA
 	
 	if _range_indicator.visible:
 		deselect()
 	GameManager.deselect_all_turrets()
+	
+	# 设置标志位以忽略鼠标悬停事件，避免颜色冲突
+	_ignore_hover_events = true
 	
 	DebugManager.dprint("Bridge", "桥梁 %s 进入扩展等待状态。" % grid_pos)
 
@@ -97,18 +102,35 @@ func cancel_expansion():
 	
 	current_bridge_state = State.NORMAL
 	
+	# --- 核心修复：重置当前升级状态 ---
+	current_upgrade = null
+	upgrade_level = 0
+	# --------------------------------
+	
 	# 返还资源
 	if _pending_expansion_upgrade:
 		GameManager.add_resource_value(_pending_expansion_upgrade.cost)
+		_decrement_upgrade_count(_pending_expansion_upgrade) # <- 核心修复：递减计数器
 		_pending_expansion_upgrade = null
+	
+	# 重置标志位，恢复鼠标悬停事件
+	_ignore_hover_events = false
 	
 	# 恢复视觉
 	if up_level_sprite.visible:
 		up_level_sprite.modulate = Color.WHITE
 	else:
-		animated_sprite.modulate = Color.WHITE
+		# 如果是次级桥梁，恢复到其特定的颜色，否则恢复到默认白色
+		if is_secondary:
+			animated_sprite.modulate = secondary_color
+		else:
+			animated_sprite.modulate = Color.WHITE
+	
+	# 恢复鼠标悬停检测，以便在正常状态下工作
+	$HurtArea2D.input_pickable = true
 	
 	DebugManager.dprint("Bridge", "桥梁 %s 取消了扩展等待状态。" % grid_pos)
+
 
 ## 在扩展连接成功后，完成并退出等待状态
 func complete_expansion():
@@ -116,6 +138,7 @@ func complete_expansion():
 	
 	current_bridge_state = State.NORMAL
 	_pending_expansion_upgrade = null
+	_ignore_hover_events = false # 确保完成时也重置标志
 	
 	# 恢复视觉
 	if up_level_sprite.visible:
@@ -237,6 +260,14 @@ func _update_upgrade_count(upgrade: Upgrade):
 	var current_count = _upgrade_counts.get(upgrade_path, 0)
 	_upgrade_counts[upgrade_path] = current_count + 1
 	DebugManager.dprint("Bridge", "升级 '%s' 的计数更新为 %d。" % [upgrade_path, _upgrade_counts[upgrade_path]])
+
+
+func _decrement_upgrade_count(upgrade: Upgrade):
+	if not upgrade: return
+	var upgrade_path = upgrade.resource_path
+	if _upgrade_counts.has(upgrade_path):
+		_upgrade_counts[upgrade_path] = max(0, _upgrade_counts[upgrade_path] - 1)
+		DebugManager.dprint("Bridge", "升级 '%s' 的计数已递减为 %d。" % [upgrade_path, _upgrade_counts[upgrade_path]])
 
 
 func _reset_to_base_stats():
@@ -575,6 +606,7 @@ func _on_hurt_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: 
 
 
 func _on_hurt_area_2d_mouse_entered() -> void:
+	if _ignore_hover_events: return
 	# 只有在常规状态下才显示鼠标悬停效果
 	if current_bridge_state == State.NORMAL:
 		if is_secondary:
@@ -584,6 +616,7 @@ func _on_hurt_area_2d_mouse_entered() -> void:
 
 
 func _on_hurt_area_2d_mouse_exited() -> void:
+	if _ignore_hover_events: return
 	# 只有在常规状态下才恢复鼠标悬停效果
 	if current_bridge_state == State.NORMAL:
 		if is_secondary:

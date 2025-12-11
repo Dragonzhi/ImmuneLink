@@ -14,6 +14,7 @@ var current_menu: BridgeUpgradeMenu = null # 明确类型为 BridgeUpgradeMenu
 var tween: Tween
 
 func _ready() -> void:
+	DebugManager.register_category("UIManager", false)
 	overlay = get_node(overlay_path)
 	ui_layer = get_node(ui_layer_path)
 	if not overlay:
@@ -134,7 +135,7 @@ func _on_upgrade_chosen(upgrade: Upgrade):
 		return
 		
 	var bridge = current_menu.selected_bridge
-	print("UIManager 收到升级选择: %s, 应用于桥梁: %s" % [upgrade.upgrade_name, bridge.grid_pos])
+	DebugManager.dprint("UIManager","UIManager 收到升级选择: %s, 应用于桥梁: %s" % [upgrade.upgrade_name, bridge.grid_pos])
 	
 	# 将升级请求转发给 GameManager
 	GameManager.request_upgrade(upgrade, bridge)
