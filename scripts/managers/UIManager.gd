@@ -66,11 +66,13 @@ func show_game_over_banner(message: String):
 	#ui_layer.add_child(center_container)
 
 func open_upgrade_menu(upgrades: Array[Upgrade], bridge: Bridge):
+	# 如果有动画正在播放（无论是打开还是关闭），都先终止
 	if tween and tween.is_running():
 		tween.kill()
 	
-	if current_menu: # 如果菜单已经打开，先关闭
-		close_upgrade_menu()
+	# 如果旧菜单已存在，立即销毁它，不播放淡出动画，避免竞态问题
+	if current_menu and is_instance_valid(current_menu):
+		current_menu.queue_free()
 
 	# Show overlay and create menu
 	overlay.visible = true
