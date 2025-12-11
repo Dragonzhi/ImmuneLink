@@ -4,7 +4,6 @@
 
 [node name="Main" instance=ExtResource("1_6icuu")]
 load_from_json = true
-level_json_path = "res://levels/data/level04.json"
 
 [node name="WaveManager" parent="." index="2"]
 initial_delay = 3.0
