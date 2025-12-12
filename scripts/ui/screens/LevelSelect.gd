@@ -30,6 +30,14 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back_button_pressed)
 	campaign_button.pressed.connect(_on_campaign_button_pressed)
 	custom_button.pressed.connect(_on_custom_button_pressed)
+	
+	# --- 针对非PC平台隐藏自定义模式按钮 ---
+	if not OS.has_feature("pc"):
+		custom_button.hide()
+		# 如果按钮被隐藏，断开其信号以防止不必要的处理
+		if custom_button.pressed.is_connected(_on_custom_button_pressed):
+			custom_button.pressed.disconnect(_on_custom_button_pressed)
+
 
 	# --- 设置初始状态 ---
 	mode_select_container.hide()
