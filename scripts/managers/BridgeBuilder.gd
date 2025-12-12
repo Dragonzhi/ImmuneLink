@@ -160,11 +160,13 @@ func _finish_building(end_node: Node, end_pos: Vector2i):
 		var validation_result = _validate_path_and_collect_items(validation_path)
 
 		if not validation_result.buildable or start_pipe.pipe_type != end_pipe.pipe_type:
+			ui_manager.request_feedback("路径阻挡，建造失败!")
 			_cancel_building()
 			return
 
 		var total_cost = path_to_build.size() * bridge_segment_cost
 		if not GameManager.spend_resource_value(total_cost):
+			ui_manager.request_feedback("资源不足 %d,无法建造!" % total_cost)
 			print("建造失败: 资源不足!")
 			_cancel_building()
 			return
@@ -194,6 +196,7 @@ func _finish_building(end_node: Node, end_pos: Vector2i):
 
 		var total_cost = path_to_build.size() * bridge_segment_cost
 		if not GameManager.spend_resource_value(total_cost):
+			ui_manager.request_feedback("资源不足 %d,无法建造!" % total_cost)
 			print("建造失败: 资源不足!")
 			_cancel_building()
 			return
