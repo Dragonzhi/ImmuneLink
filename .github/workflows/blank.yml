@@ -1,26 +1,74 @@
-name: Deploy Game
+name: Deploy Godot Game
 
 on:
   push:
     branches: [main]
     paths:
-      - 'docs/**'  # 只有 docs 文件夹下的文件变动才触发
-      - '.github/workflows/deploy.yml'  # 工作流本身变动也触发
+      - 'docs/**'
+
+# 必须添加权限
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
-    if: github.event_name == 'push'  # 确保是 push 事件
+  deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        
-      - name: Deploy to GitHub Pages
+          
+      - name: 验证 Godot 文件
+        run: |
+          echo "=== Godot 游戏文件检查 ==="
+          echo "当前目录: $(pwd)"
+          echo ""
+          echo "docs 文件夹内容:"
+          ls -la docs/
+          echo ""
+          echo "检查关键文件..."
+          REQUIRED_FILES=("index.html" "game.js" "game.wasm" "game.pck")
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ -f "docs/$file" ]; then
+              echo "✅ $file 存在"
+            else
+              echo "⚠️  $file 不存在 (可能文件名不同)"
+            fi
+          done
+          
+          # 查找实际的 wasm 和 pck 文件名
+          echo ""
+          echo "查找 wasm 文件:"
+          find docs/ -name "*.wasm" -type f
+          echo ""
+          echo "查找 pck 文件:"
+          find docs/ -name "*.pck" -type f
+      
+      - name: 创建 .nojekyll 文件（重要！）
+        run: |
+          # 这个文件告诉 GitHub Pages 不要使用 Jekyll 处理
+          touch docs/.nojekyll
+          echo "Created .nojekyll file"
+      
+      - name: 修复文件权限（如果需要）
+        run: |
+          # 确保文件可读
+          chmod -R a+r docs/
+      
+      - name: 部署到 GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs  # 直接发布 docs 文件夹
-          keep_files: false    # 每次清空 gh-pages 内容
+          publish_dir: ./docs
+          keep_files: false
+          force_orphan: true  # 清理旧文件
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: '🎮 Deploy Godot Game - $(date)'
