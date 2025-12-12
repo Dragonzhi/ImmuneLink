@@ -6,6 +6,8 @@ signal time_remaining_changed(new_time: float)
 signal nk_samples_changed(new_count: int) # 新增：NK样本数量变化信号
 signal upgrade_menu_opened(bridge: Bridge) # 新增：当升级菜单打开时发出信号
 
+var custom_level_json_path: String = "" # 新增：用于存储自定义关卡json文件的路径
+
 var wave_manager : WaveManager
 
 var _repair_value: float = 0.0:

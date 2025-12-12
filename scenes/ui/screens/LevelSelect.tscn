@@ -12,8 +12,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_abcde")
-level_names = Array[String](["Level 1", "Level 2", "Level 3", "Level 4", "Level DIY"])
-level_scene_paths = Array[String](["res://scenes/levels/level01/Level01.tscn", "res://scenes/levels/level02/Level02.tscn", "res://scenes/levels/level03/Level03.tscn", "res://scenes/levels/level04/Level04.tscn", "res://scenes/levels/load_level/Level_load.tscn"])
+level_names = Array[String](["Level 1", "Level 2", "Level 3", "Level 4"])
+level_scene_paths = Array[String](["res://scenes/levels/level01/Level01.tscn", "res://scenes/levels/level02/Level02.tscn", "res://scenes/levels/level03/Level03.tscn", "res://scenes/levels/level04/Level04.tscn"])
 
 [node name="ParticleBackground" parent="." instance=ExtResource("3_abcde")]
 
@@ -40,18 +40,41 @@ size_flags_vertical = 0
 layout_mode = 2
 theme = ExtResource("2_abcde")
 theme_override_font_sizes/font_size = 8
-text = " < 返回 "
+text = " < 主菜单 "
 
 [node name="Title" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 1
 theme = ExtResource("2_abcde")
 theme_override_font_sizes/font_size = 24
-text = "选择任务"
+text = "选择模式"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="ModeSelectContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 16
+
+[node name="CampaignButton" type="Button" parent="MarginContainer/VBoxContainer/ModeSelectContainer"]
+layout_mode = 2
+theme = ExtResource("2_abcde")
+text = "关卡模式"
+
+[node name="CustomButton" type="Button" parent="MarginContainer/VBoxContainer/ModeSelectContainer"]
+layout_mode = 2
+theme = ExtResource("2_abcde")
+text = "自定义模式"
+
+[node name="RandomButton" type="Button" parent="MarginContainer/VBoxContainer/ModeSelectContainer"]
+layout_mode = 2
+theme = ExtResource("2_abcde")
+disabled = true
+text = "随机模式"
+
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0

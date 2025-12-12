@@ -9,14 +9,26 @@ extends Node2D
 @onready var wave_manager: WaveManager = $WaveManager if has_node("WaveManager") else null
 
 func _ready():
+	# 决定要加载哪个JSON文件
+	var json_path_to_load: String = ""
+	if GameManager and not GameManager.custom_level_json_path.is_empty():
+		# 优先使用来自LevelSelect界面的选择
+		print("MainController: 检测到来自GameManager的自定义关卡路径。")
+		json_path_to_load = GameManager.custom_level_json_path
+		GameManager.custom_level_json_path = "" # 用完后立即清空，防止下次误用
+		load_from_json = true # 强制进入JSON加载模式
+	else:
+		# 回退到编辑器中设置的默认值
+		json_path_to_load = level_filename
+
 	# 1. 准备一个空的配置字典
 	var config_data: Dictionary
 
 	if load_from_json:
 		# --- JSON加载模式 ---
 		print("MainController: 以JSON模式启动。")
-		if level_filename.is_empty():
-			printerr("MainController: 未设置要加载的 level_filename。")
+		if json_path_to_load.is_empty():
+			printerr("MainController: 未设置要加载的关卡JSON文件。")
 			return
 
 		if not level_loader:
@@ -24,10 +36,10 @@ func _ready():
 			return
 		
 		# 调用加载器加载场景节点，并获取关卡配置数据
-		config_data = level_loader.load_level_from_json(level_filename, self)
+		config_data = level_loader.load_level_from_json(json_path_to_load, self)
 
 		if config_data.is_empty():
-			printerr("MainController: 从JSON加载关卡失败: %s" % level_filename)
+			printerr("MainController: 从JSON加载关卡失败: %s" % json_path_to_load)
 			return
 		print("MainController: 成功从JSON加载场景节点。")
 		
