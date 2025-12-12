@@ -30,6 +30,7 @@ DialogueManager="*res://scripts/dialogue/DialogueManager.gd"
 SoundManager="*res://scenes/managers/SoundManager.tscn"
 DebugManager="*res://scripts/managers/DebugManager.gd"
 TutorialManager="*res://scenes/tutorial/TutorialManager.tscn"
+RandomLevelGenerator="*res://scripts/managers/RandomLevelGenerator.gd"
 
 [display]
 

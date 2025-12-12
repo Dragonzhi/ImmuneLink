@@ -244,3 +244,36 @@ func _load_waves(waves_data: Array) -> Array[WAVE_CLASS]:
 		new_wave.default_spawn_infos = loaded_enemy_spawn_infos
 		loaded_waves.append(new_wave)
 	return loaded_waves
+
+
+# 接收字典数据，直接加载关卡
+func load_level_from_dictionary(level_data: Dictionary, scene_root: Node2D) -> Dictionary:
+	if level_data.is_empty():
+		printerr("LevelLoader 错误: 传入的关卡数据字典为空。")
+		return {}
+	
+	print("LevelLoader: 从字典数据加载关卡。")
+	
+	# 1. 加载和配置场景中的节点 (Pipes, Spawners)
+	_load_pipes(level_data.get("pipes", []), scene_root)
+	_load_spawners(level_data.get("spawners", []), scene_root)
+
+	# 2. 加载和配置 WaveManager 的数据
+	var waves = _load_waves(level_data.get("waves", []))
+	var initial_delay = level_data.get("initial_delay", 5.0)
+	
+	var wave_manager = scene_root.find_child("WaveManager", true, false)
+	if wave_manager:
+		wave_manager.waves = waves
+		wave_manager.initial_delay = initial_delay
+		# Spawners可能已更新, 重新获取
+		var spawners_in_scene: Array[Node] = []
+		for node in scene_root.get_tree().get_nodes_in_group("spawners"):
+			if scene_root.is_ancestor_of(node):
+				spawners_in_scene.append(node)
+		wave_manager.spawners = spawners_in_scene
+	else:
+		printerr("LevelLoader 错误: 场景中未找到 WaveManager 节点！")
+
+	# 3. 返回关卡数据字典，由 MainController 负责配置 GameManager
+	return level_data
