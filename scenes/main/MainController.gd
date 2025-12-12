@@ -27,7 +27,10 @@ func _ready():
 	if load_from_json:
 		# --- JSON加载模式 ---
 		print("MainController: 以JSON模式启动。")
-		if json_path_to_load.is_empty():
+		
+		# 修正: LevelLoader期望的是文件名, 而不是可能来自GameManager的完整路径.
+		var filename_only = json_path_to_load.get_file()
+		if filename_only.is_empty():
 			printerr("MainController: 未设置要加载的关卡JSON文件。")
 			return
 
@@ -36,10 +39,10 @@ func _ready():
 			return
 		
 		# 调用加载器加载场景节点，并获取关卡配置数据
-		config_data = level_loader.load_level_from_json(json_path_to_load, self)
+		config_data = level_loader.load_level_from_json(filename_only, self)
 
 		if config_data.is_empty():
-			printerr("MainController: 从JSON加载关卡失败: %s" % json_path_to_load)
+			printerr("MainController: 从JSON加载关卡失败: %s" % filename_only)
 			return
 		print("MainController: 成功从JSON加载场景节点。")
 		

@@ -144,7 +144,17 @@ func _populate_campaign_levels() -> void:
 		_create_level_button(level_names[i], Callable(self, "_on_level_button_pressed").bind(i))
 
 func _populate_custom_levels() -> void:
-	var custom_levels := _find_json_files("user://levels/")
+	# 优先检查可执行文件目录下的levels/
+	var exe_dir = OS.get_executable_path().get_base_dir()
+	var custom_dir_path = exe_dir.path_join("levels")
+
+	# 确保目录存在，不存在则创建
+	if not DirAccess.dir_exists_absolute(custom_dir_path):
+		DirAccess.make_dir_recursive_absolute(custom_dir_path)
+		
+	var custom_levels := _find_json_files(custom_dir_path)
+
+	# 如果exe目录没有，则检查res://下的内置数据
 	if custom_levels.is_empty():
 		custom_levels = _find_json_files("res://levels/data/")
 	
