@@ -72,3 +72,20 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: '🎮 Deploy Godot Game - $(date)'
+
+          # ➡️ 新增：配置 Pages
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5 
+
+      # ➡️ 新增：上传 Artifact
+      # ⚠️ 注意：这里的 path 必须与你的 Godot 导出文件夹一致 (./docs)
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './docs'
+
+      # ➡️ 新增：部署到 Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
