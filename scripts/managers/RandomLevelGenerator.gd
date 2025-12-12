@@ -55,30 +55,18 @@ func _generate_pipes() -> Array:
 	var pipes = []
 	var positions = []
 	
-	# “邻边布局”逻辑
-	# 随机选择一个对角线组合 (0: 左上+右下, 1: 右上+左下)
 	var corner_config = randi() % 2
-	# 随机决定哪个是生命管道区
 	var life_is_first_corner = randi() % 2 == 0
 	
-	var corner1_edges = []
-	var corner2_edges = []
-	
-	if corner_config == 0:
-		# 组合1: 左上角(边2,边0) + 右下角(边3,边1)
-		corner1_edges = [2, 0] # 左, 上
-		corner2_edges = [3, 1] # 右, 下
-	else:
-		# 组合2: 右上角(边3,边0) + 左下角(边2,边1)
-		corner1_edges = [3, 0] # 右, 上
-		corner2_edges = [2, 1] # 左, 下
+	var corner1_edges = [2, 0] if corner_config == 0 else [3, 0] # 左/上 或 右/上
+	var corner2_edges = [3, 1] if corner_config == 0 else [2, 1] # 右/下 或 左/下
 
 	var life_edges = corner1_edges if life_is_first_corner else corner2_edges
 	var supply_edges = corner2_edges if life_is_first_corner else corner1_edges
 	
 	print("RandomLevelGenerator: 生成邻边布局 (八字)")
 
-	# 生成生命管道 (在相邻的两条边上)
+	# 1. 生成生命管道 (总是一对)
 	var life_pipe_1_data = _generate_unique_position_on_edge(life_edges[0], positions)
 	positions.append(life_pipe_1_data.position)
 	pipes.append({"name": "random_life_A", "type": "LIFE", "position": [life_pipe_1_data.position.x, life_pipe_1_data.position.y], "direction": life_pipe_1_data.direction})
@@ -87,14 +75,17 @@ func _generate_pipes() -> Array:
 	positions.append(life_pipe_2_data.position)
 	pipes.append({"name": "random_life_B", "type": "LIFE", "position": [life_pipe_2_data.position.x, life_pipe_2_data.position.y], "direction": life_pipe_2_data.direction})
 
-	# 生成资源管道 (在另外相邻的两条边上)
-	var supply_pipe_1_data = _generate_unique_position_on_edge(supply_edges[0], positions)
-	positions.append(supply_pipe_1_data.position)
-	pipes.append({"name": "random_supply_A", "type": "SUPPLY", "position": [supply_pipe_1_data.position.x, supply_pipe_1_data.position.y], "direction": supply_pipe_1_data.direction})
+	# 2. 生成资源管道 (1或2对)
+	var num_supply_pairs = randi_range(1, 2)
+	for i in range(num_supply_pairs):
+		var suffix = char(ord("A") + i) # A, B, C...
+		var supply_pipe_1_data = _generate_unique_position_on_edge(supply_edges[0], positions)
+		positions.append(supply_pipe_1_data.position)
+		pipes.append({"name": "random_supply_%s_1" % suffix, "type": "SUPPLY", "position": [supply_pipe_1_data.position.x, supply_pipe_1_data.position.y], "direction": supply_pipe_1_data.direction})
 
-	var supply_pipe_2_data = _generate_unique_position_on_edge(supply_edges[1], positions)
-	positions.append(supply_pipe_2_data.position)
-	pipes.append({"name": "random_supply_B", "type": "SUPPLY", "position": [supply_pipe_2_data.position.x, supply_pipe_2_data.position.y], "direction": supply_pipe_2_data.direction})
+		var supply_pipe_2_data = _generate_unique_position_on_edge(supply_edges[1], positions)
+		positions.append(supply_pipe_2_data.position)
+		pipes.append({"name": "random_supply_%s_2" % suffix, "type": "SUPPLY", "position": [supply_pipe_2_data.position.x, supply_pipe_2_data.position.y], "direction": supply_pipe_2_data.direction})
 
 	print("RandomLevelGenerator: 生成分区管道布局: ", pipes)
 	return pipes
