@@ -75,6 +75,7 @@ text = "随机模式"
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
 visible = false
 layout_mode = 2
+size_flags_vertical = 3
 
 [node name="LevelButtonsContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
