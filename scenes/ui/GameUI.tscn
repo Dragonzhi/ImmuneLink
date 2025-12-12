@@ -49,5 +49,41 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "资源: 100"
 
+[node name="FeedbackLabel" type="Label" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -75.0
+offset_top = -140.0
+offset_right = 75.0
+offset_bottom = -117.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 8
+text = "资源不足！"
+horizontal_alignment = 1
+
+[node name="FeedbackTimer" type="Timer" parent="."]
+one_shot = true
+
 [node name="DialogueBox" parent="." instance=ExtResource("2_3pxe2")]
 visible = false
+
+[node name="PauseButton" type="Button" parent="."]
+process_mode = 3
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -32.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = 24.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 8
+text = "||"

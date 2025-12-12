@@ -4,6 +4,8 @@ signal connection_made(pipe_type: int) # 新增信号：当有新连接建立时
 
 @export var red_pipe_repair_rate: float = 1.0  # Red pipes generate repair value
 
+const LIFE_CONNECTION_COST = 25 # 激活一条生命连接所需的资源
+
 var _connections: Dictionary = {}
 var _grid_manager: GridManager
 
