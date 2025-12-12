@@ -7,6 +7,7 @@ signal nk_samples_changed(new_count: int) # 新增：NK样本数量变化信号
 signal upgrade_menu_opened(bridge: Bridge) # 新增：当升级菜单打开时发出信号
 
 var custom_level_json_path: String = "" # 新增：用于存储自定义关卡json文件的路径
+var is_random_mode: bool = false # 新增：用于标记是否需要加载随机模式
 
 var wave_manager : WaveManager
 

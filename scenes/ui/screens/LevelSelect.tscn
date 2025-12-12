@@ -70,14 +70,11 @@ text = "自定义模式"
 [node name="RandomButton" type="Button" parent="MarginContainer/VBoxContainer/ModeSelectContainer"]
 layout_mode = 2
 theme = ExtResource("2_abcde")
-disabled = true
 text = "随机模式"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
 visible = false
 layout_mode = 2
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
 
 [node name="LevelButtonsContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2

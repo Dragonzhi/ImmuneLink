@@ -6,12 +6,13 @@ extends Control
 @onready var mode_select_container: VBoxContainer = $MarginContainer/VBoxContainer/ModeSelectContainer
 @onready var campaign_button: Button = $MarginContainer/VBoxContainer/ModeSelectContainer/CampaignButton
 @onready var custom_button: Button = $MarginContainer/VBoxContainer/ModeSelectContainer/CustomButton
+@onready var random_button: Button = $MarginContainer/VBoxContainer/ModeSelectContainer/RandomButton
 @onready var scroll_container: ScrollContainer = $MarginContainer/VBoxContainer/ScrollContainer
 @onready var level_buttons_container: GridContainer = $MarginContainer/VBoxContainer/ScrollContainer/LevelButtonsContainer
 
 # --- 可配置变量 ---
-@export var level_names: Array[String]
-@export var level_scene_paths: Array[String]
+@export var level_names: Array[String] # 所有关卡的名称列表
+@export var level_scene_paths: Array[String] # 与level_names对应的关卡场景路径列表
 @export var main_menu_scene_path: String = "res://scenes/world/MainMenu.tscn"
 @export var level_load_scene_path: String = "res://scenes/levels/load_level/Level_load.tscn"
 
@@ -30,6 +31,7 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back_button_pressed)
 	campaign_button.pressed.connect(_on_campaign_button_pressed)
 	custom_button.pressed.connect(_on_custom_button_pressed)
+	random_button.pressed.connect(_on_random_button_pressed)
 	
 	# --- 针对非PC平台隐藏自定义模式按钮 ---
 	if not OS.has_feature("pc"):
@@ -100,6 +102,23 @@ func _on_campaign_button_pressed() -> void:
 func _on_custom_button_pressed() -> void:
 	SoundManager.play_sfx("ui_accept")
 	_switch_to_level_view("选择自定义关卡", Callable(self, "_populate_custom_levels"))
+
+func _on_random_button_pressed() -> void:
+	if _is_transitioning: return
+	
+	SoundManager.play_sfx("ui_accept")
+	_is_transitioning = true
+	GameManager.is_random_mode = true
+	
+	# 异步执行动画和场景切换
+	var new_scene_path = level_load_scene_path
+	var tween = _animate_view(mode_select_container, mode_select_container, false)
+	await tween.finished
+	if SceneManager:
+		SceneManager.change_scene_to_file(new_scene_path)
+	else:
+		_is_transitioning = false # 重置状态以防万一
+
 
 func _on_level_button_pressed(index: int) -> void:
 	SoundManager.play_sfx("ui_accept")
