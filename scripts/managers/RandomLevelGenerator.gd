@@ -270,19 +270,13 @@ func _generate_waves() -> Array:
 
 # 辅助函数：扫描敌人目录以获取所有可用的敌人类型名称
 func _get_available_enemy_types() -> Array:
-	var enemy_types = []
-	var path = "res://scenes/enemies/"
-	var dir = DirAccess.open(path)
-	if dir:
-		dir.list_dir_begin()
-		var file_name = dir.get_next()
-		while file_name != "":
-			# 确保是 .tscn 文件，并且不是目录，也不是基础敌人场景
-			if not dir.current_is_dir() and file_name.ends_with(".tscn") and "Base" not in file_name:
-				var type_name = file_name.get_basename() # 例如 "VirusEnemy.tscn" -> "VirusEnemy"
-				enemy_types.append(type_name)
-			file_name = dir.get_next()
-	else:
-		printerr("无法打开敌人目录: ", path)
-		
+	# DirAccess 在导出版本中（尤其是在Web和移动端）不稳定，因此我们硬编码敌人列表
+	# 这样可以确保在所有平台上都能正确生成敌人波次
+	var enemy_types = [
+		"CD4TEnemy",
+		"DCEnemy",
+		"GermEnemy",
+		"MacrophageEnemy",
+		"VirusEnemy"
+	]
 	return enemy_types
