@@ -15,4 +15,4 @@ default_color = Color(0.4, 0.5, 1, 0.5)
 [node name="CostLabel" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 10

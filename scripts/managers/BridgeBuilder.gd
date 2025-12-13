@@ -21,6 +21,7 @@ var ui_manager: Node
 # --- Build State ---
 var build_mode: bool = false
 var _is_building_secondary: bool = false
+var _is_mobile: bool = false
 var start_pipe: Pipe = null
 var start_bridge: Bridge = null
 var start_pos: Vector2i
@@ -51,21 +52,32 @@ func _ready() -> void:
 	get_tree().get_root().mouse_exited.connect(_on_mouse_exited)
 	
 	cost_label.hide()
+	
+	_is_mobile = not OS.has_feature("pc")
+	if _is_mobile:
+		cost_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 # --- Input Handling ---
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not build_mode: return
 	
-	if event is InputEventMouseMotion:
+	if event is InputEventMouseMotion or event is InputEventScreenDrag:
+		# This is a motion event, so it's safe to access event.position.
+		# Update the label's position here.
+		if cost_label.visible:
+			if _is_mobile:
+				var viewport_rect = get_viewport().get_visible_rect()
+				cost_label.global_position = Vector2(viewport_rect.size.x / 2 - cost_label.size.x / 2, 30)
+			else:
+				cost_label.global_position = event.position + Vector2(15, 15)
+		
 		_handle_mouse_motion(event)
+
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 		_handle_left_mouse_release(event)
-	
-	if cost_label.visible:
-		cost_label.global_position = event.position + Vector2(5, 5)
 
-func _handle_mouse_motion(event: InputEventMouseMotion):
+func _handle_mouse_motion(event: InputEvent):
 	var new_grid_pos = grid_manager.world_to_grid(event.position)
 	_update_cost_label()
 	
