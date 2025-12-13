@@ -158,20 +158,41 @@ func get_active_path() -> Path2D:
 	return null
 
 func _get_random_enemy() -> EnemySpawnInfo:
+	DebugManager.dprint("EnemySpawnPoint", "--- Choosing Random Enemy ---")
+	if enemy_list.is_empty():
+		DebugManager.dprint("EnemySpawnPoint", "Enemy list is empty!")
+		return null
+
 	var total_weight = 0
+	var report_str = "Available enemies: "
 	for spawn_info in enemy_list:
 		total_weight += spawn_info.weight
+		if is_instance_valid(spawn_info) and is_instance_valid(spawn_info.enemy_scene):
+			report_str += "%s (Weight: %d), " % [spawn_info.enemy_scene.resource_path.get_file(), spawn_info.weight]
+		else:
+			report_str += "Invalid SpawnInfo, "
 	
+	DebugManager.dprint("EnemySpawnPoint", report_str)
+	DebugManager.dprint("EnemySpawnPoint", "Total weight: %d" % total_weight)
+
 	if total_weight <= 0:
+		DebugManager.dprint("EnemySpawnPoint", "Total weight is 0, cannot choose an enemy.")
 		return null
 
 	var random_value = randi_range(1, total_weight)
+	DebugManager.dprint("EnemySpawnPoint", "Random value (1 to %d): %d" % [total_weight, random_value])
 	
 	for spawn_info in enemy_list:
+		if not is_instance_valid(spawn_info) or not is_instance_valid(spawn_info.enemy_scene):
+			DebugManager.dprint("EnemySpawnPoint", "Skipping invalid spawn info in selection loop.")
+			continue
+		DebugManager.dprint("EnemySpawnPoint", "Checking enemy %s (Weight: %d)" % [spawn_info.enemy_scene.resource_path.get_file(), spawn_info.weight])
 		random_value -= spawn_info.weight
 		if random_value <= 0:
+			DebugManager.dprint("EnemySpawnPoint", ">>> CHOSEN: %s" % spawn_info.enemy_scene.resource_path.get_file())
 			return spawn_info
-			
+	
+	DebugManager.dprint("EnemySpawnPoint", "Loop finished without choosing an enemy. This should not happen!")
 	return null
 
 func _register_occupied_cells():

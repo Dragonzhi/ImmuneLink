@@ -269,7 +269,7 @@ func _generate_waves() -> Array:
 		
 		# 为当前波次随机选择敌人类型
 		var enemies_in_wave = []
-		var enemy_types_in_this_wave_count = randi_range(1, max(1, available_enemies.size() / 2)) # 最多使用一半的可用敌人类型
+		var enemy_types_in_this_wave_count = randi_range(1, max(1, available_enemies.size())) # 最多使用的可用敌人类型
 		var available_enemies_copy = available_enemies.duplicate()
 		available_enemies_copy.shuffle()
 		
