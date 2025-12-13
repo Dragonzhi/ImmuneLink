@@ -208,8 +208,15 @@ func _on_game_over_timer_timeout(is_victory: bool, timer: Timer):
 	get_tree().paused = false
 	
 	# 准备要传递的数据
-	@warning_ignore("narrowing_conversion")
-	var final_score:int = _resource_value + _repair_value # 简单计算一个分数
+	# 新的计分逻辑：基于时间和修复进度，与资源无关
+	var time_bonus: int = 0
+	if is_victory:
+		time_bonus = int(_time_remaining * 10) # 每剩余1秒奖励10分
+	
+	var repair_bonus: int = int(_repair_value * 5) # 每修复1%奖励5分
+	
+	var final_score: int = time_bonus + repair_bonus
+	
 	var time_spent = _current_level_duration - _time_remaining
 	@warning_ignore("integer_division")
 	var minutes:int = int(time_spent) / 60

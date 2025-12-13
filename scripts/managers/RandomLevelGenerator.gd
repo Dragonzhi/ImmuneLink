@@ -1,8 +1,8 @@
 extends Node
 
 # --- 随机生成参数 ---
-const MIN_STARTING_RESOURCES = 250   # 最小初始资源
-const MAX_STARTING_RESOURCES = 300   # 最大初始资源
+const MIN_STARTING_RESOURCES = 280   # 最小初始资源
+const MAX_STARTING_RESOURCES = 320   # 最大初始资源
 
 const SCREEN_WIDTH = 384             # 屏幕宽度
 const SCREEN_HEIGHT = 216            # 屏幕高度
@@ -15,12 +15,12 @@ const EDGE_OFFSET_RANGE_N = 1        # 边缘偏移的网格单元数 (+/- N个�
 const MIN_SPAWNERS = 1               # 最小出生点数量
 const MAX_SPAWNERS = 1               # 最大出生点数量 (已设为1)
 
-const MIN_WAVES = 3                  # 最少波数
-const MAX_WAVES = 5                  # 最多波数
-const MIN_ENEMIES_PER_WAVE = 5       # 每波最少敌人数量 (基础值)
-const MAX_ENEMIES_PER_WAVE = 15      # 每波最多敌人数量 (基础值)
+const MIN_WAVES = 6                  # 最少波数
+const MAX_WAVES = 10                  # 最多波数
+const MIN_ENEMIES_PER_WAVE = 8       # 每波最少敌人数量 (基础值)
+const MAX_ENEMIES_PER_WAVE = 24      # 每波最多敌人数量 (基础值)
 const MIN_SPAWN_INTERVAL = 0.5       # 最小出怪间隔
-const MAX_SPAWN_INTERVAL = 2.0       # 最大出怪间隔
+const MAX_SPAWN_INTERVAL = 3.0       # 最大出怪间隔
 
 
 func _ready():
