@@ -17,7 +17,7 @@ const MAX_SPAWNERS = 1               # 最大出生点数量 (已设为1)
 
 const MIN_WAVES = 6                  # 最少波数
 const MAX_WAVES = 10                  # 最多波数
-const MIN_ENEMIES_PER_WAVE = 8       # 每波最少敌人数量 (基础值)
+const MIN_ENEMIES_PER_WAVE = 10       # 每波最少敌人数量 (基础值)
 const MAX_ENEMIES_PER_WAVE = 24      # 每波最多敌人数量 (基础值)
 const MIN_SPAWN_INTERVAL = 0.5       # 最小出怪间隔
 const MAX_SPAWN_INTERVAL = 3.0       # 最大出怪间隔
@@ -166,8 +166,8 @@ func _generate_spawners_and_paths(existing_entity_positions: Array, num_paths: i
 			
 		var all_paths = []
 		for j in range(num_paths):
-			# 将所有实体的位置（管道+出生点）传递给路径生成器，以避开它们
-			all_paths.append(_generate_complex_loop_path(spawner_pos, all_positions))
+			# 将路径索引j和总路径数num_paths传递给生成器
+			all_paths.append(_generate_complex_loop_path(spawner_pos, all_positions, j, num_paths))
 		
 		spawners.append({
 			"name": "RandomSpawner%02d" % (i + 1),
@@ -207,13 +207,28 @@ func _generate_unique_center_position(existing_positions: Array, clearance: floa
 	return Vector2.INF
 
 # 辅助函数：生成一条复杂的环路路径
-func _generate_complex_loop_path(start_pos: Vector2, obstacles: Array) -> Array:
+func _generate_complex_loop_path(start_pos: Vector2, obstacles: Array, path_index: int, total_paths: int) -> Array:
 	var waypoints = [start_pos]
 	var num_intermediate_waypoints = 3 # 生成3个中间航点，总共5个点
 	
+	# 发散因子：从0.0（第一条路径）到1.0（最后一条路径）线性增长
+	var divergence_factor = float(path_index) / float(max(1, total_paths - 1))
+	DebugManager.dprint("RandomLevelGenerator", "为路径 %d/%d 生成, 发散因子: %s" % [path_index + 1, total_paths, divergence_factor])
+
 	for i in range(num_intermediate_waypoints):
-		# 为航点也设置一个最小间距，避免路径点过于密集
-		var waypoint = _generate_unique_center_position(obstacles + waypoints, 32.0)
+		var waypoint = Vector2.INF
+		
+		# 后期的路径有更高概率在边缘生成航点
+		if randf() < divergence_factor:
+			DebugManager.dprint("RandomLevelGenerator", "路径 %d 的航点 %d 将在边缘生成" % [path_index + 1, i + 1])
+			# _generate_unique_position_on_edge 返回一个字典, 我们需要它的 .position
+			var edge_data = _generate_unique_position_on_edge(randi_range(0, 3), obstacles + waypoints)
+			if not edge_data.is_empty():
+				waypoint = edge_data.position
+		else:
+			# 早期的路径主要在中心生成航点
+			waypoint = _generate_unique_center_position(obstacles + waypoints, 32.0)
+
 		if waypoint != Vector2.INF:
 			waypoints.append(waypoint)
 	
@@ -250,7 +265,7 @@ func _generate_waves() -> Array:
 		
 		wave_data["default_enemy_count"] = randi_range(min_enemies, max_enemies)
 		wave_data["default_spawn_interval"] = randf_range(MIN_SPAWN_INTERVAL, MAX_SPAWN_INTERVAL)
-		wave_data["post_wave_delay"] = randf_range(3.0, 7.0) # 波次之间的随机延迟
+		wave_data["post_wave_delay"] = randf_range(6.0, 12.0) # 波次之间的随机延迟
 		
 		# 为当前波次随机选择敌人类型
 		var enemies_in_wave = []
