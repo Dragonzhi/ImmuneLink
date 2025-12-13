@@ -33,9 +33,7 @@ func _ready() -> void:
 	random_button.pressed.connect(_on_random_button_pressed)
 	
 	if not OS.has_feature("pc"):
-		custom_button.hide()
-		if custom_button.pressed.is_connected(_on_custom_button_pressed):
-			custom_button.pressed.disconnect(_on_custom_button_pressed)
+		custom_button.queue_free()
 
 	mode_select_container.hide()
 	scroll_container.hide()
@@ -73,16 +71,8 @@ func _switch_to_level_view(list_title: String, populate_callable: Callable) -> v
 	await _animate_view(mode_select_container, mode_select_container, false).finished
 
 	populate_callable.call()
-	await get_tree().process_frame
+	await get_tree().process_frame # 等待一帧，确保节点已添加
 	
-	# --- 最终诊断：检查父容器VBoxContainer的状态 ---
-	var vbox = scroll_container.get_parent()
-	print("--- 最终诊断开始 ---")
-	print("VBoxContainer 尺寸: ", vbox.size)
-	for child in vbox.get_children():
-		print("VBox 子节点: %s, 可见性: %s, 垂直SizeFlags: %d" % [child.name, child.visible, child.size_flags_vertical])
-	print("--- 最终诊断结束 ---")
-
 	level_buttons_container.update_minimum_size()
 	scroll_container.update_minimum_size()
 	
