@@ -89,7 +89,10 @@ func open_upgrade_menu(upgrades: Array[Upgrade], bridge: Bridge):
 	tween.tween_property(current_menu, "modulate:a", 1.0, fade_duration).set_trans(Tween.TRANS_SINE)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_accept"):
+		_toggle_pause()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		
 		if DialogueManager and DialogueManager.has_method("force_stop_all_dialogues"):
