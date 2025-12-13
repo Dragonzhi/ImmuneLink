@@ -21,7 +21,7 @@ const NKProtocolUpgradeResource = preload("res://scripts/upgrades/resourses/NKPr
 
 @export var max_health: float = 100.0
 @export var repair_time: float = 3.0
-@export var repair_cost: int = 10 # 修复此桥段所需的资源
+@export var repair_cost: int = 5 # 修复此桥段所需的资源
 
 @export_group("NK Aura Effect")
 @export var nk_aura_slow_multiplier: float = 0.7 # 减速效果，例如0.7代表速度变为70%
@@ -590,18 +590,21 @@ func _on_hurt_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: 
 		State.DESTROYED:
 			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
 				if repair_timer.is_stopped(): # 只有在修复计时器停止时才能尝试修复
-					# 先检查资源是否足够
-					if GameManager.spend_resource_value(repair_cost):
-						# 资源足够，开始修复流程
-						animated_sprite.modulate = Color(0.2, 0.5, 1.0)
-						animated_sprite.animation = tile_animation_name
-						animated_sprite.play()
-						repair_timer.start()
-					else:
-						# 资源不足，发出UI提示
-						var ui_manager = get_node_or_null("/root/Main/UIManager")
-						if ui_manager:
-							ui_manager.request_feedback("资源不足 %d, 无法修复!" % repair_cost)
+					GameManager.force_spend_resource(repair_cost) # 强制扣费，允许负债
+					
+					# 显示反馈信息
+					var ui_manager = get_node_or_null("/root/Main/UIManager")
+					if ui_manager:
+						if GameManager.get_resource_value() < 0:
+							ui_manager.request_feedback("已修复！资源不足，产生负债。")
+						else:
+							ui_manager.request_feedback("已修复！消耗 %d 资源。" % repair_cost)
+
+					# 开始修复流程
+					animated_sprite.modulate = Color(0.2, 0.5, 1.0)
+					animated_sprite.animation = tile_animation_name
+					animated_sprite.play()
+					repair_timer.start()
 					
 					get_viewport().set_input_as_handled()
 		State.EXPANSION_WAITING:

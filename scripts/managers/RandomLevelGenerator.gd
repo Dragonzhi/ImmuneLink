@@ -23,6 +23,10 @@ const MIN_SPAWN_INTERVAL = 0.5       # 最小出怪间隔
 const MAX_SPAWN_INTERVAL = 2.0       # 最大出怪间隔
 
 
+func _ready():
+	DebugManager.register_category("RandomLevelGenerator", false) # 默认关闭
+
+
 # Main public function to be called to generate random level data
 func generate_random_level_data() -> Dictionary:
 	# 调整顺序：先生成波次，以确定需要多少条路径
@@ -41,14 +45,14 @@ func generate_random_level_data() -> Dictionary:
 		"waves": waves_data,
 		"initial_delay": 5.0 # Placeholder
 	}
-	print("随机关卡数据已生成: ", level_data)
+	DebugManager.dprint("RandomLevelGenerator", "随机关卡数据已生成: %s" % str(level_data))
 	return level_data
 
 # --- 私有占位函数 ---
 
 func _generate_starting_resources() -> int:
 	var random_resources = randi_range(MIN_STARTING_RESOURCES, MAX_STARTING_RESOURCES)
-	print("RandomLevelGenerator: 生成随机初始资源: ", random_resources)
+	DebugManager.dprint("RandomLevelGenerator", "生成随机初始资源: %s" % random_resources)
 	return random_resources
 
 func _generate_pipes() -> Array:
@@ -64,7 +68,7 @@ func _generate_pipes() -> Array:
 	var life_edges = corner1_edges if life_is_first_corner else corner2_edges
 	var supply_edges = corner2_edges if life_is_first_corner else corner1_edges
 	
-	print("RandomLevelGenerator: 生成邻边布局 (八字)")
+	DebugManager.dprint("RandomLevelGenerator", "生成邻边布局 (八字)")
 
 	# 1. 生成生命管道 (总是一对)
 	var life_pipe_1_data = _generate_unique_position_on_edge(life_edges[0], positions)
@@ -87,7 +91,7 @@ func _generate_pipes() -> Array:
 		positions.append(supply_pipe_2_data.position)
 		pipes.append({"name": "random_supply_%s_2" % suffix, "type": "SUPPLY", "position": [supply_pipe_2_data.position.x, supply_pipe_2_data.position.y], "direction": supply_pipe_2_data.direction})
 
-	print("RandomLevelGenerator: 生成分区管道布局: ", pipes)
+	DebugManager.dprint("RandomLevelGenerator", "生成分区管道布局: %s" % str(pipes))
 	return pipes
 
 # 新的辅助函数：在 *指定* 边缘生成一个唯一的位置
@@ -173,7 +177,7 @@ func _generate_spawners_and_paths(existing_entity_positions: Array, num_paths: i
 		
 		all_positions.append(spawner_pos)
 
-	print("RandomLevelGenerator: 生成随机出生点 (居中): ", spawners)
+	DebugManager.dprint("RandomLevelGenerator", "生成随机出生点 (居中): %s" % str(spawners))
 	return spawners
 
 # 辅助函数：在地图中心区域生成一个唯一的、对齐网格的位置
@@ -265,7 +269,7 @@ func _generate_waves() -> Array:
 		wave_data["enemies"] = enemies_in_wave
 		waves.append(wave_data)
 		
-	print("RandomLevelGenerator: 生成随机波次: ", waves)
+	DebugManager.dprint("RandomLevelGenerator", "生成随机波次: %s" % str(waves))
 	return waves
 
 # 辅助函数：扫描敌人目录以获取所有可用的敌人类型名称

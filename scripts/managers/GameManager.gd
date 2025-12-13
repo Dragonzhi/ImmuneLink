@@ -110,6 +110,13 @@ func spend_resource_value(amount: float) -> bool:
 	else:
 		return false
 
+func force_spend_resource(amount: float):
+	"""
+	强制花费资源，允许资源值变为负数（产生负债）。
+	主要用于修复等无论如何都必须执行的操作。
+	"""
+	self._resource_value -= amount
+
 func add_nk_cell_sample(amount: int):
 	self._nk_cell_samples += amount
 
