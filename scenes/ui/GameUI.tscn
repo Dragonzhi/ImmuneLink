@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cmd7kak7nst2" path="res://scenes/ui/dialogue/DialogueBox.tscn" id="2_3pxe2"]
 
 [node name="GameUI" type="Control"]
+process_mode = 3
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -73,6 +74,16 @@ one_shot = true
 
 [node name="DialogueBox" parent="." instance=ExtResource("2_3pxe2")]
 visible = false
+
+[node name="BackToMenuButton" type="Button" parent="."]
+process_mode = 3
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 40.0
+offset_bottom = 21.0
+theme_override_font_sizes/font_size = 8
+text = "返回菜单"
 
 [node name="PauseButton" type="Button" parent="."]
 process_mode = 3

@@ -5,6 +5,7 @@ extends Control
 @onready var time_label: Label = $PanelContainer/TimeLabel
 @onready var feedback_label: Label = $FeedbackLabel
 @onready var feedback_timer: Timer = $FeedbackTimer
+@onready var back_to_menu_button: Button = $BackToMenuButton
 
 
 func _ready() -> void:
@@ -21,10 +22,27 @@ func _ready() -> void:
 	# Connect timer timeout
 	feedback_timer.timeout.connect(_on_feedback_timer_timeout)
 	
+	# Connect button signal
+	back_to_menu_button.pressed.connect(_on_back_to_menu_button_pressed)
+	
 	# Initialize labels with current values
 	_on_repair_value_changed(GameManager.get_repair_value())
 	_on_resource_value_changed(GameManager.get_resource_value())
 	_on_time_remaining_changed(GameManager.get_time_remaining())
+
+
+func _process(delta: float) -> void:
+	# 根据暂停状态显示/隐藏返回菜单按钮
+	if back_to_menu_button:
+		back_to_menu_button.visible = get_tree().paused
+
+
+func _on_back_to_menu_button_pressed() -> void:
+	# 必须先取消暂停，否则场景切换会出问题
+	get_tree().paused = false
+	# 切换回关卡选择界面
+	if SceneManager:
+		SceneManager.change_scene_to_file("res://scenes/ui/screens/LevelSelect.tscn")
 
 
 func show_feedback(message: String, duration: float = 2.0) -> void:

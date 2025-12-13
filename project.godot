@@ -10,11 +10,12 @@ config_version=5
 
 [application]
 
-config/name="Bridge"
-config/version="0.3"
+config/name="ImmuneLink"
+config/version="0.4"
 run/main_scene="uid://bkhq73a620q5k"
 config/features=PackedStringArray("4.5", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="uid://rotlai4fs2wb"
+config/windows_native_icon="res://assets/icon.ico"
 
 [autoload]
 
