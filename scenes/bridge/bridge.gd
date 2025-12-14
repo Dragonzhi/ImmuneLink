@@ -492,6 +492,10 @@ func take_damage(amount: float):
 	SoundManager.play_sfx("bridge_hit") # 播放桥受击音效
 	health_bar.update_health(current_health) 
 	if current_health <= 0:
+		# --- 核心修复：在桥梁被摧毁时，立即重置所有升级状态 ---
+		_reset_to_base_stats()
+		# ----------------------------------------------------
+		
 		if is_destroyed: return # 防止重复触发
 		SoundManager.play_sfx("bridge_fail") # 播放桥被摧毁的音效
 		current_health = 0
