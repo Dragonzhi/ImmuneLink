@@ -293,9 +293,10 @@ func _get_available_enemy_types() -> Array:
 	# 这样可以确保在所有平台上都能正确生成敌人波次
 	var enemy_types = [
 		"CD4TEnemy",
+		"CTLEnemy",
 		"DCEnemy",
 		"GermEnemy",
 		"MacrophageEnemy",
-		"VirusEnemy"
+		"VirusEnemy",
 	]
 	return enemy_types

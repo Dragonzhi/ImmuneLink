@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://chnokpp78126j"]
+
+[ext_resource type="PackedScene" uid="uid://0nk3tfn6rk4s" path="res://scenes/main/Main.tscn" id="1_4roty"]
+
+[node name="Main" instance=ExtResource("1_4roty")]
+
+[editable path="BackGround/EnemySpawns/EnemySpawnPoint01"]

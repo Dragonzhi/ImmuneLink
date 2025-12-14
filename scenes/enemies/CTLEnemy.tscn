@@ -1,0 +1,79 @@
+[gd_scene load_steps=9 format=3 uid="uid://ccfp312x4lfc3"]
+
+[ext_resource type="PackedScene" uid="uid://cm325e0w41j3h" path="res://scenes/entities/BaseEnemy.tscn" id="1_nxqes"]
+[ext_resource type="Texture2D" uid="uid://lubqls6l7jsh" path="res://assets/cells/normall/CTL细胞.png" id="2_iwt5h"]
+[ext_resource type="Script" uid="uid://c8y5clcmrl0a5" path="res://scripts/enemies/CTLEnemy.gd" id="2_vrgl2"]
+
+[sub_resource type="Curve" id="Curve_vrgl2"]
+_data = [Vector2(0.17647061, 0.21276104), 0.0, 0.0, 0, 0, Vector2(0.35882357, 0.49327147), 0.0, 0.0, 0, 0, Vector2(0.62941176, 0.85522044), 0.0, 0.0, 0, 0, Vector2(0.78431374, 0.2519722), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_1k2ry"]
+curve = SubResource("Curve_vrgl2")
+
+[sub_resource type="Curve" id="Curve_iwt5h"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.4967742, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_vrgl2"]
+curve = SubResource("Curve_iwt5h")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_1k2ry"]
+lifetime_randomness = 0.4
+particle_flag_disable_z = true
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 1.0
+emission_ring_radius = 12.0
+emission_ring_inner_radius = 6.0
+emission_ring_cone_angle = 90.0
+angle_min = 1.0728835e-05
+angle_max = 90.000015
+spread = 180.0
+initial_velocity_min = 5.0
+initial_velocity_max = 7.0
+gravity = Vector3(0, 0, 0)
+radial_accel_min = -2.2351742e-06
+radial_accel_max = -2.2351742e-06
+tangential_accel_min = 49.999996
+tangential_accel_max = 99.99999
+scale_max = 2.5
+scale_curve = SubResource("CurveTexture_vrgl2")
+color = Color(0.8784314, 0.22352941, 0.6313726, 0.7529412)
+emission_curve = SubResource("CurveTexture_1k2ry")
+hue_variation_min = -0.050000023
+hue_variation_max = 0.049999975
+
+[node name="CTLEnemy" instance=ExtResource("1_nxqes")]
+script = ExtResource("2_vrgl2")
+damage_boost_multiplier = 1.5
+speed_boost_multiplier = 1.5
+boost_duration = 3.0
+boost_color = Color(1.8, 0.8, 0.8, 1)
+max_hp = 60.0
+move_speed = 35.0
+damage = 12.0
+attack_rate = 2.0
+
+[node name="Sprite2D" parent="." index="0"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("2_iwt5h")
+
+[node name="HealthBar" parent="." index="3"]
+offset_left = -7.0
+offset_top = -9.0
+offset_right = 49.0
+offset_bottom = -1.0
+
+[node name="BoostTimer" type="Timer" parent="." index="9"]
+one_shot = true
+
+[node name="BoostParticles" type="GPUParticles2D" parent="." index="10"]
+emitting = false
+amount = 24
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_1k2ry")
+
+[connection signal="timeout" from="BoostTimer" to="." method="_on_boost_timer_timeout"]
