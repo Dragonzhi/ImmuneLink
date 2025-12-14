@@ -23,8 +23,163 @@ extends Node
 			# 异步重置，防止Godot编辑器在处理时卡顿
 			call_deferred("_reset_export_flag")
 
+@export_group("Import Actions", "import_")
+@export_file("*.json") var import_json_path: String = ""
+@export var import_now: bool = false:
+	set(value):
+		if value:
+			_import_level_data()
+			call_deferred("_reset_import_flag")
+
+const PIPE_SCENE = preload("res://scenes/pipes/Pipe.tscn")
+const ENEMY_SPAWN_POINT_SCENE = preload("res://scenes/others/enemy_spawn_point.tscn")
+
 func _reset_export_flag():
 	export_now = false
+
+func _reset_import_flag():
+	import_now = false
+
+func _import_level_data():
+	if not get_tree() or not get_tree().edited_scene_root:
+		printerr("导入错误: 无法获取编辑器场景树。请确保场景已打开。")
+		return
+
+	if import_json_path.is_empty() or not FileAccess.file_exists(import_json_path):
+		printerr("导入错误: JSON文件路径为空或文件不存在: '%s'" % import_json_path)
+		return
+
+	var scene_root = get_tree().edited_scene_root
+	print("--- 开始从JSON '%s' 导入数据到场景 '%s' ---" % [import_json_path, scene_root.name])
+
+	# 1. 解析JSON
+	var file = FileAccess.open(import_json_path, FileAccess.READ)
+	if not file:
+		printerr("打开文件失败: ", import_json_path)
+		return
+	var json_data = JSON.parse_string(file.get_as_text())
+	if json_data == null:
+		printerr("解析JSON失败: ", import_json_path)
+		return
+
+	# 2. 导入节点
+	_import_pipes(json_data.get("pipes", []), scene_root)
+	_import_spawners(json_data.get("spawners", []), scene_root)
+
+	# 3. 更新WaveManager (部分功能)
+	var wave_manager = scene_root.find_child("WaveManager", true, false)
+	if wave_manager:
+		wave_manager.starting_resources = json_data.get("starting_resources", 250)
+		wave_manager.game_time_limit = json_data.get("game_time_limit", 300.0)
+		wave_manager.initial_delay = json_data.get("initial_delay", 5.0)
+		print("已更新 WaveManager 的基础配置。 (注意: 波次详细数据无法通过此工具导入)")
+	
+	print("--- 场景数据导入完成 ---")
+
+
+func _import_pipes(pipes_data: Array, scene_root: Node):
+	print("正在导入管道...")
+	var pipes_container_red = scene_root.get_node_or_null("BackGround/Pipes/Red")
+	var pipes_container_blue = scene_root.get_node_or_null("BackGround/Pipes/Blue")
+	
+	if not pipes_container_red or not pipes_container_blue:
+		printerr("Pipes导入错误: 场景中未找到 'BackGround/Pipes/Red' 或 'Blue' 容器节点!")
+		return
+
+	var existing_pipes = {}
+	for child in pipes_container_red.get_children(): existing_pipes[child.name] = child
+	for child in pipes_container_blue.get_children(): existing_pipes[child.name] = child
+	
+	for pipe_info in pipes_data:
+		var pipe_name = pipe_info.get("name")
+		if pipe_name == null: continue
+
+		var pipe_node: Node2D = existing_pipes.get(pipe_name)
+
+		if pipe_node:
+			existing_pipes.erase(pipe_name)
+		else:
+			print("  创建新管道: ", pipe_name)
+			pipe_node = PIPE_SCENE.instantiate()
+			pipe_node.name = pipe_name
+			# 修正: 先设置 owner, 再 add_child
+			pipe_node.owner = scene_root
+			if pipe_info.get("type") == "LIFE":
+				pipes_container_red.add_child(pipe_node)
+			else:
+				pipes_container_blue.add_child(pipe_node)
+
+		var pos = Vector2(pipe_info.get("position")[0], pipe_info.get("position")[1])
+		pipe_node.global_position = pos
+		
+		var type_str = pipe_info.get("type", "LIFE")
+		if type_str in Pipe.PipeType: pipe_node.pipe_type = Pipe.PipeType[type_str]
+		
+		var dir_str = pipe_info.get("direction", "UP")
+		if dir_str in Pipe.Direction: pipe_node.direction_enum = Pipe.Direction[dir_str]
+
+	for pipe_name in existing_pipes:
+		print("  移除多余管道: ", pipe_name)
+		existing_pipes[pipe_name].queue_free()
+
+func _import_spawners(spawners_data: Array, scene_root: Node):
+	print("正在导入生成点...")
+	var container = scene_root.get_node_or_null("BackGround/EnemySpawns")
+	if not container:
+		printerr("Spawners导入错误: 场景中未找到 'BackGround/EnemySpawns' 容器节点!")
+		return
+
+	var existing_spawners = {}
+	for child in container.get_children():
+		if child is Node2D: existing_spawners[child.name] = child
+	
+	var i = 0
+	for spawner_info in spawners_data:
+		var spawner_name = "EnemySpawnPoint%02d" % (i + 1)
+		var spawner_node: Node2D = existing_spawners.get(spawner_name)
+		
+		if spawner_node:
+			existing_spawners.erase(spawner_name)
+		else:
+			print("  创建新生成点: ", spawner_name)
+			spawner_node = ENEMY_SPAWN_POINT_SCENE.instantiate()
+			spawner_node.name = spawner_name
+			# 修正: 先设置 owner, 再 add_child
+			spawner_node.owner = scene_root
+			container.add_child(spawner_node)
+
+		_configure_spawner(spawner_node, spawner_info)
+		i += 1
+
+	for spawner_name in existing_spawners:
+		print("  移除多余生成点: ", spawner_name)
+		existing_spawners[spawner_name].queue_free()
+
+func _configure_spawner(spawner_node: Node, spawner_info: Dictionary):
+	var pos = Vector2(spawner_info.get("position")[0], spawner_info.get("position")[1])
+	spawner_node.global_position = pos
+
+	for child in spawner_node.get_children():
+		if child is Path2D: child.queue_free()
+	
+	var paths_data = spawner_info.get("paths", [])
+	var i = 0
+	for path_data in paths_data:
+		var path2d = Path2D.new()
+		path2d.name = "Path%02d" % (i + 1)
+		# 修正: 移除此处的 owner 设置。
+		# 子节点会自动从其父节点(spawner_node)继承正确的 owner。
+		# path2d.owner = spawner_node.owner 
+		var curve = Curve2D.new()
+		for p_arr in path_data:
+			var local_point = Vector2(p_arr[0], p_arr[1]) - pos
+			curve.add_point(local_point)
+		path2d.curve = curve
+		spawner_node.add_child(path2d)
+		i += 1
+	
+	if spawner_node.has_method("update_paths_from_children"):
+		spawner_node.call_deferred("update_paths_from_children")
 
 
 func _export_level_data():
