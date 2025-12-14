@@ -7,7 +7,7 @@
 [node name="DCEnemy" instance=ExtResource("1_h5we7")]
 script = ExtResource("2_jmpyl")
 growth_rate_while_attacking = 20.0
-max_growth_value = 100.0
+max_growth_value = 50.0
 bridge_traverse_duration = 3.0
 ability_cooldown = 8.0
 bridge_collision_layer = 3

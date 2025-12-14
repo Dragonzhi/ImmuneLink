@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="Wave" load_steps=6 format=3 uid="uid://bktbxy4finrku"]
 
 [ext_resource type="Script" uid="uid://dd58g3gcq2w5n" path="res://scripts/others/EnemySpawnInfo.gd" id="1_e0th3"]
-[ext_resource type="PackedScene" uid="uid://ccfp312x4lfc3" path="res://scenes/enemies/CTLEnemy.tscn" id="2_uah6y"]
+[ext_resource type="PackedScene" uid="uid://tlfxb2l7y5rr" path="res://scenes/enemies/DCEnemy.tscn" id="2_uah6y"]
 [ext_resource type="Script" path="res://scripts/managers/Wave.gd" id="4_hqy3h"]
 [ext_resource type="Script" path="res://scripts/managers/SpawnerWaveConfig.gd" id="5_45o5c"]
 

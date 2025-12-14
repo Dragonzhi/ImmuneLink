@@ -19,6 +19,7 @@ var _can_use_ability: bool = true
 @onready var _indicator: CPUParticles2D = $BridgeAbilityIndicator
 
 func _ready():
+	DebugManager.register_category("DCEnemy", false)
 	super()
 	
 	if not _ability_timer.is_connected("timeout", _on_ability_timer_timeout):
@@ -38,7 +39,7 @@ func _execute_attack(delta: float):
 	# 在攻击状态下，并且能力可用时，累积成长值
 	if _can_use_ability:
 		_growth_value += growth_rate_while_attacking * delta
-		# print("DC-Enemy attacking bridge. Growth: %d/%d" % [_growth_value, max_growth_value]) # DEBUG
+		DebugManager.dprint("DCEnemy", "DC-Enemy attacking bridge. Growth: %d/%d" % [_growth_value, max_growth_value])
 		if _growth_value >= max_growth_value:
 			_activate_bridge_traversal()
 
@@ -63,7 +64,7 @@ func _activate_bridge_traversal():
 	# 禁用与桥梁层的碰撞
 	set_collision_mask_value(bridge_collision_layer, false)
 	
-	print("DC-Enemy: Bridge traversal ACTIVATED for %s seconds." % bridge_traverse_duration) # DEBUG
+	DebugManager.dprint("DCEnemy", "Bridge traversal ACTIVATED for %s seconds." % bridge_traverse_duration)
 	_ability_timer.start(bridge_traverse_duration)
 
 func _deactivate_bridge_traversal():
@@ -74,7 +75,7 @@ func _deactivate_bridge_traversal():
 	# 恢复与桥梁层的碰撞
 	set_collision_mask_value(bridge_collision_layer, true)
 	
-	print("DC-Enemy: Bridge traversal DEACTIVATED. Cooldown started for %s seconds." % ability_cooldown) # DEBUG
+	DebugManager.dprint("DCEnemy", "Bridge traversal DEACTIVATED. Cooldown started for %s seconds." % ability_cooldown)
 	_reset_timer.start(ability_cooldown)
 
 func _on_ability_timer_timeout():
@@ -82,4 +83,4 @@ func _on_ability_timer_timeout():
 
 func _on_reset_timer_timeout():
 	_can_use_ability = true
-	print("DC-Enemy: Ability ready to charge again.") # DEBUG
+	DebugManager.dprint("DCEnemy", "Ability ready to charge again.")
