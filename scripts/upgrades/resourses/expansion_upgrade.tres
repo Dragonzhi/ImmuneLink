@@ -7,6 +7,6 @@
 script = ExtResource("1_gvf52")
 upgrade_name = "桥梁扩展"
 description = "从此桥梁段延伸出新的连接。"
-cost = 50
+cost = 25
 icon = ExtResource("1_kdoyb")
 metadata/_custom_type_script = "uid://curn4433e5rnd"
