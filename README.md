@@ -1,7 +1,8 @@
 # 免疫联结 (Immune-Link)
 
-<img width="1548" height="814" alt="image" src="https://github.com/user-attachments/assets/b0511353-ca9f-4750-9dce-9018925fe7e7" />
+<p align="center"><img src="https://github.com/user-attachments/assets/b0511353-ca9f-4750-9dce-9018925fe7e7" width="500" height="250"></p>
 
+<div align="center">
 
 
 **《免疫联结》是一款为** [**G-Star公益行\_2025卡赢杯公益游戏开发大赛**](https://2025gamejam.osgame.org/) **开发的2D塔防游戏，主题为“桥”。**
