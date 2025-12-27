@@ -16,7 +16,7 @@
 
 * **游戏演示视频**: [Bilibili](https://www.bilibili.com/video/BV1Z8mFBUEk2/?vd_source=4ac880d8393eec2d29654503468e89f3)
 * **开发日志**: [开发日志1](https://www.xiaoheihe.cn/app/bbs/link/169695514) |[开发日志2](https://www.xiaoheihe.cn/app/bbs/link/169836519) |[开发日志3](https://www.xiaoheihe.cn/app/bbs/link/170146934)
-
+* **在线游玩**：[👉Play🎮](https://dragonzhi.github.io/ImmuneLink/)
 ---
 
 ## ✨ 核心玩法
